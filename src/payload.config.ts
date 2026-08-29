@@ -94,7 +94,7 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URL || '',
     },
-    push: false,
+    push: process.env.DATABASE_PUSH === 'true',
   }),
 
   email: useResend
