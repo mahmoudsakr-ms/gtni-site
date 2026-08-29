@@ -53,6 +53,12 @@ Verified working in this environment: `pnpm run dev` serves `/` and all frontend
 - `MEMORY.md` — condensed carry-over notes between chat sessions (decisions made, gotchas hit, open questions) so the user doesn't have to re-explain context every new conversation. Update it at the end of a session.
 - `CODEMAP.md` — structural index of the codebase (see above). Update it whenever files are added/removed/significantly restructured.
 
+## ⚠️ Standing Rules for All Edits
+
+- **Non-destructive edits.** Prefer additive schema/config changes. Never drop existing data, remove working functionality, or make an irreversible change without an explicit, separate, confirmed step.
+- **Rollback checkpoints.** Before any risky change (schema migration, access-control change, routing change), ensure the working tree is committed clean first — that commit *is* the rollback checkpoint (`git revert`/`git reset` back to it if something breaks). Don't stack multiple unrelated risky changes into one uncommitted working tree.
+- There is a large pending multi-phase plan saved at `PLAN_SECURITY_I18N.md` (security hardening + CMS localization + Gemini AI translation) — read it before starting related work; it documents phase-by-phase sequencing built around these two rules.
+
 ## ⚠️ Permanent Workflow — Required After Every Feature/Change
 
 **These four steps are mandatory after completing any feature, fix, or non-trivial edit — do not skip them and do not ask whether to do them, just do them (pausing only for the explicit user confirmation step 3 requires):**
