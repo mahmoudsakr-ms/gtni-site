@@ -1,0 +1,90 @@
+/*
+ * GTNI Admin - Brand Variables
+ * Contains all color definitions, fonts, and CSS custom properties
+ */
+
+/* Import a nicer font - Cairo for Arabic support and modern look */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Override all admin fonts */
+:root {
+  --font-body: 'Inter', 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+}
+
+/* Apply font to everything */
+/* Global Body background force */
+html,
+* {
+  font-family: var(--font-body) !important;
+}
+body {
+  background-color: var(--body-bg) !important;
+}
+
+.template-default__wrap {
+  background-color: var(--body-bg) !important;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   BRAND COLORS & CSS VARIABLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* GTNI Brand Colors */
+  --gtni-turquoise: #00bcd4;
+  --gtni-turquoise-light: #26c6da;
+  --gtni-turquoise-dark: #00acc1;
+  --gtni-dark: #1a1a2e;
+  --gtni-gold: #ffd700;
+  /* Background Colors - Rich Obsidian Navy Sidebar & Deep Content */
+  --nav-bg: #080e18;
+  --body-bg: #0d1726; /* Deep elegant navy blue background */
+  --header-bg: #080e18;
+
+  /* Premium UI Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(0, 188, 212, 0.15);
+  --glass-glow: rgba(0, 188, 212, 0.2);
+  --input-bg: #152238;
+  --card-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.35);
+  --brand-gradient: linear-gradient(
+    135deg,
+    var(--gtni-turquoise) 0%,
+    var(--gtni-turquoise-dark) 100%
+  );
+
+  /* Font variables */
+  --font-body:
+    'Montserrat', 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace !important;
+
+  /* Override theme colors with brand */
+  --theme-success-500: #00bcd4 !important;
+  --theme-success-400: #26c6da !important;
+  --theme-success-600: #00acc1 !important;
+
+  /* Payload Theme Overrides - Rich Deep Blue Dark Mode */
+  --theme-bg: #0d1726 !important;
+  --theme-elevation-0: #0d1726 !important;
+  --theme-elevation-50: #132034 !important;
+  --theme-elevation-100: #1a2b45 !important;
+  --theme-elevation-150: #253c5e !important;
+  --theme-elevation-200: #314b73 !important;
+  --theme-elevation-800: #ffffff !important;
+  --theme-text: #ffffff !important;
+}
+
+/* Light Theme Mode Overrides */
+[data-theme='light'] {
+  --nav-bg: #ffffff !important;
+  --body-bg: #f8fafc !important;
+  --header-bg: #ffffff !important;
+  --input-bg: #ffffff !important;
+  --theme-bg: #f8fafc !important;
+  --theme-elevation-0: #ffffff !important;
+  --theme-elevation-50: #f1f5f9 !important;
+  --theme-elevation-100: #e2e8f0 !important;
+  --theme-elevation-150: #cbd5e1 !important;
+  --theme-elevation-200: #94a3b8 !important;
+  --theme-elevation-800: #0f172a !important;
+  --theme-text: #0f172a !important;
+}

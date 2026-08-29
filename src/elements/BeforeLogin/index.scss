@@ -1,0 +1,65 @@
+@import '~@payloadcms/ui/scss';
+
+@layer payload-default {
+  .before-login {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100vh;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 1;
+
+    &__image-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      img {
+        object-fit: cover !important;
+      }
+    }
+
+    /* Target the Payload Login form container to move it to the right half and center it there */
+    @at-root {
+      .login {
+        display: flex !important;
+        justify-content: center !important; /* Center the wrap */
+        align-items: center !important;
+        padding-left: 50vw !important; /* Offset by the image width */
+        background-color: var(--body-bg) !important;
+        min-height: 100vh !important;
+
+        /* Hide redundant icon on the login page */
+
+        &__wrap {
+          width: 100% !important;
+          max-width: 500px !important; /* Confine the form width */
+          margin: 0 !important;
+          padding: 0 base(2) !important;
+        }
+
+        &__form {
+          width: 100% !important;
+        }
+      }
+    }
+
+    /* Responsive - stack on mobile */
+    @include mid-break {
+      position: relative;
+      width: 100%;
+      height: 40vh;
+      border-right: 0;
+
+      @at-root {
+        .login {
+          display: block !important;
+          &__wrap {
+            width: 100% !important;
+            padding: base(2) !important;
+          }
+        }
+      }
+    }
+  }
+}

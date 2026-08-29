@@ -1,0 +1,630 @@
+/*
+ * GTNI Admin - Components
+ * Collapsible sections, arrays, uploads, rich text, tables, cards
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COLLAPSIBLE SECTIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.collapsible {
+  border: 1px solid rgba(0, 188, 212, 0.15) !important;
+  border-radius: 12px !important;
+  margin-bottom: 16px !important;
+  overflow: visible !important;
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.collapsible__toggle {
+  display: flex !important;
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.08) 0%, transparent 100%) !important;
+  padding: 16px 20px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  border-bottom: 1px solid rgba(0, 188, 212, 0.1) !important;
+}
+
+.collapsible__toggle:hover {
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.15) 0%, transparent 100%) !important;
+}
+
+.collapsible--collapsed .collapsible__toggle {
+  border-bottom: none !important;
+}
+
+.collapsible__content {
+  padding: 20px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ARRAY FIELDS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.array-field__row {
+  border: 1px solid rgba(0, 188, 212, 0.12) !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.2s ease !important;
+}
+
+.array-field__row:hover {
+  border-color: rgba(0, 188, 212, 0.25) !important;
+}
+
+.array-field__add-button,
+.array-field__add-row {
+  border: 2px dashed rgba(0, 188, 212, 0.3) !important;
+  border-radius: 10px !important;
+  padding: 20px !important;
+  transition: all 0.3s ease !important;
+  background: transparent !important;
+  color: #00bcd4 !important;
+  font-weight: 500 !important;
+}
+
+.array-field__add-button:hover,
+.array-field__add-row:hover {
+  border-color: #00bcd4 !important;
+  background: rgba(0, 188, 212, 0.08) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UPLOAD FIELDS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.upload__dropzone,
+.file-field__upload {
+  border: 2px dashed rgba(0, 188, 212, 0.25) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+  background: rgba(0, 188, 212, 0.02) !important;
+}
+
+.upload__dropzone:hover,
+.file-field__upload:hover {
+  border-color: #00bcd4 !important;
+  background: rgba(0, 188, 212, 0.05) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RICH TEXT EDITOR
+   ═══════════════════════════════════════════════════════════════════════════ */
+.rich-text-lexical,
+.rich-text-lexical *,
+[data-lexical-editor='true'],
+[data-lexical-editor='true'] *,
+.ContentEditable__root,
+.ContentEditable__root * {
+  font-family: 'Montserrat', 'Cairo', sans-serif !important;
+}
+
+.rich-text {
+  border: 1px solid rgba(0, 188, 212, 0.2) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+.rich-text:focus-within {
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.12) !important;
+}
+
+.ContentEditable__placeholder,
+[data-lexical-placeholder],
+.editor-placeholder {
+  font-family: 'Montserrat', 'Cairo', sans-serif !important;
+  font-size: 15px !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TABLES & LISTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.table {
+  width: 100% !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: rgba(255, 255, 255, 0.01) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+.table__header,
+thead {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.table__header th,
+thead th {
+  padding: 18px 20px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px !important;
+}
+
+.table__row,
+tbody tr {
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+  background: transparent !important;
+}
+
+.table__row:hover,
+tbody tr:hover {
+  background: rgba(0, 188, 212, 0.07) !important;
+  transform: translateX(6px) !important;
+  border-left: 4px solid var(--gtni-turquoise) !important;
+  box-shadow: -10px 0 20px rgba(0, 188, 212, 0.15) !important;
+  cursor: pointer;
+}
+
+/* Checkboxes in tables */
+.table input[type='checkbox'] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.table input[type='checkbox']:checked {
+  background: var(--gtni-turquoise);
+  border-color: var(--gtni-turquoise);
+}
+
+.table input[type='checkbox']:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* List Controls (Search, Filter, Sort) */
+.list-controls {
+  margin-bottom: 32px !important;
+  padding: 20px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+@media (min-width: 769px) {
+  .search-bar {
+    grid-template-columns: 1fr auto !important;
+
+    &:has(.search-bar__actions) {
+      grid-template-columns: 1fr auto auto !important;
+    }
+
+    .icon--search {
+      grid-column: 2/3 !important;
+      grid-row: 1/2 !important;
+    }
+
+    .search-filter {
+      grid-column: 1/3 !important;
+      grid-row: 1/2 !important;
+
+      input {
+        padding-inline-start: 16px !important;
+        padding-inline-end: 45px !important;
+      }
+    }
+
+    &__actions {
+      grid-column: 3/4 !important;
+      grid-row: 1/2 !important;
+    }
+  }
+}
+
+.list-controls__button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 10px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  padding: 10px 20px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+}
+
+.list-controls__button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(0, 188, 212, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Table Avatars (Common in Users collection) */
+.table .avatar {
+  border: 2px solid var(--glass-border) !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.table__row:hover .avatar {
+  border-color: var(--gtni-turquoise) !important;
+  transform: scale(1.1) !important;
+}
+
+/* Pagination & Per Page */
+.paginator,
+.per-page {
+  padding: 20px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 13px !important;
+}
+
+.paginator__button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 6px !important;
+  color: #fff !important;
+  transition: all 0.2s ease !important;
+}
+
+.paginator__button:hover:not(:disabled) {
+  background: var(--gtni-turquoise) !important;
+  box-shadow: 0 0 15px rgba(0, 188, 212, 0.3) !important;
+}
+
+/* Table Cell Refinements */
+.table th,
+.table td {
+  padding: 16px 20px !important;
+  vertical-align: middle !important;
+}
+
+.table td {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 14px !important;
+}
+
+/* Custom Scrollbar for tables */
+.table__wrap {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 188, 212, 0.2) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 188, 212, 0.2);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--gtni-turquoise);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HEADER & APP BAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+.app-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: var(--nav-bg) !important; /* Match sidebar */
+  height: var(--app-header-height, 60px) !important;
+}
+
+/* Page headers (Collection lists and Document headers) */
+.doc-header,
+.collection-list__header,
+.list-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding-top: 50px !important; /* Slightly more for a premium feel */
+  padding-bottom: 24px !important;
+  margin-bottom: 28px !important;
+  background: transparent !important;
+}
+
+.template-default__wrap {
+  background-color: var(--body-bg) !important;
+}
+
+.template-default__content,
+.template-list__content,
+.collection-list,
+.dashboard-page,
+.view-list {
+  padding-top: 48px !important;
+}
+
+.template-default__nav {
+  background: var(--nav-bg) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BREADCRUMBS & STEP NAV (React Select)
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Target the specific react-select structure provided by the user */
+.step-nav,
+.breadcrumbs {
+  /* Enforce larger logo size in the breadcrumb home link */
+  .step-nav__home,
+  .step-nav [class*='__home'],
+  .step-nav a:first-child,
+  .breadcrumbs a:first-child,
+  .graphic-icon {
+    margin-right: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    height: auto !important;
+    width: auto !important;
+
+    img,
+    svg {
+      height: 34px !important;
+      width: auto !important;
+      max-width: 150px !important;
+      min-width: auto !important;
+      object-fit: contain !important;
+      overflow: visible !important;
+    }
+  }
+
+  /* The main control container */
+  .rs__control {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    cursor: pointer !important;
+    min-height: auto !important;
+    padding: 2px 8px !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.04) !important;
+    }
+  }
+
+  /* The value container where "Dashboard" sits */
+  .rs__value-container {
+    padding: 4px 12px !important;
+    gap: 0 !important;
+  }
+
+  /* The actual text "Dashboard" */
+  .rs__single-value {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+  }
+
+  /* Indicators (Chevron) */
+  .rs__indicators {
+    padding-right: 8px !important;
+  }
+
+  /* Remove the vertical separator line */
+  .rs__indicator-separator {
+    display: none !important;
+  }
+
+  /* The chevron icon */
+  .dropdown-indicator {
+    color: rgba(255, 255, 255, 0.4) !important;
+    padding: 0 !important;
+
+    &:hover {
+      color: var(--gtni-turquoise) !important;
+    }
+
+    svg {
+      width: 14px !important;
+      height: 14px !important;
+    }
+  }
+}
+
+/* Ensure no outlines on focus for these specific elements */
+.step-nav *:focus,
+.breadcrumbs *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure Popup Wrapper and Trigger Buttons are clean, compact & transparent */
+.popup,
+.popup-button,
+.options-button,
+.popup__toggle,
+.popup-button__button,
+[class*='__popup-button'],
+[class*='popup__toggle'] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+}
+
+/* Global Solid Styling ONLY for the Opened Dropdown Content Box */
+.popup__content,
+.popover,
+[class*='__popup-content'],
+[class*='popup__content'],
+.options-button__popup,
+.react-select__menu,
+.rs__menu {
+  background: #16243a !important; /* Solid navy background */
+  border: 1px solid #283c5e !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 6px !important;
+  z-index: 9999 !important;
+  outline: none !important;
+  opacity: 1 !important;
+  min-width: 160px !important;
+}
+
+[data-theme='light'] .popup__content,
+[data-theme='light'] .popover,
+[data-theme='light'] [class*='__popup-content'],
+[data-theme='light'] [class*='popup__content'],
+[data-theme='light'] .options-button__popup,
+[data-theme='light'] .react-select__menu,
+[data-theme='light'] .rs__menu {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Remove internal transparent overrides */
+.step-nav [class*='__menu-list'],
+.breadcrumbs [class*='__menu-list'] {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+/* Items inside the Dropdown Menu */
+.popup__content button,
+.popup__content a,
+.popover button,
+.popover a,
+[class*='popup__content'] button,
+[class*='popup__content'] a,
+.options-button__popup button {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 14px !important;
+  width: 100% !important;
+  text-align: left !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #f1f5f9 !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+[data-theme='light'] .popup__content button,
+[data-theme='light'] .popup__content a,
+[data-theme='light'] .popover button,
+[data-theme='light'] .popover a,
+[data-theme='light'] [class*='popup__content'] button,
+[data-theme='light'] .options-button__popup button {
+  color: #1e293b !important;
+}
+
+.popup__content button:hover,
+.popup__content a:hover,
+.popover button:hover,
+.popover a:hover,
+[class*='popup__content'] button:hover,
+.options-button__popup button:hover {
+  background: #253959 !important;
+  color: #00bcd4 !important;
+}
+
+[data-theme='light'] .popup__content button:hover,
+[data-theme='light'] .popup__content a:hover,
+[data-theme='light'] .popover button:hover,
+[data-theme='light'] [class*='popup__content'] button:hover,
+[data-theme='light'] .options-button__popup button:hover {
+  background: #f1f5f9 !important;
+  color: #0083aa !important;
+}
+
+.step-nav__list {
+  gap: 0 !important; /* Spacing handled by link padding */
+  align-items: center !important;
+}
+
+.step-nav__link:hover,
+.breadcrumbs__link:hover,
+.step-nav__button:hover,
+.breadcrumbs__button:hover {
+  color: var(--gtni-turquoise) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUTTON STATES (Save/Publish)
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Make disabled save button noticeably lighter/dimmer */
+button#action-save:disabled,
+button[id*='action-save']:disabled,
+.form-submit .btn:disabled,
+.btn.btn--style-primary:disabled {
+  /* opacity: 0.3 !important; <--- Removed to keep text bright */
+  filter: grayscale(1) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important; /* Faint background */
+  color: #ffffff !important; /* Bright white text as requested */
+  border-color: transparent !important;
+  cursor: not-allowed !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADMIN LOGO & ICON GRAPHICS (Uncrop & Enlarge)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.graphic-logo,
+.graphic-icon,
+[class*='graphic-logo'],
+[class*='graphic-icon'],
+.nav__header a,
+.nav__header .logo {
+  display: flex !important;
+  align-items: center !important;
+  max-height: none !important;
+  height: auto !important;
+  width: auto !important;
+  overflow: visible !important;
+  padding: 4px 0 !important;
+}
+
+.graphic-logo img,
+.graphic-icon img,
+[class*='graphic-logo'] img,
+[class*='graphic-icon'] img {
+  max-height: 52px !important;
+  max-width: 180px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  overflow: visible !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HIDE ADMIN THEME SELECTOR & ENFORCE DARK THEME ALWAYS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.theme-selector,
+[class*='theme-selector'],
+[class*='ThemeSelector'],
+[class*='account__theme'],
+[class*='nav__theme'],
+[class*='theme-field'],
+.field-type-theme,
+div.theme,
+div[class*='theme-picker'],
+div[class*='ThemePicker'] {
+  display: none !important;
+}

@@ -1,0 +1,18 @@
+/*
+ * GTNI Admin - Responsive
+ * Media queries for mobile and tablet support
+ */
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px !important;
+  }
+
+  .collapsible__toggle {
+    padding: 14px 16px !important;
+  }
+
+  .collapsible__content {
+    padding: 16px !important;
+  }
+}

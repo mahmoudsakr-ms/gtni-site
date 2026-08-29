@@ -1,0 +1,61 @@
+/*
+ * GTNI Admin - Typography
+ * Font families and text styling
+ */
+
+body,
+html {
+  font-family:
+    'Montserrat',
+    'Cairo',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif !important;
+}
+
+/* All text elements */
+span,
+p,
+div,
+a,
+label,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+textarea,
+select,
+button,
+td,
+th,
+.nav-label,
+.step-nav__link,
+.collection-list__title,
+.nav-group__toggle,
+.nav-group__content a {
+  font-family: 'Montserrat', 'Cairo', sans-serif !important;
+}
+
+/* Labels and titles */
+label,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600 !important;
+}
+
+/* Code/mono sections */
+code,
+pre,
+.code-editor,
+.json-field {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace !important;
+}

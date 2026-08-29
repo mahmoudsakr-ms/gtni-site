@@ -1,0 +1,233 @@
+@import '~@payloadcms/ui/scss';
+
+/**
+ * GTNI Admin Navigation Styles
+ * Clean, dark design with smooth hover effects
+ */
+
+@layer payload-default {
+  .nav {
+    --nav-bg: #080e18;
+    --nav-border: #162438;
+    --nav-link-color: rgba(255, 255, 255, 0.7);
+    --nav-link-hover-bg: rgba(0, 188, 212, 0.08);
+    --nav-link-active-bg: rgba(0, 188, 212, 0.12);
+    --nav-accent: #00bcd4;
+    --nav-group-color: rgba(255, 255, 255, 0.4);
+    --nav-icon-color: #5a9eb5;
+
+    background: var(--nav-bg) !important;
+    border-right: 1px solid var(--nav-border) !important;
+
+    &__wrap {
+      padding: base(1) 0;
+      display: flex;
+      flex-direction: column;
+      gap: base(0.5);
+    }
+
+    &__scroll {
+      background: var(--nav-bg);
+    }
+
+    /* Navigation links */
+    &__link {
+      display: flex;
+      align-items: center;
+      gap: base(0.75);
+      padding: base(0.6) base(1.25);
+      margin: 2px base(0.5);
+      border-radius: 8px;
+      color: var(--nav-link-color);
+      font-size: 14px;
+      font-weight: 400;
+      text-decoration: none !important;
+      position: relative;
+      transition: all 0.2s ease;
+      overflow: hidden;
+
+      /* Hover glow effect */
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: linear-gradient(90deg, var(--nav-accent), transparent);
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      &:hover {
+        background: var(--nav-link-hover-bg);
+        color: rgba(255, 255, 255, 0.95);
+        padding-left: base(1.5);
+
+        &::before {
+          width: 3px;
+          opacity: 1;
+        }
+
+        .nav__icon {
+          color: var(--nav-accent);
+          opacity: 1;
+        }
+      }
+
+      /* Active state */
+      &.active {
+        background: var(--nav-link-active-bg);
+        color: var(--nav-accent);
+        font-weight: 500;
+
+        &::before {
+          width: 3px;
+          opacity: 1;
+        }
+
+        .nav__icon {
+          color: var(--nav-accent);
+          opacity: 1;
+        }
+      }
+    }
+
+    /* Link labels */
+    &__link-label {
+      font-size: 14px;
+      color: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Icons */
+    &__icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: var(--nav-icon-color);
+      opacity: 0.7;
+      transition: all 0.2s ease;
+    }
+
+    /* Controls section (logout) */
+    &__controls {
+      padding: base(1);
+      border-top: 1px solid var(--nav-border);
+      margin-top: auto;
+    }
+
+    /* Logout button */
+    &__log-out {
+      display: flex;
+      align-items: center;
+      gap: base(0.5);
+      padding: base(0.5) base(0.75);
+      color: rgba(255, 255, 255, 0.5);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    /* Header with hamburger */
+    &__header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--app-header-height, 60px);
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-border);
+      z-index: 100;
+      padding: 0 base(1);
+
+      @include mid-break {
+        display: flex;
+        align-items: center;
+      }
+
+      &-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+    }
+
+    /* Mobile close button */
+    &__mobile-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--nav-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(0, 188, 212, 0.3);
+      }
+    }
+  }
+
+  /* Nav Group styling */
+  .nav-group {
+    margin-bottom: base(0.5);
+
+    &__toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: base(1) base(1.25) base(0.5);
+      color: var(--theme-elevation-400, rgba(255, 255, 255, 0.4));
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--theme-elevation-550, rgba(255, 255, 255, 0.6));
+      }
+
+      svg {
+        width: 12px;
+        height: 12px;
+        opacity: 0.5;
+        transition: transform 0.2s ease;
+      }
+    }
+
+    &__label {
+      font-family: var(--font-body);
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Collapsed state */
+    &--collapsed {
+      .nav-group__toggle svg {
+        transform: rotate(-90deg);
+      }
+
+      .nav-group__content {
+        display: none;
+      }
+    }
+  }
+}

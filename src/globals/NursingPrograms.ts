@@ -1,0 +1,168 @@
+import { GlobalConfig } from 'payload'
+import { revalidatePath } from 'next/cache'
+
+export const NursingPrograms: GlobalConfig = {
+  slug: 'nursing-programs',
+  label: 'The Program',
+  admin: {
+    group: 'Pages',
+    description: 'Manage the Nursing Programs page content',
+  },
+  access: {
+    read: () => true,
+  },
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        revalidatePath('/nursing-programs')
+        return doc
+      },
+    ],
+  },
+
+  fields: [
+    // ════════════════════════════════════════════════════════════════════════
+    // HERO SECTION
+    // ════════════════════════════════════════════════════════════════════════
+    {
+      type: 'collapsible',
+      label: '🖼️ Hero Section',
+      admin: {
+        initCollapsed: false,
+      },
+      fields: [
+        {
+          name: 'heroImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Hero Background Image',
+        },
+        {
+          name: 'heroTitle',
+          type: 'text',
+          label: 'Hero Title',
+          defaultValue: 'Nursing Programs',
+        },
+        {
+          name: 'heroSubtitle',
+          type: 'textarea',
+          label: 'Hero Subtitle',
+        },
+      ],
+    },
+
+    {
+      name: 'overview',
+      type: 'richText',
+      label: 'Program Overview',
+    },
+
+    // ============================================
+    // EPSLOs SECTION
+    // ============================================
+    {
+      name: 'epslos',
+      type: 'group',
+      label: 'EPSLOs (End-of-Program Student Learning Outcomes)',
+      fields: [
+        {
+          name: 'sectionTitle',
+          type: 'text',
+          label: 'Section Title',
+          defaultValue: 'EPSLOs',
+        },
+        {
+          name: 'sectionSubtitle',
+          type: 'text',
+          label: 'Section Subtitle',
+          defaultValue: 'End-of-Program Student Learning Outcomes',
+        },
+        // Dynamic Categories Array
+        {
+          name: 'categories',
+          type: 'array',
+          label: 'EPSLO Categories',
+          admin: {
+            description: 'Add, remove, or reorder learning outcome categories as needed.',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              label: 'Category Title',
+              admin: {
+                placeholder: 'e.g., KNOWLEDGE & UNDERSTANDING',
+              },
+            },
+            {
+              name: 'items',
+              type: 'textarea',
+              label: 'Learning Outcomes',
+              admin: {
+                description:
+                  'Write each outcome on a new line. They will be displayed as bullet points.',
+                rows: 8,
+              },
+            },
+            {
+              type: 'collapsible',
+              label: 'EPSLO Image (Optional)',
+              admin: {
+                initCollapsed: true,
+              },
+              fields: [
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Image',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // ============================================
+    // COURSES SECTION
+    // ============================================
+    {
+      name: 'coursesSection',
+      type: 'group',
+      label: 'Courses Section',
+      fields: [
+        {
+          name: 'sectionTitle',
+          type: 'text',
+          label: 'Section Title',
+          defaultValue: 'Courses',
+        },
+        {
+          name: 'description',
+          type: 'richText',
+          label: 'Courses Description',
+        },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Section Image',
+        },
+        {
+          name: 'buttonText',
+          type: 'text',
+          label: 'Button Text',
+          defaultValue: 'GO TO COURSES',
+        },
+        {
+          name: 'buttonLink',
+          type: 'text',
+          label: 'Button Link (URL)',
+          defaultValue: '/courses',
+        },
+      ],
+    },
+  ],
+}

@@ -1,0 +1,47 @@
+/*
+ * GTNI Admin - Buttons
+ * Button styles and variations
+ */
+
+.btn {
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn--style-primary,
+.btn.btn--style-primary {
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn--style-primary:hover,
+button[type='submit']:hover,
+.btn.primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(0, 188, 212, 0.4) !important;
+  filter: brightness(1.1) !important;
+}
+
+/* Secondary buttons - Glassy */
+.btn--style-secondary,
+.btn.secondary {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn--style-secondary:hover,
+.btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(0, 188, 212, 0.4) !important;
+}

@@ -1,0 +1,332 @@
+/* GTNI Custom Admin Styles */
+/* Brand Colors based on GTNI identity */
+
+:root {
+  /* Primary Brand Colors */
+  --gtni-turquoise: #00bcd4;
+  --gtni-dark: #1a1a2e;
+  --gtni-gold: #ffd700;
+
+  /* Override Payload theme variables */
+  --theme-elevation-0: #0f0f1a;
+  --theme-elevation-50: #1a1a2e;
+  --theme-elevation-100: #242440;
+  --theme-elevation-150: #2d2d4a;
+  --theme-elevation-200: #363655;
+  --theme-elevation-250: #404060;
+  --theme-elevation-300: #4a4a6b;
+  --theme-elevation-350: #545476;
+  --theme-elevation-400: #5e5e81;
+  --theme-elevation-450: #68688c;
+  --theme-elevation-500: #727297;
+  --theme-elevation-550: #7c7ca2;
+  --theme-elevation-600: #8686ad;
+  --theme-elevation-650: #9090b8;
+  --theme-elevation-700: #9a9ac3;
+  --theme-elevation-800: #a4a4ce;
+  --theme-elevation-900: #aeaed9;
+  --theme-elevation-1000: #b8b8e4;
+
+  /* Brand accent color */
+  --theme-success-500: #00bcd4;
+  --theme-success-400: #26c6da;
+  --theme-success-600: #00acc1;
+
+  /* Focus/Active states */
+  --theme-bg-focus: rgba(0, 188, 212, 0.1);
+  --theme-text-active: #00bcd4;
+}
+
+/* Sidebar Navigation Styling */
+.nav {
+  border-right: 1px solid rgba(0, 188, 212, 0.1) !important;
+}
+
+.nav__link:hover,
+.nav__link--active {
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.15) 0%, transparent 100%) !important;
+  border-left: 3px solid #00bcd4 !important;
+}
+
+.nav__link--active .nav__link__label {
+  color: #00bcd4 !important;
+  font-weight: 600 !important;
+}
+
+/* Group Headers */
+.nav__group-header {
+  color: #00bcd4 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  font-size: 11px !important;
+  padding: 16px 20px 8px !important;
+  border-bottom: 1px solid rgba(0, 188, 212, 0.1) !important;
+}
+
+/* Logo Area */
+.nav__header {
+  padding: 20px !important;
+  border-bottom: 1px solid rgba(0, 188, 212, 0.2) !important;
+  background: linear-gradient(180deg, rgba(0, 188, 212, 0.05) 0%, transparent 100%) !important;
+}
+
+/* Buttons */
+.btn--style-primary {
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn--style-primary:hover {
+  background: linear-gradient(135deg, #26c6da 0%, #00bcd4 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 20px rgba(0, 188, 212, 0.3) !important;
+}
+
+.btn--style-secondary {
+  border-color: rgba(0, 188, 212, 0.3) !important;
+  color: #00bcd4 !important;
+}
+
+.btn--style-secondary:hover {
+  background: rgba(0, 188, 212, 0.1) !important;
+  border-color: #00bcd4 !important;
+}
+
+/* Form Fields */
+.field-type.text input,
+.field-type.textarea textarea,
+.field-type.select .rs__control {
+  border: 1px solid rgba(0, 188, 212, 0.2) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.field-type.text input:focus,
+.field-type.textarea textarea:focus,
+.field-type.select .rs__control--is-focused {
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important;
+}
+
+/* Collapsible Sections */
+.collapsible {
+  border: 1px solid rgba(0, 188, 212, 0.15) !important;
+  border-radius: 12px !important;
+  margin-bottom: 16px !important;
+  overflow: hidden !important;
+}
+
+.collapsible__toggle {
+  display: flex !important;
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.08) 0%, transparent 100%) !important;
+  padding: 16px 20px !important;
+  font-weight: 600 !important;
+}
+
+.collapsible__toggle:hover {
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.15) 0%, transparent 100%) !important;
+}
+
+.collapsible--collapsed .collapsible__toggle {
+  border-radius: 12px !important;
+}
+
+/* Array Fields */
+.array-field__row {
+  border: 1px solid rgba(0, 188, 212, 0.1) !important;
+  border-radius: 8px !important;
+  margin-bottom: 12px !important;
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.array-field__add-button {
+  border: 2px dashed rgba(0, 188, 212, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.array-field__add-button:hover {
+  border-color: #00bcd4 !important;
+  background: rgba(0, 188, 212, 0.05) !important;
+}
+
+/* Upload Fields */
+.upload-field {
+  border: 2px dashed rgba(0, 188, 212, 0.2) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.upload-field:hover {
+  border-color: #00bcd4 !important;
+  background: rgba(0, 188, 212, 0.02) !important;
+}
+
+/* Table/List View */
+.table {
+  border: 1px solid rgba(0, 188, 212, 0.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.table__header {
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, transparent 100%) !important;
+}
+
+.table__row:hover {
+  background: rgba(0, 188, 212, 0.05) !important;
+}
+
+/* Cards/Blocks */
+.card {
+  border: 1px solid rgba(0, 188, 212, 0.1) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.card:hover {
+  border-color: rgba(0, 188, 212, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(0, 188, 212, 0.1) !important;
+}
+
+/* Dashboard */
+.dashboard {
+  padding: 32px !important;
+}
+
+.dashboard__card {
+  border: 1px solid rgba(0, 188, 212, 0.15) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, rgba(0, 188, 212, 0.03) 0%, transparent 100%) !important;
+  transition: all 0.3s ease !important;
+}
+
+.dashboard__card:hover {
+  border-color: #00bcd4 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 30px rgba(0, 188, 212, 0.15) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 188, 212, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 188, 212, 0.5);
+}
+
+/* Global Header */
+.app-header {
+  border-bottom: 1px solid rgba(0, 188, 212, 0.1) !important;
+  background: linear-gradient(180deg, rgba(0, 188, 212, 0.03) 0%, transparent 100%) !important;
+}
+
+/* Save Status Indicator */
+.template-default__save-status {
+  color: #00bcd4 !important;
+}
+
+/* Version Pill */
+.version-pill {
+  background: rgba(0, 188, 212, 0.1) !important;
+  border: 1px solid rgba(0, 188, 212, 0.2) !important;
+  color: #00bcd4 !important;
+}
+
+/* Toast Notifications */
+.toast-container .toast--success {
+  border-left: 4px solid #00bcd4 !important;
+}
+
+/* Checkbox */
+input[type='checkbox']:checked {
+  background-color: #00bcd4 !important;
+  border-color: #00bcd4 !important;
+}
+
+/* Radio */
+input[type='radio']:checked {
+  border-color: #00bcd4 !important;
+}
+
+input[type='radio']:checked::after {
+  background-color: #00bcd4 !important;
+}
+
+/* Rich Text Editor */
+.rich-text {
+  border: 1px solid rgba(0, 188, 212, 0.2) !important;
+  border-radius: 8px !important;
+}
+
+.rich-text:focus-within {
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important;
+}
+
+/* Loading Spinner */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 188, 212, 0.05) 0%,
+    rgba(0, 188, 212, 0.1) 50%,
+    rgba(0, 188, 212, 0.05) 100%
+  ) !important;
+}
+
+/* Document Header */
+.doc-header {
+  border-bottom: 1px solid rgba(0, 188, 212, 0.1) !important;
+  padding-bottom: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Field Labels */
+.field-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 8px !important;
+}
+
+/* Field Description */
+.field-description {
+  color: rgba(0, 188, 212, 0.7) !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px !important;
+  }
+
+  .collapsible__toggle {
+    padding: 12px 16px !important;
+  }
+}

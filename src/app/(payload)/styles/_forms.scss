@@ -1,0 +1,101 @@
+/*
+ * GTNI Admin - Form Fields
+ * Input fields, selects, labels, and descriptions
+ */
+
+/* Text inputs */
+.field-type.text input,
+.field-type.textarea textarea,
+.field-type.number input,
+.field-type.email input,
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+textarea {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 10px !important;
+  background: var(--input-bg) !important;
+  color: #fff !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  padding: 14px 16px !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.field-type.text input:focus,
+.field-type.textarea textarea:focus,
+input:focus,
+textarea:focus {
+  border-color: rgba(0, 188, 212, 0.5) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow:
+    0 0 0 4px rgba(0, 188, 212, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Field labels */
+.field-label {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  margin-bottom: 10px !important;
+  display: block;
+}
+
+/* Field descriptions */
+.field-description {
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 12px !important;
+  font-style: italic !important;
+  margin-top: 8px !important;
+}
+
+/* Select/Dropdown */
+.rs__control {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 10px !important;
+  background: var(--input-bg) !important;
+  min-height: 48px !important;
+}
+
+.rs__control--is-focused {
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15) !important;
+}
+
+.rs__menu {
+  border: 1px solid rgba(0, 188, 212, 0.2) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  z-index: 9999 !important;
+}
+
+.rs__option--is-focused {
+  background: rgba(0, 188, 212, 0.15) !important;
+}
+
+.rs__option--is-selected {
+  background: #00bcd4 !important;
+}
+
+/* Checkboxes & Radios */
+input[type='checkbox']:checked {
+  background-color: #00bcd4 !important;
+  border-color: #00bcd4 !important;
+}
+
+input[type='radio']:checked {
+  border-color: #00bcd4 !important;
+}
+
+input[type='radio']:checked::after {
+  background-color: #00bcd4 !important;
+}
+
+/* Toggle switches */
+.toggle-field__input:checked + .toggle-field__toggle {
+  background: #00bcd4 !important;
+}

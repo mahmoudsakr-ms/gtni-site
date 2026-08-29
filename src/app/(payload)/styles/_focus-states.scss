@@ -1,0 +1,236 @@
+/*
+ * GTNI Admin - Focus States
+ * Custom focus outlines and states for accessibility
+ */
+
+/* Remove default ugly outlines and replace with brand-styled focus */
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: none !important;
+}
+
+/* Input fields focus */
+input:focus,
+textarea:focus,
+select:focus,
+[contenteditable='true']:focus {
+  outline: none !important;
+  border-color: #00bcd4 !important;
+  box-shadow:
+    0 0 0 3px rgba(0, 188, 212, 0.2),
+    0 0 15px rgba(0, 188, 212, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* React Select / Dropdown focus */
+.rs__control,
+.rs__control--is-focused,
+.ReactSelect__control,
+.ReactSelect__control--is-focused,
+[class*='select']:focus,
+[class*='Select']:focus {
+  outline: none !important;
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2) !important;
+}
+
+.rs__control--is-focused {
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2) !important;
+}
+
+/* Remove ALL focus outlines from react-select inner elements */
+.rs__value-container,
+.rs__value-container *,
+.rs__single-value,
+.rs__input,
+.rs__input input,
+.rs__input-container,
+.rs__placeholder,
+.rs__indicators,
+.rs__dropdown-indicator,
+.rs__clear-indicator,
+.rs__menu,
+.rs__menu-list,
+[class*='rs__'] *,
+[class*='ReactSelect'] * {
+  outline: none !important;
+}
+
+/* Target the inner input container with emotion css classes */
+.rs__input-container,
+.rs__input-container[class*='css-'],
+div[class*='css-'][data-value],
+[data-value] {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Target the actual input with role=combobox */
+input.rs__input,
+input[role='combobox'],
+.rs__control input,
+.rs__value-container input {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+input.rs__input:focus,
+input[role='combobox']:focus,
+.rs__control input:focus,
+.rs__value-container input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Specifically target the value container focus */
+.rs__value-container:focus,
+.rs__value-container:focus-within,
+.rs__single-value:focus,
+.rs__input:focus,
+.rs__input input:focus,
+.rs__input-container:focus,
+div[class*='ValueContainer']:focus,
+div[class*='singleValue']:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Dropdown menu items hover */
+.rs__option:hover,
+.rs__option--is-focused {
+  background: rgba(0, 188, 212, 0.15) !important;
+}
+
+.rs__option--is-selected {
+  background: #00bcd4 !important;
+  color: white !important;
+}
+
+/* Button focus states */
+button:focus,
+.btn:focus,
+[role='button']:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.25) !important;
+}
+
+/* Checkbox and Radio focus */
+input[type='checkbox']:focus,
+input[type='radio']:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2) !important;
+}
+
+/* Link focus */
+a:focus {
+  outline: none !important;
+  text-decoration: none !important;
+  color: #00bcd4 !important;
+}
+
+/* Collapsible toggle focus */
+.collapsible__toggle:focus,
+.collapsible__toggle:focus-visible {
+  outline: none !important;
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.12) 0%, transparent 100%) !important;
+}
+
+/* Array field row focus */
+.array-field__row:focus-within {
+  border-color: rgba(0, 188, 212, 0.4) !important;
+  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.1) !important;
+}
+
+/* Upload field focus */
+.upload__dropzone:focus,
+.upload__dropzone:focus-within,
+.file-field__upload:focus {
+  outline: none !important;
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15) !important;
+}
+
+/* Lexical editor focus */
+.rich-text:focus-within,
+.rich-text-lexical:focus-within {
+  outline: none !important;
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15) !important;
+}
+
+/* Remove internal focus styling for Lexical contenteditable to avoid double outline */
+[data-lexical-editor='true']:focus,
+.ContentEditable__root:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Tab focus */
+[role='tab']:focus,
+.tabs__tab:focus {
+  outline: none !important;
+  background: rgba(0, 188, 212, 0.1) !important;
+  border-color: #00bcd4 !important;
+}
+
+/* Navigation links focus */
+.nav-group__content a:focus,
+.nav__link:focus {
+  outline: none !important;
+  background: rgba(0, 188, 212, 0.15) !important;
+  text-decoration: none !important;
+}
+
+/* Card focus */
+.card:focus,
+.card:focus-within {
+  outline: none !important;
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15) !important;
+}
+
+/* Popup/Modal focus trap */
+[role='dialog']:focus,
+.modal:focus {
+  outline: none !important;
+}
+
+/* Date picker focus */
+.react-datepicker__input-container input:focus {
+  outline: none !important;
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2) !important;
+}
+
+/* Pill/Tag focus */
+.pill:focus,
+.tag:focus,
+.rs__multi-value:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.3) !important;
+}
+
+/* Smooth transitions for all focus states */
+input,
+textarea,
+select,
+button,
+a,
+.btn,
+.rs__control,
+.collapsible__toggle,
+.upload__dropzone {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease !important;
+}

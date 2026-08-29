@@ -1,0 +1,305 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* Brand Colors */
+  --color-brand-dark: #25234e;
+  --color-brand-light: #4c6baf;
+  --color-brand-turquoise: #53b5b2;
+
+  /* Semantic Mappings */
+  --color-primary: var(--color-brand-dark);
+  --color-secondary: var(--color-brand-light);
+  --color-accent: var(--color-brand-turquoise);
+
+  /* Background and Foreground */
+  --color-background: #ffffff;
+  --color-foreground: var(--color-brand-dark);
+
+  /* Fonts */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.705 0.015 286.067);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.21 0.006 285.885);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.705 0.015 286.067);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.92 0.004 286.32);
+  --primary-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.552 0.016 285.938);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.552 0.016 285.938);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ============================================
+   Google Translate — Hide default UI elements
+   ============================================ */
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-ftab-link,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-text-highlight {
+  display: none !important;
+}
+
+.skiptranslate {
+  display: none !important;
+}
+
+/* Google Translate pushes body down — prevent that */
+body {
+  top: 0 !important;
+}
+
+/* Prevent Google Translate from altering font styles */
+.goog-te-combo {
+  display: none !important;
+}
+
+/* Elements marked .notranslate won't be translated by Google */
+.notranslate {
+  /* This class is recognized by Google Translate natively */
+}
+
+/* ============================================
+   RTL Support — activated when lang="ar"
+   ============================================ */
+
+:root {
+  /* 
+   * 🎛️ لوحة تحكم اللغة العربية (RTL) 🎛️
+   */
+
+  /* 1. لتشغيل/إيقاف "قلب اتجاه المحتوى" (اليمين يسار واليسار يمين) 
+        - للتشغيل (يقلب المحتوى): rtl
+        - للإيقاف (يحافظ على شكله الأصلي): ltr  */
+  --arabic-content-direction: rtl; /* تم الإيقاف بناءً على طلبك */
+
+  /* 2. لتشغيل/إيقاف "محاذاة النص" (الكلام يذهب لليمين)
+        - للتشغيل (النص لليمين): right
+        - للإيقاف (النص لليسار): left  */
+  --arabic-text-alignment: right; /* يعمل حالياً */
+}
+
+html.translated-rtl,
+html[lang='ar'] {
+  direction: var(--arabic-content-direction);
+}
+
+html.translated-rtl body,
+html[lang='ar'] body {
+  text-align: var(--arabic-text-alignment);
+}
+
+/* ---- Navbar: ALWAYS stays LTR ---- */
+html.translated-rtl nav,
+html[lang='ar'] nav {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* ---- Footer: ALWAYS stays LTR ---- */
+html.translated-rtl footer,
+html[lang='ar'] footer {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* ---- Main content: RTL ---- */
+html.translated-rtl main,
+html[lang='ar'] main {
+  direction: var(--arabic-content-direction);
+  text-align: var(--arabic-text-alignment);
+}
+
+/* ---- Arabic Typography Fix ---- 
+   Arabic is a connected/cursive script — wide letter-spacing tears 
+   characters apart and makes text unreadable. This resets all 
+   letter-spacing and uppercase transforms when the page is in Arabic.
+   Works automatically for every element, no per-component changes needed. */
+html.translated-rtl *,
+html[lang='ar'] * {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* ---- Google Translate UI Overrides ---- */
+/* 1. Prevent ANY highlight box when hovering over translated text */
+.goog-text-highlight,
+.goog-text-highlight:hover,
+.goog-text-highlight:active,
+font:hover,
+font {
+  background-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* 2. Hide the Google Translate tooltip popup and ALL Gadget UI / Banners completely */
+#goog-gt-tt, 
+#goog-gt-tt *,
+div[id^="goog-gt-"],
+div[class^="goog-te-"],
+iframe[class^="goog-te-"],
+iframe[src*="translate.googleapis.com"],
+.goog-te-balloon-frame,
+.goog-te-banner-frame,
+.goog-te-gadget,
+.goog-te-gadget-icon,
+.goog-te-spinner-pos,
+.VIpgJd-Zvi9od-ORHb-OEVmcd,
+.VIpgJd-Zvi9od-aZ2wEe-wOHMyf,
+.skiptranslate > iframe,
+div.skiptranslate,
+iframe.skiptranslate,
+#google_translate_element {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* 3. Prevent the page from shifting down when the invisible Google toolbar is present */
+body {
+  top: 0px !important;
+  position: relative !important;
+}
+
+/* ---- Scrollbar Utilities ---- */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+

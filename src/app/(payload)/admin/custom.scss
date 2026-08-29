@@ -1,0 +1,91 @@
+// /*
+//  * Custom Admin Styles for GTNI Payload CMS
+//  * This file customizes the admin panel fonts and appearance
+//  */
+
+// /* Import a nicer font - Cairo for Arabic support and modern look */
+// @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+// /* Override all admin fonts */
+// :root {
+//   --font-body: 'Inter', 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+//   --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+// }
+
+// /* Apply font to everything */
+// body,
+// html,
+// * {
+//   font-family: var(--font-body) !important;
+// }
+
+// /* Lexical Editor - The rich text editor placeholder and content */
+// .lexical-editor,
+// .lexical-editor *,
+// [data-lexical-editor='true'],
+// [data-lexical-editor='true'] *,
+// .ContentEditable__root,
+// .ContentEditable__root *,
+// .editor-shell *,
+// .rich-text-lexical *,
+// .lexical-content * {
+//   font-family: var(--font-body) !important;
+// }
+
+// /* Placeholder text specifically */
+// .ContentEditable__placeholder,
+// [data-lexical-placeholder],
+// .editor-placeholder {
+//   font-family: var(--font-body) !important;
+//   font-size: 15px !important;
+//   color: rgba(255, 255, 255, 0.4) !important;
+// }
+
+// /* Input fields */
+// input,
+// textarea,
+// select,
+// button {
+//   font-family: var(--font-body) !important;
+// }
+
+// /* Labels and titles */
+// label,
+// h1,
+// h2,
+// h3,
+// h4,
+// h5,
+// h6,
+// .nav-label,
+// .step-nav__link,
+// .collection-list__title {
+//   font-family: var(--font-body) !important;
+//   font-weight: 600 !important;
+// }
+
+// /* Table cells */
+// td,
+// th {
+//   font-family: var(--font-body) !important;
+// }
+
+// /* Buttons */
+// .btn {
+//   font-family: var(--font-body) !important;
+//   font-weight: 500 !important;
+// }
+
+// /* Sidebar navigation */
+// .nav-group__toggle,
+// .nav-group__content a {
+//   font-family: var(--font-body) !important;
+// }
+
+// /* Code/mono sections should stay monospace */
+// code,
+// pre,
+// .code-editor,
+// .json-field {
+//   font-family: var(--font-mono) !important;
+// }
