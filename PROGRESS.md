@@ -21,7 +21,9 @@ Running chronological log of work done on this project. Newest entry on top.
 - Exercised the real field walker against the live `AboutGTNI` global (11 strings correctly collected across nested collapsible/group/array fields), pushed the result through the real HTTP API: English untouched, Arabic draft correctly translated under the **same** array row ids as English, published Arabic still correctly falls back to English pre-publish.
 - Full 9-route + `/admin` sweep still 200. Lint clean.
 
-**Next**: Phase 4 (public-facing locale routing via `next-intl`) is the last phase — the most invasive (route restructuring under `[locale]`, removing the existing `GoogleTranslate.tsx` widget). A real Gemini API key from the user is still needed to verify Phase 3 end-to-end with actual translations.
+**⚠️ SUPERSEDED same session — see note below.** After committing this, the user decided to swap the translation provider from Gemini to the **Google Translate API** (Cloud Translation) instead. This commit (`c390071`) is left in local git history but was **not pushed**, since it needs rework before it's the final Phase 3. Do not build on `geminiTranslate.ts`/`ai-translate/route.ts` as-is without first confirming the provider swap approach with the user next session — see `MEMORY.md` for the open decision.
+
+**Next**: Rework Phase 3 to use Google Translate API instead of Gemini (provider swap, scope/design not yet decided — e.g. whether to keep the same schema-driven field-walker architecture and admin UI and just swap the translation call, or something else). Phase 4 (public-facing locale routing via `next-intl`) remains last and unstarted.
 
 ---
 
