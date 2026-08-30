@@ -1394,13 +1394,9 @@ export interface Setting {
    */
   resendApiKey?: string | null;
   /**
-   * Google Gemini API key used by the "Translate with AI" button on translatable pages. Get one at aistudio.google.com/apikey.
+   * API key for the Google Cloud Translation API ("Basic"/v2), used by the "Translate with AI" button on translatable pages. In Google Cloud Console: enable the "Cloud Translation API" on a project, then create an API key (restricting it to that API is recommended).
    */
-  geminiApiKey?: string | null;
-  /**
-   * Gemini model name to use for translation (e.g. gemini-2.5-flash). Change without a redeploy if Google renames/retires a model.
-   */
-  geminiModel?: string | null;
+  googleTranslateApiKey?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1912,8 +1908,7 @@ export interface SettingsSelect<T extends boolean = true> {
   smtpPass?: T;
   smtpSecure?: T;
   resendApiKey?: T;
-  geminiApiKey?: T;
-  geminiModel?: T;
+  googleTranslateApiKey?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

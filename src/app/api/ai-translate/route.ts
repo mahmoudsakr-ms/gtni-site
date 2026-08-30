@@ -1,7 +1,7 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { NextRequest, NextResponse } from 'next/server'
-import { translateDocument, GeminiTranslateError } from '@/utilities/geminiTranslate'
+import { translateDocument, TranslationApiError } from '@/utilities/translateContent'
 
 // Only these globals carry `localized: true` fields (see Phase 2 in PLAN_SECURITY_I18N.md).
 // The NewsEvents *collection* (individual articles) and `settings` are deliberately excluded.
@@ -74,14 +74,17 @@ export async function POST(request: NextRequest) {
   }
 
   // Local API bypasses field-level `access.read: () => false` -- this is the one place
-  // allowed to read the real Gemini API key, server-side only, never returned to a client.
+  // allowed to read the real Google Translate API key, server-side only, never returned
+  // to a client.
   const settings = await payload.findGlobal({ slug: 'settings' })
-  const apiKey = (settings as Record<string, unknown>).geminiApiKey as string | undefined
-  const model = ((settings as Record<string, unknown>).geminiModel as string) || 'gemini-2.5-flash'
+  const apiKey = (settings as Record<string, unknown>).googleTranslateApiKey as string | undefined
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'No Gemini API key configured. Add one under Settings > AI Translation (Gemini).' },
+      {
+        error:
+          'No Google Translate API key configured. Add one under Settings > AI Translation (Google Translate).',
+      },
       { status: 400 },
     )
   }
@@ -100,23 +103,13 @@ export async function POST(request: NextRequest) {
   const results: Record<string, { fieldsTranslated: number } | { error: string }> = {}
 
   for (const targetLocale of targetLocales as string[]) {
-    const localeEntry = localeConfig.locales.find((l) =>
-      typeof l === 'string' ? l === targetLocale : l.code === targetLocale,
-    )
-    const targetLocaleLabel =
-      typeof localeEntry === 'object' && localeEntry?.label
-        ? typeof localeEntry.label === 'string'
-          ? localeEntry.label
-          : (localeEntry.label as Record<string, string>).en || targetLocale
-        : targetLocale
-
     try {
       const { data: translatedData, fieldsTranslated } = await translateDocument(
         globalConfig.fields,
         sourceDoc as Record<string, unknown>,
-        targetLocaleLabel,
+        targetLocale,
+        defaultLocale,
         apiKey,
-        model,
       )
 
       await payload.updateGlobal({
@@ -129,7 +122,7 @@ export async function POST(request: NextRequest) {
       results[targetLocale] = { fieldsTranslated }
     } catch (error) {
       const message =
-        error instanceof GeminiTranslateError || error instanceof Error
+        error instanceof TranslationApiError || error instanceof Error
           ? error.message
           : 'Unknown error during translation.'
       results[targetLocale] = { error: message }

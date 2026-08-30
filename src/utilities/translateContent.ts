@@ -1,7 +1,8 @@
 import type { Field } from 'payload'
 
 /**
- * AI-assisted translation via Google Gemini.
+ * AI-assisted translation via the Google Cloud Translation API ("Basic" / v2 --
+ * a plain API key is enough, no service account or GCP project wiring needed).
  *
  * The field walker below is schema-driven: it reads the SAME `localized: true`
  * flags set on each global's field config (see src/globals/*.ts) to decide what
@@ -13,6 +14,12 @@ import type { Field } from 'payload'
  * updating a localized array field without preserving the existing row `id` makes
  * Payload treat it as a new row, silently orphaning the other locale's data for
  * that position (found and confirmed during Phase 2 testing).
+ *
+ * Note: unlike an LLM-based translator, Cloud Translation is a literal machine
+ * translation engine with no steerable "tone" or "preserve this proper noun"
+ * instruction -- in practice short institutional acronyms like "GTNI" are left
+ * as-is by NMT engines since they're not recognized words, but this hasn't been
+ * verified against a real API key yet. Worth a spot-check once a key is added.
  */
 
 export interface TranslatableRef {
@@ -150,75 +157,61 @@ export function collectTranslatableRefs(
   }
 }
 
-export class GeminiTranslateError extends Error {}
+export class TranslationApiError extends Error {}
 
 /**
- * Sends a batch of source strings to Gemini and returns their translations, in the
- * same order. Batching everything for one document into a single call (rather than
- * one call per field) preserves cross-field context and keeps API usage low.
+ * Sends a batch of source strings to the Google Cloud Translation API ("Basic" v2)
+ * and returns their translations, in the same order. Batching an entire document's
+ * strings into one call keeps API usage low.
  */
-export async function translateStringsWithGemini(
+export async function translateStringsWithGoogle(
   texts: string[],
-  targetLocaleLabel: string,
+  targetLocaleCode: string,
+  sourceLocaleCode: string,
   apiKey: string,
-  model: string,
 ): Promise<string[]> {
   if (texts.length === 0) return []
 
-  const prompt = `You are a professional translator for the website of the Gouna Technical Nursing Institute (GTNI), a nursing education institution in Egypt. Translate each of the following English strings into ${targetLocaleLabel}. Use a professional, formal tone appropriate for an educational institution's public website. Preserve the meaning and any HTML-like punctuation exactly. Do not translate the institute's proper name "GTNI" or "Gouna Technical Nursing Institute" -- keep those as-is. Return ONLY a JSON array of the translated strings, in the exact same order, with no additional commentary.
+  const url = `https://translation.googleapis.com/language/translate/v2?key=${encodeURIComponent(apiKey)}`
 
-Strings to translate (as a JSON array):
-${JSON.stringify(texts)}`
-
-  // API key sent via header rather than the `?key=` query param, so it never ends up in
-  // server access logs or in a URL that might be echoed back inside an error message.
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: 'ARRAY',
-          items: { type: 'STRING' },
-        },
-      },
-    }),
-  })
+  let response: Response
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        q: texts,
+        source: sourceLocaleCode,
+        target: targetLocaleCode,
+        format: 'text',
+      }),
+    })
+  } catch (e) {
+    // Logged server-side only (never sent to the client) since a raw fetch-level
+    // exception can sometimes include the request URL, and therefore the API key.
+    console.error('Google Translate fetch failed:', e)
+    throw new TranslationApiError('Network error contacting the Google Translate API.')
+  }
 
   if (!response.ok) {
     const errText = await response.text().catch(() => '')
-    throw new GeminiTranslateError(
-      `Gemini API request failed (${response.status}): ${errText.slice(0, 500)}`,
+    throw new TranslationApiError(
+      `Google Translate API request failed (${response.status}): ${errText.slice(0, 500)}`,
     )
   }
 
   const json = (await response.json()) as {
-    candidates?: { content?: { parts?: { text?: string }[] } }[]
+    data?: { translations?: { translatedText?: string }[] }
   }
 
-  const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!rawText) {
-    throw new GeminiTranslateError('Gemini API returned no translation content.')
-  }
-
-  let translated: unknown
-  try {
-    translated = JSON.parse(rawText)
-  } catch {
-    throw new GeminiTranslateError('Gemini API returned invalid JSON.')
-  }
-
-  if (!Array.isArray(translated) || translated.length !== texts.length) {
-    throw new GeminiTranslateError(
-      `Gemini API returned ${Array.isArray(translated) ? translated.length : 'non-array'} items, expected ${texts.length}.`,
+  const translations = json.data?.translations
+  if (!Array.isArray(translations) || translations.length !== texts.length) {
+    throw new TranslationApiError(
+      `Google Translate API returned ${Array.isArray(translations) ? translations.length : 'no'} translations, expected ${texts.length}.`,
     )
   }
 
-  return translated.map((t) => (typeof t === 'string' ? t : String(t)))
+  return translations.map((t) => t.translatedText || '')
 }
 
 /**
@@ -230,9 +223,9 @@ ${JSON.stringify(texts)}`
 export async function translateDocument(
   fields: Field[],
   sourceData: Record<string, unknown>,
-  targetLocaleLabel: string,
+  targetLocaleCode: string,
+  sourceLocaleCode: string,
   apiKey: string,
-  model: string,
 ): Promise<{ data: Record<string, unknown>; fieldsTranslated: number }> {
   const clonedData: Record<string, unknown> = {}
   const refs: TranslatableRef[] = []
@@ -244,7 +237,12 @@ export async function translateDocument(
   }
 
   const originals = refs.map((r) => r.getOriginal())
-  const translated = await translateStringsWithGemini(originals, targetLocaleLabel, apiKey, model)
+  const translated = await translateStringsWithGoogle(
+    originals,
+    targetLocaleCode,
+    sourceLocaleCode,
+    apiKey,
+  )
 
   refs.forEach((ref, i) => ref.setTranslated(translated[i]))
 
