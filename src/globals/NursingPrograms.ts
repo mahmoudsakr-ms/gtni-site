@@ -11,6 +11,9 @@ export const NursingPrograms: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -41,12 +44,14 @@ export const NursingPrograms: GlobalConfig = {
           name: 'heroTitle',
           type: 'text',
           label: 'Hero Title',
+          localized: true,
           defaultValue: 'Nursing Programs',
         },
         {
           name: 'heroSubtitle',
           type: 'textarea',
           label: 'Hero Subtitle',
+          localized: true,
         },
       ],
     },
@@ -55,6 +60,7 @@ export const NursingPrograms: GlobalConfig = {
       name: 'overview',
       type: 'richText',
       label: 'Program Overview',
+      localized: true,
     },
 
     // ============================================
@@ -69,12 +75,14 @@ export const NursingPrograms: GlobalConfig = {
           name: 'sectionTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'EPSLOs',
         },
         {
           name: 'sectionSubtitle',
           type: 'text',
           label: 'Section Subtitle',
+          localized: true,
           defaultValue: 'End-of-Program Student Learning Outcomes',
         },
         // Dynamic Categories Array
@@ -91,6 +99,7 @@ export const NursingPrograms: GlobalConfig = {
               type: 'text',
               required: true,
               label: 'Category Title',
+              localized: true,
               admin: {
                 placeholder: 'e.g., KNOWLEDGE & UNDERSTANDING',
               },
@@ -99,6 +108,7 @@ export const NursingPrograms: GlobalConfig = {
               name: 'items',
               type: 'textarea',
               label: 'Learning Outcomes',
+              localized: true,
               admin: {
                 description:
                   'Write each outcome on a new line. They will be displayed as bullet points.',
@@ -137,12 +147,14 @@ export const NursingPrograms: GlobalConfig = {
           name: 'sectionTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'Courses',
         },
         {
           name: 'description',
           type: 'richText',
           label: 'Courses Description',
+          localized: true,
         },
         {
           name: 'image',
@@ -154,6 +166,7 @@ export const NursingPrograms: GlobalConfig = {
           name: 'buttonText',
           type: 'text',
           label: 'Button Text',
+          localized: true,
           defaultValue: 'GO TO COURSES',
         },
         {

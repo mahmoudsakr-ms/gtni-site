@@ -11,6 +11,9 @@ export const Admission: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -33,12 +36,14 @@ export const Admission: GlobalConfig = {
               name: 'heroTitle',
               type: 'text',
               label: 'Hero Title',
+              localized: true,
               defaultValue: 'ADMISSION 2025-2026',
             },
             {
               name: 'heroDescription',
               type: 'textarea',
               label: 'Hero Description',
+              localized: true,
               defaultValue:
                 'For details and more explanation of the admission process 2025-2026, watch this video:',
             },
@@ -52,6 +57,7 @@ export const Admission: GlobalConfig = {
               name: 'applyButtonText',
               type: 'text',
               label: 'Apply Button Text',
+              localized: true,
               defaultValue: 'Apply',
             },
             {
@@ -79,17 +85,20 @@ export const Admission: GlobalConfig = {
               name: 'qualificationsTitle',
               type: 'text',
               label: 'Qualifications Title',
+              localized: true,
               defaultValue: 'QUALIFICATIONS FOR SCHOLARSHIP',
             },
             {
               name: 'qualificationsContent',
               type: 'richText',
               label: 'Qualifications Content',
+              localized: true,
             },
             {
               name: 'admissionDecisionTitle',
               type: 'text',
               label: 'Admission Decision Title',
+              localized: true,
               defaultValue: 'The admission decision is based on three aspects:',
             },
             {
@@ -101,6 +110,7 @@ export const Admission: GlobalConfig = {
                   name: 'aspect',
                   type: 'textarea',
                   label: 'Aspect Description',
+                  localized: true,
                 },
               ],
             },
@@ -117,6 +127,7 @@ export const Admission: GlobalConfig = {
               name: 'requirementsTitle',
               type: 'text',
               label: 'Requirements Title',
+              localized: true,
               defaultValue: 'The admission requirements are identified in Close 28 and Close 29...',
             },
             {
@@ -128,6 +139,7 @@ export const Admission: GlobalConfig = {
                   name: 'requirement',
                   type: 'textarea',
                   label: 'Requirement',
+                  localized: true,
                 },
               ],
             },
@@ -138,6 +150,7 @@ export const Admission: GlobalConfig = {
                   name: 'introInfo',
                   type: 'richText',
                   label: 'Intro Info (e.g. GTNI accepts both male...)',
+                  localized: true,
                   admin: {
                     width: '100%',
                   },
@@ -148,6 +161,7 @@ export const Admission: GlobalConfig = {
               name: 'submissionTitle',
               type: 'text',
               label: 'Submission Title',
+              localized: true,
               defaultValue: 'CANDIDATES MUST SUBMIT THE BELOW TO PROVE THE ADMISSION REQUIREMENTS:',
             },
             {
@@ -159,6 +173,7 @@ export const Admission: GlobalConfig = {
                   name: 'document',
                   type: 'text',
                   label: 'Document Name',
+                  localized: true,
                 },
               ],
             },
@@ -166,6 +181,7 @@ export const Admission: GlobalConfig = {
               name: 'applicationStepsTitle',
               type: 'text',
               label: 'Application Steps Title',
+              localized: true,
               defaultValue: 'FOLLOW THE FOLLOWING STEPS TO APPLY TO THE INSTITUTE.',
             },
             {
@@ -177,6 +193,7 @@ export const Admission: GlobalConfig = {
                   name: 'step',
                   type: 'textarea',
                   label: 'Step Description',
+                  localized: true,
                 },
               ],
             },
@@ -193,6 +210,7 @@ export const Admission: GlobalConfig = {
               name: 'stepsTitle',
               type: 'text',
               label: 'Steps Title',
+              localized: true,
             },
             {
               name: 'stepsImageDesktop',
@@ -219,6 +237,7 @@ export const Admission: GlobalConfig = {
               name: 'domainsTitle',
               type: 'text',
               label: 'Domains Title',
+              localized: true,
               defaultValue:
                 'TO BE A PROFESSIONAL NURSE YOU NEED TO POSSESS THE FOLLOWING ESSENTIAL DOMAINS',
             },
@@ -232,6 +251,7 @@ export const Admission: GlobalConfig = {
               name: 'domainsImageTitle',
               type: 'text',
               label: 'Image Title (Overlay)',
+              localized: true,
               defaultValue: 'Core Competencies',
             },
             {
@@ -243,11 +263,13 @@ export const Admission: GlobalConfig = {
                   name: 'domainTitle',
                   type: 'text',
                   label: 'Domain Title (e.g. A cognitive ability)',
+                  localized: true,
                 },
                 {
                   name: 'domainDescription',
                   type: 'textarea',
                   label: 'Domain Description',
+                  localized: true,
                 },
               ],
             },

@@ -25,6 +25,9 @@ export const StudentServices: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -62,6 +65,7 @@ export const StudentServices: GlobalConfig = {
               name: 'heroTitle',
               type: 'text',
               label: 'Page Title',
+              localized: true,
               defaultValue: 'Student Services',
               admin: {
                 width: '50%',
@@ -73,6 +77,7 @@ export const StudentServices: GlobalConfig = {
           name: 'heroSubtitle',
           type: 'textarea',
           label: 'Subtitle',
+          localized: true,
           defaultValue:
             'Discover the services and support available to enhance your journey at GTNI.',
           admin: {
@@ -101,6 +106,7 @@ export const StudentServices: GlobalConfig = {
               name: 'overviewCategory',
               type: 'text',
               label: 'Overview Title',
+              localized: true,
               defaultValue: 'Student Services Overview',
               admin: {
                 width: '50%',
@@ -110,6 +116,7 @@ export const StudentServices: GlobalConfig = {
               name: 'studentServicesListTitle',
               type: 'text',
               label: 'Student Services List Title',
+              localized: true,
               defaultValue: 'Student Services List',
               admin: {
                 width: '50%',
@@ -121,6 +128,7 @@ export const StudentServices: GlobalConfig = {
           name: 'purpose',
           type: 'richText',
           label: 'Purpose & Objectives',
+          localized: true,
           admin: {
             description:
               'Content Hint: "GTNI aims to enhance students overall educational experience by providing diverse student services that cater to their academic, personal, and social needs..."',
@@ -162,6 +170,7 @@ export const StudentServices: GlobalConfig = {
               type: 'text',
               label: 'Service Name',
               required: true,
+              localized: true,
               admin: {
                 placeholder: 'e.g., Language Services',
               },
@@ -190,6 +199,7 @@ export const StudentServices: GlobalConfig = {
               name: 'serviceDescription',
               type: 'richText',
               label: 'Service Description',
+              localized: true,
               admin: {
                 description: 'Provide a detailed description of what this service offers',
               },
@@ -200,6 +210,7 @@ export const StudentServices: GlobalConfig = {
               name: 'additionalNote',
               type: 'textarea',
               label: 'Additional Note (Optional)',
+              localized: true,
               admin: {
                 description:
                   'Add any extra notes or highlights (appears below the main description)',
@@ -240,6 +251,7 @@ export const StudentServices: GlobalConfig = {
                       name: 'tableTitle',
                       type: 'text',
                       label: 'Table Title',
+                      localized: true,
                       admin: {
                         placeholder: 'e.g., Language Services Offered',
                       },
@@ -252,6 +264,7 @@ export const StudentServices: GlobalConfig = {
                           name: 'columnHeader1',
                           type: 'text',
                           label: 'Column 1 Header',
+                          localized: true,
                           admin: {
                             width: '33%',
                             placeholder: 'e.g., Service Name',
@@ -261,6 +274,7 @@ export const StudentServices: GlobalConfig = {
                           name: 'columnHeader2',
                           type: 'text',
                           label: 'Column 2 Header',
+                          localized: true,
                           admin: {
                             width: '33%',
                             placeholder: 'e.g., Target Group',
@@ -270,6 +284,7 @@ export const StudentServices: GlobalConfig = {
                           name: 'columnHeader3',
                           type: 'text',
                           label: 'Column 3 Header',
+                          localized: true,
                           admin: {
                             width: '33%',
                             placeholder: 'e.g., Course Link (optional)',
@@ -299,6 +314,7 @@ export const StudentServices: GlobalConfig = {
                               name: 'col1',
                               type: 'text',
                               label: 'Column 1 Value',
+                              localized: true,
                               admin: {
                                 width: '33%',
                                 placeholder: 'e.g., Language Clinic',
@@ -308,6 +324,7 @@ export const StudentServices: GlobalConfig = {
                               name: 'col2',
                               type: 'text',
                               label: 'Column 2 Value',
+                              localized: true,
                               admin: {
                                 width: '33%',
                                 placeholder: 'e.g., Bridge Students',
@@ -317,6 +334,7 @@ export const StudentServices: GlobalConfig = {
                               name: 'col3',
                               type: 'text',
                               label: 'Column 3 Value',
+                              localized: true,
                               admin: {
                                 width: '33%',
                                 placeholder: 'e.g., EN101',
@@ -350,6 +368,7 @@ export const StudentServices: GlobalConfig = {
           name: 'policyTitle',
           type: 'text',
           label: 'Policy Title',
+          localized: true,
           defaultValue: 'Student Policy',
           admin: {
             width: '50%',
@@ -359,6 +378,7 @@ export const StudentServices: GlobalConfig = {
           name: 'policyDescription',
           type: 'richText',
           label: 'Policy Description',
+          localized: true,
           admin: {
             width: '50%',
           },
@@ -401,6 +421,7 @@ export const StudentServices: GlobalConfig = {
               name: 'reviewedBy',
               type: 'text',
               label: 'Reviewed By',
+              localized: true,
               defaultValue: 'Administrative Committee',
               admin: {
                 width: '50%',
@@ -423,6 +444,7 @@ export const StudentServices: GlobalConfig = {
               name: 'approvedBy',
               type: 'text',
               label: 'Approved By',
+              localized: true,
               defaultValue: 'Administrative Committee',
               admin: {
                 width: '50%',

@@ -90,6 +90,14 @@ export default buildConfig({
   // Explicit instead of relying on Payload's defaults — scoped to the site's own origin.
   cors: [process.env.NEXT_PUBLIC_SERVER_URL].filter((v): v is string => Boolean(v)),
   csrf: [process.env.NEXT_PUBLIC_SERVER_URL].filter((v): v is string => Boolean(v)),
+  localization: {
+    locales: [
+      { code: 'en', label: 'English' },
+      { code: 'ar', label: 'العربية', rtl: true },
+    ],
+    defaultLocale: 'en',
+    fallback: true,
+  },
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

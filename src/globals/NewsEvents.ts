@@ -11,6 +11,9 @@ export const NewsEvents: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -29,11 +32,13 @@ export const NewsEvents: GlobalConfig = {
           name: 'title',
           type: 'text',
           required: true,
+          localized: true,
           defaultValue: 'News & Events',
         },
         {
           name: 'subtitle',
           type: 'textarea',
+          localized: true,
           defaultValue:
             'Stay updated with the latest happenings, academic excellence, and student life at GTNI.',
         },
@@ -83,6 +88,7 @@ export const NewsEvents: GlobalConfig = {
           type: 'text',
           required: true,
           label: 'Section Title',
+          localized: true,
           admin: {
             description: 'Example: "Community of Interest"',
           },
@@ -91,6 +97,7 @@ export const NewsEvents: GlobalConfig = {
           name: 'description',
           type: 'textarea',
           label: 'Section Introductory Description',
+          localized: true,
           admin: {
             description: 'Optional. Text displayed directly under section title.',
           },

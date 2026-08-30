@@ -11,6 +11,9 @@ export const Vacancies: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -24,12 +27,14 @@ export const Vacancies: GlobalConfig = {
       name: 'heroTitle',
       type: 'text',
       label: 'Hero Title',
+      localized: true,
       defaultValue: 'Join the GTNI Family',
     },
     {
       name: 'heroDescription',
       type: 'textarea',
       label: 'Hero Description',
+      localized: true,
     },
     {
       name: 'heroImage',
@@ -41,6 +46,7 @@ export const Vacancies: GlobalConfig = {
       name: 'overview',
       type: 'richText',
       label: 'Page Overview',
+      localized: true,
     },
     {
       name: 'applicationEmail',
@@ -57,6 +63,7 @@ export const Vacancies: GlobalConfig = {
           name: 'title',
           type: 'text',
           required: true,
+          localized: true,
         },
         {
           name: 'status',
@@ -74,6 +81,7 @@ export const Vacancies: GlobalConfig = {
         {
           name: 'department',
           type: 'text',
+          localized: true,
         },
         {
           name: 'type',
@@ -89,11 +97,13 @@ export const Vacancies: GlobalConfig = {
           name: 'description',
           type: 'richText',
           label: 'Job Description',
+          localized: true,
         },
         {
           name: 'requirements',
           type: 'textarea',
           label: 'Requirements (Short text)',
+          localized: true,
         },
         {
           name: 'deadline',

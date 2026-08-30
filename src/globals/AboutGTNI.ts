@@ -11,6 +11,9 @@ export const AboutGTNI: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -84,6 +87,7 @@ export const AboutGTNI: GlobalConfig = {
           type: 'text',
           label: 'Hero Title',
           maxLength: 100,
+          localized: true,
           defaultValue: 'About GTNI',
           admin: {
             components: {
@@ -95,6 +99,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'heroSubtitle',
           type: 'textarea',
           label: 'Hero Subtitle',
+          localized: true,
           admin: {
             components: {
               Field: '@/components/payload/Fields/TextareaField',
@@ -121,6 +126,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'mission',
           type: 'richText',
           label: 'Our Mission',
+          localized: true,
           admin: {
             description: 'The mission statement of GTNI',
           },
@@ -129,6 +135,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'vision',
           type: 'richText',
           label: 'Our Vision',
+          localized: true,
           admin: {
             description: 'The vision statement of GTNI',
           },
@@ -153,6 +160,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'philosophyTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'Academic Philosophy',
           admin: {
             components: {
@@ -164,6 +172,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'philosophyContent',
           type: 'richText',
           label: 'Philosophy Content',
+          localized: true,
         },
         {
           name: 'philosophyImage',
@@ -188,6 +197,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'sectionTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'GTNI In Numbers',
         },
         {
@@ -212,17 +222,20 @@ export const AboutGTNI: GlobalConfig = {
               type: 'text',
               required: true,
               label: 'Stat Label (e.g., Number of Graduates)',
+              localized: true,
             },
             {
               name: 'value',
               type: 'text',
               required: true,
               label: 'Stat Value (e.g., 500+)',
+              localized: true,
             },
             {
               name: 'description',
               type: 'textarea',
               label: 'Description (optional)',
+              localized: true,
             },
           ],
         },
@@ -243,6 +256,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'leadershipTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'Board Members',
         },
         {
@@ -268,6 +282,7 @@ export const AboutGTNI: GlobalConfig = {
                   type: 'text',
                   label: 'Full Name',
                   required: true,
+                  localized: true,
                   admin: {
                     width: '50%',
                   },
@@ -276,6 +291,7 @@ export const AboutGTNI: GlobalConfig = {
                   name: 'role',
                   type: 'text',
                   label: 'Designation / Role',
+                  localized: true,
                   admin: {
                     width: '50%',
                     placeholder: 'e.g., Director, Faculty Member',
@@ -293,6 +309,7 @@ export const AboutGTNI: GlobalConfig = {
               name: 'bio',
               type: 'textarea',
               label: 'Short Bio',
+              localized: true,
               admin: {
                 rows: 4,
               },
@@ -315,6 +332,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'otherTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           index: false,
         },
         {
@@ -340,6 +358,7 @@ export const AboutGTNI: GlobalConfig = {
                   type: 'text',
                   label: 'Full Name',
                   required: true,
+                  localized: true,
                   admin: {
                     width: '50%',
                   },
@@ -348,6 +367,7 @@ export const AboutGTNI: GlobalConfig = {
                   name: 'role',
                   type: 'text',
                   label: 'Designation / Role',
+                  localized: true,
                   admin: {
                     width: '50%',
                     placeholder: 'e.g., Coordinator, Support Staff',
@@ -365,6 +385,7 @@ export const AboutGTNI: GlobalConfig = {
               name: 'bio',
               type: 'textarea',
               label: 'Short Bio',
+              localized: true,
               admin: {
                 rows: 4,
               },
@@ -387,6 +408,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'facultyTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'Faculty Members',
           index: false,
         },
@@ -413,6 +435,7 @@ export const AboutGTNI: GlobalConfig = {
                   type: 'text',
                   label: 'Full Name',
                   required: true,
+                  localized: true,
                   admin: {
                     width: '50%',
                   },
@@ -421,6 +444,7 @@ export const AboutGTNI: GlobalConfig = {
                   name: 'role',
                   type: 'text',
                   label: 'Designation / Role',
+                  localized: true,
                   admin: {
                     width: '50%',
                     placeholder: 'e.g., Director, Faculty Member',
@@ -438,6 +462,7 @@ export const AboutGTNI: GlobalConfig = {
               name: 'bio',
               type: 'textarea',
               label: 'Short Bio',
+              localized: true,
               admin: {
                 rows: 4,
               },
@@ -460,6 +485,7 @@ export const AboutGTNI: GlobalConfig = {
           name: 'adminTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           index: false,
         },
         {
@@ -485,6 +511,7 @@ export const AboutGTNI: GlobalConfig = {
                   type: 'text',
                   label: 'Full Name',
                   required: true,
+                  localized: true,
                   admin: {
                     width: '50%',
                   },
@@ -493,6 +520,7 @@ export const AboutGTNI: GlobalConfig = {
                   name: 'role',
                   type: 'text',
                   label: 'Designation / Role',
+                  localized: true,
                   admin: {
                     width: '50%',
                     placeholder: 'e.g., Administrator, Support Staff',
@@ -510,6 +538,7 @@ export const AboutGTNI: GlobalConfig = {
               name: 'bio',
               type: 'textarea',
               label: 'Short Bio',
+              localized: true,
               admin: {
                 rows: 4,
               },

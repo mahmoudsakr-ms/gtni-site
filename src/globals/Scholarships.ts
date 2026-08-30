@@ -17,12 +17,14 @@ const GtniScholarshipBlock: Block = {
       type: 'text',
       label: 'Title',
       required: true,
+      localized: true,
     },
     {
       name: 'content',
       type: 'richText',
       label: 'Content',
       required: true,
+      localized: true,
     },
     {
       name: 'image',
@@ -46,6 +48,9 @@ export const Scholarships: GlobalConfig = {
   },
   access: {
     read: () => true,
+  },
+  versions: {
+    drafts: true,
   },
   hooks: {
     afterChange: [
@@ -80,6 +85,7 @@ export const Scholarships: GlobalConfig = {
               name: 'heroTitle',
               type: 'text',
               label: 'Page Title',
+              localized: true,
               defaultValue: 'Scholarships',
               admin: {
                 width: '50%',
@@ -91,6 +97,7 @@ export const Scholarships: GlobalConfig = {
           name: 'heroSubtitle',
           type: 'textarea',
           label: 'Subtitle',
+          localized: true,
           defaultValue:
             'Discover the services and support available to enhance your journey at GTNI.',
           admin: {
@@ -131,6 +138,7 @@ export const Scholarships: GlobalConfig = {
               name: 'accommodationTitle',
               type: 'text',
               label: 'Title',
+              localized: true,
               defaultValue: 'Accommodation',
               admin: {
                 width: '50%',
@@ -142,6 +150,7 @@ export const Scholarships: GlobalConfig = {
           name: 'accommodationContent',
           type: 'richText',
           label: 'Accommodation Content',
+          localized: true,
         },
         {
           name: 'accommodationImage',
@@ -160,6 +169,7 @@ export const Scholarships: GlobalConfig = {
               name: 'accommodationFacilitiesTitle',
               type: 'text',
               label: 'Title',
+              localized: true,
               defaultValue: 'Accommodation Facilities',
               admin: {
                 width: '50%',
@@ -220,6 +230,7 @@ export const Scholarships: GlobalConfig = {
                   type: 'text',
                   label: 'Category Title',
                   required: true,
+                  localized: true,
                   admin: { width: '70%' },
                 },
               ],
@@ -229,6 +240,7 @@ export const Scholarships: GlobalConfig = {
               type: 'richText',
               label: 'Category Description',
               required: true,
+              localized: true,
             },
             {
               name: 'mainImage',
@@ -245,6 +257,7 @@ export const Scholarships: GlobalConfig = {
       name: 'buttonText',
       type: 'text',
       label: 'Apply Button Text',
+      localized: true,
     },
     {
       name: 'buttonLink',

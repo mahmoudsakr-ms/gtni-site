@@ -11,6 +11,9 @@ export const Footer: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -30,6 +33,7 @@ export const Footer: GlobalConfig = {
       name: 'description',
       type: 'textarea',
       label: 'Footer Description',
+      localized: true,
       defaultValue:
         'Empowering students to achieve their dreams through world-class education and a supportive community.',
     },
@@ -67,6 +71,7 @@ export const Footer: GlobalConfig = {
           name: 'label',
           type: 'text',
           required: true,
+          localized: true,
         },
         {
           name: 'globalPage',
@@ -95,6 +100,7 @@ export const Footer: GlobalConfig = {
           name: 'address',
           type: 'text',
           label: 'Physical Address',
+          localized: true,
         },
         {
           name: 'phone',
@@ -112,6 +118,7 @@ export const Footer: GlobalConfig = {
       name: 'copyrightText',
       type: 'text',
       label: 'Copyright Text',
+      localized: true,
       defaultValue: '© 2026 GTNI. All rights reserved.',
     },
   ],

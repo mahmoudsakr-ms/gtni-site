@@ -26,6 +26,9 @@ export const CoursesGlobal: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -55,12 +58,14 @@ export const CoursesGlobal: GlobalConfig = {
           name: 'heroTitle',
           type: 'text',
           label: 'Page Title',
+          localized: true,
           defaultValue: 'Our Courses',
         },
         {
           name: 'heroSubtitle',
           type: 'textarea',
           label: 'Subtitle',
+          localized: true,
           defaultValue: 'Competency-based curriculum designed for nursing excellence',
         },
       ],
@@ -80,12 +85,14 @@ export const CoursesGlobal: GlobalConfig = {
           name: 'overviewTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'Competency-Based Curriculum',
         },
         {
           name: 'overviewContent',
           type: 'richText',
           label: 'Overview Description',
+          localized: true,
         },
       ],
     },
@@ -104,12 +111,14 @@ export const CoursesGlobal: GlobalConfig = {
           name: 'creditHoursTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'Credit Hours System',
         },
         {
           name: 'creditHoursDescription',
           type: 'textarea',
           label: 'Introduction',
+          localized: true,
           defaultValue:
             'GTNI works on a credit hours system. The Cumulative Grade Point Average (GPA) begins with NU101 Semester.',
         },
@@ -117,6 +126,7 @@ export const CoursesGlobal: GlobalConfig = {
           name: 'creditHoursRules',
           type: 'textarea',
           label: 'Credit Hour Rules',
+          localized: true,
           admin: {
             description: 'Enter each rule on a new line. They will be displayed as bullet points.',
             rows: 5,
@@ -161,6 +171,7 @@ export const CoursesGlobal: GlobalConfig = {
                   type: 'text',
                   required: true,
                   label: 'Semester Name',
+                  localized: true,
                   admin: {
                     placeholder: 'e.g., PREPARATORY SEMESTER',
                     width: '50%',
@@ -179,6 +190,7 @@ export const CoursesGlobal: GlobalConfig = {
                   name: 'tabLabel',
                   type: 'text',
                   label: 'Tab Label (Short)',
+                  localized: true,
                   admin: {
                     placeholder: 'e.g., Preparatory',
                     width: '25%',
@@ -190,6 +202,7 @@ export const CoursesGlobal: GlobalConfig = {
               name: 'description',
               type: 'textarea',
               label: 'Semester Description',
+              localized: true,
               admin: {
                 rows: 3,
                 placeholder: 'Describe what students will learn in this semester...',
@@ -228,6 +241,7 @@ export const CoursesGlobal: GlobalConfig = {
                       type: 'text',
                       required: true,
                       label: 'Course Title',
+                      localized: true,
                       admin: {
                         placeholder: 'English Language',
                         width: '80%',
@@ -340,12 +354,14 @@ export const CoursesGlobal: GlobalConfig = {
           name: 'competencyTitle',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'COMPETENCY-BASED CURRICULUM',
         },
         {
           name: 'competencyDescription',
           type: 'textarea',
           label: 'Description',
+          localized: true,
           admin: {
             description:
               'Main text for the section. Use Enter (New Line) to split into paragraphs.',
@@ -375,6 +391,7 @@ export const CoursesGlobal: GlobalConfig = {
               name: 'clinicalHoursText',
               type: 'text',
               label: 'Clinical Hours Description',
+              localized: true,
               defaultValue: 'Hours of clinical practice in approved hospital settings.',
               admin: { width: '34%' },
             },

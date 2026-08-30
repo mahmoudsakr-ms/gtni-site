@@ -92,7 +92,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'ar') | ('en' | 'ar')[];
   globals: {
     header: Header;
     home: Home;
@@ -119,7 +119,7 @@ export interface Config {
     admission: AdmissionSelect<false> | AdmissionSelect<true>;
     vacancies: VacanciesSelect<false> | VacanciesSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'ar';
   user: User & {
     collection: 'users';
   };
@@ -560,6 +560,7 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -641,6 +642,7 @@ export interface Home {
         }[]
       | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -678,6 +680,7 @@ export interface NewsEventsGlobal {
         id?: string | null;
       }[]
     | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -719,6 +722,7 @@ export interface Footer {
     email?: string | null;
   };
   copyrightText?: string | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -792,6 +796,7 @@ export interface Course {
   clinicalHoursMin?: string | null;
   clinicalHoursMax?: string | null;
   clinicalHoursText?: string | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -918,6 +923,7 @@ export interface StudentService {
   reviewDate?: string | null;
   approvedBy?: string | null;
   approvalDate?: string | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1038,6 +1044,7 @@ export interface AboutGtni {
         id?: string | null;
       }[]
     | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1106,6 +1113,7 @@ export interface NursingProgram {
     buttonText?: string | null;
     buttonLink?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1192,6 +1200,7 @@ export interface Scholarship {
     | null;
   buttonText?: string | null;
   buttonLink?: string | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1281,6 +1290,7 @@ export interface Admission {
         id?: string | null;
       }[]
     | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1337,6 +1347,7 @@ export interface Vacancy {
         id?: string | null;
       }[]
     | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1360,6 +1371,7 @@ export interface HeaderSelect<T extends boolean = true> {
         link?: T;
         id?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1427,6 +1439,7 @@ export interface HomeSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1452,6 +1465,7 @@ export interface NewsEventsGlobalSelect<T extends boolean = true> {
         categories?: T;
         id?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1485,6 +1499,7 @@ export interface FooterSelect<T extends boolean = true> {
         email?: T;
       };
   copyrightText?: T;
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1530,6 +1545,7 @@ export interface CoursesSelect<T extends boolean = true> {
   clinicalHoursMin?: T;
   clinicalHoursMax?: T;
   clinicalHoursText?: T;
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1584,6 +1600,7 @@ export interface StudentServicesSelect<T extends boolean = true> {
   reviewDate?: T;
   approvedBy?: T;
   approvalDate?: T;
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1654,6 +1671,7 @@ export interface AboutGtniSelect<T extends boolean = true> {
         bio?: T;
         id?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1690,6 +1708,7 @@ export interface NursingProgramsSelect<T extends boolean = true> {
         buttonText?: T;
         buttonLink?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1735,6 +1754,7 @@ export interface ScholarshipsSelect<T extends boolean = true> {
       };
   buttonText?: T;
   buttonLink?: T;
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1794,6 +1814,7 @@ export interface AdmissionSelect<T extends boolean = true> {
         domainDescription?: T;
         id?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1820,6 +1841,7 @@ export interface VacanciesSelect<T extends boolean = true> {
         deadline?: T;
         id?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

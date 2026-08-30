@@ -11,6 +11,9 @@ export const Home: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -84,10 +87,12 @@ export const Home: GlobalConfig = {
         {
           name: 'title',
           type: 'text',
+          localized: true,
         },
         {
           name: 'subtitle',
           type: 'textarea',
+          localized: true,
         },
       ],
     },
@@ -100,11 +105,13 @@ export const Home: GlobalConfig = {
         {
           name: 'line1',
           type: 'text',
+          localized: true,
           defaultValue: 'BE A PART OF AN EXCITING FUTURE',
         },
         {
           name: 'line2',
           type: 'text',
+          localized: true,
           defaultValue: 'EDUCATING , INSPIRING , ENABLEING',
         },
       ],
@@ -118,15 +125,18 @@ export const Home: GlobalConfig = {
         {
           name: 'title',
           type: 'text',
+          localized: true,
           defaultValue: 'Welcome to the Gouna Technical Nursing Institute',
         },
         {
           name: 'content',
           type: 'richText',
+          localized: true,
         },
         {
           name: 'signature',
           type: 'text',
+          localized: true,
           defaultValue: 'Mr., Gouna Technical Nursing Institute',
         },
         {
@@ -184,6 +194,7 @@ export const Home: GlobalConfig = {
               name: 'cardTitle',
               type: 'text',
               label: 'Card Title (Optional - uses page title if empty)',
+              localized: true,
             },
           ],
         },
@@ -205,6 +216,7 @@ export const Home: GlobalConfig = {
           name: 'title',
           type: 'text',
           label: 'Section Title',
+          localized: true,
           defaultValue: 'Student Testimonials',
           admin: {
             condition: (_, siblingData) => siblingData?.enabled,
@@ -233,17 +245,20 @@ export const Home: GlobalConfig = {
               name: 'studentName',
               type: 'text',
               label: 'Student Name',
+              localized: true,
             },
             {
               name: 'jobTitle',
               type: 'text',
               label: 'Job Title (e.g. Excellence in Nursing)',
+              localized: true,
             },
             {
               name: 'quote',
               type: 'textarea',
               label: 'Testimonial Quote',
               required: true,
+              localized: true,
             },
           ],
         },

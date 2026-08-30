@@ -11,6 +11,9 @@ export const Header: GlobalConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -39,6 +42,7 @@ export const Header: GlobalConfig = {
           type: 'text',
           label: 'Display Label',
           required: true,
+          localized: true,
         },
         {
           name: 'globalPage',
@@ -71,6 +75,7 @@ export const Header: GlobalConfig = {
           name: 'label',
           type: 'text',
           required: true,
+          localized: true,
         },
         {
           name: 'link',
