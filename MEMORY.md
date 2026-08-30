@@ -4,19 +4,20 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
-## 2026-08-30 — Phase 3 (Gemini AI translation) implemented
+## 2026-08-30 — Phase 3 reworked and completed: Google Cloud Translation API
 
-**What happened**: Implemented and verified (as far as possible without a real API key) Phase 3 of `PLAN_SECURITY_I18N.md`. Committed locally as `c390071`, not yet pushed. User does not have a Gemini API key to provide right now — proceeded with build-now-test-later per their explicit choice.
+**What happened**: Phase 3 was first built against Gemini, then the user asked (mid-session) to swap to the Google Cloud Translation API instead. Confirmed the swap scope explicitly: keep the same admin button / schema-driven field walker / draft→publish workflow, only swap the translation call. Implemented and verified. Committed locally as `f9a1211` (+ plan doc update `6b42f6b`), **not yet pushed** — user paused before deciding.
 
-**Key design decision**: the translation engine is schema-driven (`collectTranslatableRefs` in `src/utilities/geminiTranslate.ts`) — it reads the `localized: true` flags already set on each global's fields (from Phase 2) rather than maintaining a separate hand-written manifest per global. Adding a new localized field to any global automatically makes it translatable with zero changes needed in Phase 3 code.
+**Key design decision (still true)**: the translation engine is schema-driven (`collectTranslatableRefs` in `src/utilities/translateContent.ts`, renamed from `geminiTranslate.ts`) — it reads the `localized: true` flags already set on each global's fields (from Phase 2) rather than maintaining a hand-written manifest per global.
 
-**⚠️ Decision reversed later in the same session**: right after this was committed, the user said to use the **Google Translate API** instead of Gemini. Commit `c390071` (the Gemini-based Phase 3) was deliberately **left unpushed** — don't push it as-is. The user then chose to pause for the day before any rework happened, so:
+**Reminder — don't confuse two similarly-named things**: `src/components/GoogleTranslate.tsx` is the OLD client-side widget that Phase 4 will remove (crawler-invisible, mistranslation-prone anti-pattern). The Google Cloud Translation API adopted in this Phase 3 rework is a completely different, unrelated, server-side thing (`src/utilities/translateContent.ts`). Same "Google Translate" name, nothing else in common.
 
-**Still open going into next session — start here**:
-1. **First, nail down the actual decision**: confirm with the user what "use Google Translate API" means precisely (they used "Google Translate API" then, when asked to clarify, confirmed "swap Gemini for Google Translate API" as opposed to just pushing the Gemini commit — but the *scope* of the swap wasn't discussed: same architecture with a different translation call, or something more different, e.g. Cloud Translation's own glossary/context features, or literally reusing the existing `src/components/GoogleTranslate.tsx` client-side widget instead of a server-side translation-and-draft flow). The original request (see `PLAN_SECURITY_I18N.md`'s Context section) explicitly asked for Gemini by name with a professional-tone, click-to-translate-then-draft-then-publish workflow — re-confirm whether that workflow (draft/publish, admin button, schema-driven field walker) stays the same and only the translation API call itself swaps to Google Translate, since that's the minimal-rework interpretation and reuses everything already built and verified in `src/utilities/geminiTranslate.ts` / `src/app/api/ai-translate/route.ts` / `TranslateButton.tsx`.
-2. Once confirmed, rework `src/utilities/geminiTranslate.ts` (rename appropriately) to call Google's Cloud Translation API instead of Gemini's generateContent endpoint. Note: Cloud Translation API needs a different auth mechanism (typically an API key tied to a Google Cloud project with the Translation API enabled and billing set up, or a service account) — this is NOT the same kind of key as a Gemini AI Studio key, so the Settings global's `geminiApiKey`/`geminiModel` fields likely need renaming/adjusting too.
-3. Then push the corrected Phase 3 commit.
-4. Phase 4 (public-facing locale routing via `next-intl`) is the last phase in the plan — most invasive: restructures routes under `[locale]`, removes the existing `src/components/GoogleTranslate.tsx` widget (note: same file name as the API being swapped to for Phase 3 -- don't confuse the *existing client-side widget* being removed in Phase 4 with the *new server-side Google Translate API* being adopted in Phase 3's rework; they are unrelated despite the similar name), updates `next.config.mjs` redirects.
+**Gotcha worth remembering**: renaming an existing Payload field locally (`geminiApiKey`→`googleTranslateApiKey`) can trigger an interactive drizzle-kit prompt during `DATABASE_PUSH=true` schema push that hangs forever with no TTY. Fix: reset the disposable local `.db*` files and let it rebuild fresh.
+
+**Still open going into next session**:
+- Confirm push of commit `f9a1211` (+ `6b42f6b`) — per-phase push confirmation policy.
+- Still need a real Google Cloud Translation API key from the user to verify actual translation output (everything up to and including the real network call has been verified; no real translation has ever been produced). Worth spot-checking whether "GTNI" survives translation unmangled, since Cloud Translation (unlike Gemini) has no steerable "preserve this term" instruction.
+- Phase 4 (public-facing locale routing via `next-intl`) is the last phase — most invasive: restructures routes under `[locale]`, removes `src/components/GoogleTranslate.tsx`, updates `next.config.mjs` redirects.
 
 ---
 

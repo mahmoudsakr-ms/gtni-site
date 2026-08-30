@@ -21,9 +21,25 @@ Running chronological log of work done on this project. Newest entry on top.
 - Exercised the real field walker against the live `AboutGTNI` global (11 strings correctly collected across nested collapsible/group/array fields), pushed the result through the real HTTP API: English untouched, Arabic draft correctly translated under the **same** array row ids as English, published Arabic still correctly falls back to English pre-publish.
 - Full 9-route + `/admin` sweep still 200. Lint clean.
 
-**⚠️ SUPERSEDED same session — see note below.** After committing this, the user decided to swap the translation provider from Gemini to the **Google Translate API** (Cloud Translation) instead. This commit (`c390071`) is left in local git history but was **not pushed**, since it needs rework before it's the final Phase 3. Do not build on `geminiTranslate.ts`/`ai-translate/route.ts` as-is without first confirming the provider swap approach with the user next session — see `MEMORY.md` for the open decision.
+**⚠️ SUPERSEDED same session.** After committing this, the user decided to swap the translation provider from Gemini to the Google Cloud Translation API instead. See the entry below (same day) for the rework — this entry is kept for history only.
 
-**Next**: Rework Phase 3 to use Google Translate API instead of Gemini (provider swap, scope/design not yet decided — e.g. whether to keep the same schema-driven field-walker architecture and admin UI and just swap the translation call, or something else). Phase 4 (public-facing locale routing via `next-intl`) remains last and unstarted.
+---
+
+## 2026-08-30 — Phase 3 reworked: Google Cloud Translation API (replacing Gemini)
+
+**Status**: ✅ Phase 3 reworked, verified as far as possible without a real API key, committed (`f9a1211`, plan doc updated in `6b42f6b`). Not yet pushed.
+
+Confirmed with the user that the swap should be minimal: keep the same admin button, same schema-driven field walker, same draft→publish workflow — only swap the underlying translation API call. Implemented exactly that:
+
+- `src/utilities/geminiTranslate.ts` renamed to `src/utilities/translateContent.ts`. `collectTranslatableRefs` (the field-walking logic) is unchanged. The low-level call now hits Google Cloud Translation's "Basic" v2 endpoint (`POST translation.googleapis.com/language/translate/v2?key=...`) — simpler than Gemini's call: a plain array of strings in, translations back in the same order, no prompt engineering or JSON-schema response mode needed.
+- `src/globals/Settings.ts`: `geminiApiKey`/`geminiModel` replaced with a single `googleTranslateApiKey` field (still write-only), tab relabeled "AI Translation (Google Translate)".
+- `src/app/api/ai-translate/route.ts` and `TranslateButton.tsx` updated for the new field name/simpler call signature.
+- **Known trade-off vs. Gemini**: Cloud Translation is literal NMT with no steerable tone or "preserve this proper noun" instruction (Gemini could be prompted to keep "GTNI" as-is and use a professional institutional tone). In practice short acronyms are usually left alone by NMT engines, but this needs a real key to confirm.
+- **Gotcha found**: renaming `geminiApiKey`→`googleTranslateApiKey` triggered an interactive drizzle-kit prompt during the local `DATABASE_PUSH=true` schema push (create-new vs. rename-column disambiguation), which hangs forever with no TTY. Fixed by resetting the disposable local dev DB. Worth remembering for any future field rename during local dev, and a reminder that the eventual hand-written production migration needs to treat renames explicitly (not rely on auto-detection).
+
+**Verified (still no real API key)**: full re-run of the same verification suite as the original Gemini version — auth gating, input validation, write-only field, a live network call to Google's real endpoint with a placeholder key (got the expected "API key not valid" error back, confirming the request reaches Google correctly; hit one transient `ETIMEDOUT` on the first attempt matching earlier sandbox network flakiness, succeeded on retry), and the array-row-id preservation test re-confirmed against the live `AboutGTNI` global through the real HTTP API. Full 9-route + `/admin` sweep still 200. Lint clean.
+
+**Next**: user paused before pushing this or continuing to Phase 4. Still need: (1) push confirmation for this Phase 3 rework, (2) a real Google Cloud Translation API key to verify actual translation output, (3) Phase 4 (public-facing locale routing via `next-intl`, removing the existing `GoogleTranslate.tsx` widget) — the last phase, not started.
 
 ---
 
