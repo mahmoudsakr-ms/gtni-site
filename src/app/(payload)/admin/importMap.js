@@ -1,6 +1,7 @@
 import { UploadLoader as UploadLoader_bfa78d67b182e63a16cb0b45c7d16313 } from '@/components/UploadLoader'
 import { CategoryCell as CategoryCell_d96afb08497116bd4bbafb33360ae94e } from '@/components/CategoryCell'
 import { BeforeListMedia as BeforeListMedia_76a174557e2165ce11312170d6a3e626 } from '@/components/BeforeListMedia'
+import { TranslateButton as TranslateButton_98200ed16afdded928321b7535fddfaf } from '@/components/payload/TranslateButton'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -42,6 +43,7 @@ export const importMap = {
   "@/components/UploadLoader#UploadLoader": UploadLoader_bfa78d67b182e63a16cb0b45c7d16313,
   "@/components/CategoryCell#CategoryCell": CategoryCell_d96afb08497116bd4bbafb33360ae94e,
   "@/components/BeforeListMedia#BeforeListMedia": BeforeListMedia_76a174557e2165ce11312170d6a3e626,
+  "@/components/payload/TranslateButton#TranslateButton": TranslateButton_98200ed16afdded928321b7535fddfaf,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,

@@ -7,6 +7,11 @@ export const Header: GlobalConfig = {
   admin: {
     group: 'Site Wide',
     description: 'Manage logo, navigation links, and login dropdown',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

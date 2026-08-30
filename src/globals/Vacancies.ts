@@ -7,6 +7,11 @@ export const Vacancies: GlobalConfig = {
   admin: {
     group: 'Pages',
     description: 'Manage job vacancies and career opportunities',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

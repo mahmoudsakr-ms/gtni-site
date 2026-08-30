@@ -7,6 +7,11 @@ export const NursingPrograms: GlobalConfig = {
   admin: {
     group: 'Pages',
     description: 'Manage the Nursing Programs page content',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

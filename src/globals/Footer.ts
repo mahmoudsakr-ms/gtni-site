@@ -7,6 +7,11 @@ export const Footer: GlobalConfig = {
   admin: {
     group: 'Site Wide',
     description: 'Manage footer logo, description, social links, quick links, and contact info',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

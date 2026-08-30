@@ -7,6 +7,11 @@ export const AboutGTNI: GlobalConfig = {
   admin: {
     group: 'Pages',
     description: 'Manage the About GTNI page content',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

@@ -7,6 +7,11 @@ export const Admission: GlobalConfig = {
   admin: {
     group: 'Pages',
     description: 'Manage Admission 2025-2026 Page Content',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

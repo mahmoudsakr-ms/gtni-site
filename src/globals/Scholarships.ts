@@ -45,6 +45,11 @@ export const Scholarships: GlobalConfig = {
   admin: {
     description: 'Manage Scholarships & Facilities',
     group: 'Pages',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

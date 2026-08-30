@@ -25,6 +25,7 @@ import { NursingPrograms } from './globals/NursingPrograms'
 import { Scholarships } from './globals/Scholarships'
 import { Admission } from './globals/Admission'
 import { Vacancies } from './globals/Vacancies'
+import { Settings } from './globals/Settings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -84,6 +85,7 @@ export default buildConfig({
     Scholarships,
     Admission,
     Vacancies,
+    Settings,
   ].map(withGlobalRevalidate),
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

@@ -16,6 +16,9 @@ const getRevalidatePaths = (slug: string, isGlobal: boolean): string | string[] 
         return '/'
       case 'news-events-global':
         return ['/', '/news-events']
+      case 'settings':
+        // System config, not a rendered page -- no frontend cache to invalidate.
+        return null
       default:
         // By convention, other pages map directly to their route (e.g. 'about-gtni' -> '/about-gtni')
         return `/${slug}`

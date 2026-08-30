@@ -7,6 +7,11 @@ export const Home: GlobalConfig = {
   admin: {
     group: 'Pages',
     description: 'Configure all sections of the homepage',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

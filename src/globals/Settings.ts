@@ -108,6 +108,34 @@ export const Settings: GlobalConfig = {
             },
           ],
         },
+        {
+          label: 'AI Translation (Gemini)',
+          fields: [
+            {
+              name: 'geminiApiKey',
+              type: 'text',
+              label: 'Gemini API Key',
+              // Write-only: never returned by read/API responses, even to authenticated users.
+              access: {
+                read: () => false,
+              },
+              admin: {
+                description:
+                  'Google Gemini API key used by the "Translate with AI" button on translatable pages. Get one at aistudio.google.com/apikey.',
+              },
+            },
+            {
+              name: 'geminiModel',
+              type: 'text',
+              label: 'Gemini Model',
+              defaultValue: 'gemini-2.5-flash',
+              admin: {
+                description:
+                  'Gemini model name to use for translation (e.g. gemini-2.5-flash). Change without a redeploy if Google renames/retires a model.',
+              },
+            },
+          ],
+        },
       ],
     },
   ],

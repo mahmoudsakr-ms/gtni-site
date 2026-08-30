@@ -105,6 +105,7 @@ export interface Config {
     scholarships: Scholarship;
     admission: Admission;
     vacancies: Vacancy;
+    settings: Setting;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
@@ -118,6 +119,7 @@ export interface Config {
     scholarships: ScholarshipsSelect<false> | ScholarshipsSelect<true>;
     admission: AdmissionSelect<false> | AdmissionSelect<true>;
     vacancies: VacanciesSelect<false> | VacanciesSelect<true>;
+    settings: SettingsSelect<false> | SettingsSelect<true>;
   };
   locale: 'en' | 'ar';
   user: User & {
@@ -1352,6 +1354,57 @@ export interface Vacancy {
   createdAt?: string | null;
 }
 /**
+ * Configure domain SMTP email server or Resend API for Payload admin password resets
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: number;
+  /**
+   * The email address used as sender (e.g. info@gtni.edu.eg)
+   */
+  emailFromAddress?: string | null;
+  /**
+   * The display name for sent emails (e.g. GTNI Admin)
+   */
+  emailFromName?: string | null;
+  /**
+   * Domain SMTP Server Host (e.g. mail.gtni.edu.eg, smtp.gmail.com, or smtp.office365.com)
+   */
+  smtpHost?: string | null;
+  /**
+   * SMTP Port (465 for SSL, 587 for TLS/STARTTLS)
+   */
+  smtpPort?: number | null;
+  /**
+   * Domain email username used to authenticate with SMTP server
+   */
+  smtpUser?: string | null;
+  /**
+   * Password for the domain SMTP email account
+   */
+  smtpPass?: string | null;
+  /**
+   * Check for Port 465 SSL. Uncheck for Port 587 TLS.
+   */
+  smtpSecure?: boolean | null;
+  /**
+   * Optional Resend API key (re_...). Used if API provider is preferred over SMTP.
+   */
+  resendApiKey?: string | null;
+  /**
+   * Google Gemini API key used by the "Translate with AI" button on translatable pages. Get one at aistudio.google.com/apikey.
+   */
+  geminiApiKey?: string | null;
+  /**
+   * Gemini model name to use for translation (e.g. gemini-2.5-flash). Change without a redeploy if Google renames/retires a model.
+   */
+  geminiModel?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -1842,6 +1895,25 @@ export interface VacanciesSelect<T extends boolean = true> {
         id?: T;
       };
   _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  emailFromAddress?: T;
+  emailFromName?: T;
+  smtpHost?: T;
+  smtpPort?: T;
+  smtpUser?: T;
+  smtpPass?: T;
+  smtpSecure?: T;
+  resendApiKey?: T;
+  geminiApiKey?: T;
+  geminiModel?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

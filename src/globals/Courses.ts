@@ -22,6 +22,11 @@ export const CoursesGlobal: GlobalConfig = {
   admin: {
     description: 'Manage the Courses page - semesters, curriculum, and course details',
     group: 'Pages',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

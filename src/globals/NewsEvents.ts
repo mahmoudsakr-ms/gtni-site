@@ -7,6 +7,11 @@ export const NewsEvents: GlobalConfig = {
   admin: {
     group: 'News & Events',
     description: 'Manage news page header and categories list',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,

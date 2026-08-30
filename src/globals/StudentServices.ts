@@ -21,6 +21,11 @@ export const StudentServices: GlobalConfig = {
   admin: {
     description: 'Manage Student Services, Guidelines, and Policies',
     group: 'Pages',
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/payload/TranslateButton#TranslateButton'],
+      },
+    },
   },
   access: {
     read: () => true,
