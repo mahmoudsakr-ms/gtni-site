@@ -1,6 +1,6 @@
 # GTNI Website: Security Hardening + CMS Localization + AI Translation
 
-**Status: APPROVED, NOT YET IMPLEMENTED.** Saved here so it survives across sessions — pick this up next time by re-reading this file plus `CLAUDE.md`/`PROGRESS.md`/`MEMORY.md`, then implement phase by phase.
+**Status: ALL 4 PHASES IMPLEMENTED AND VERIFIED LOCALLY.** See `PROGRESS.md`/`MEMORY.md` for exact commit hashes and what's still open (a real Google Translate API key to verify actual translation output; production deployment of the Phase 2 schema migration, which needs direct VPS/DB access this environment doesn't have).
 
 ## Context
 
@@ -103,24 +103,26 @@ Add `versions: { drafts: true }` to each of these 10 `GlobalConfig` objects, giv
 
 ## Phase 4 — Public-Facing Locale Routing & SEO
 
-A design-validation pass surfaced that a hand-rolled middleware-rewrite approach (the original idea) has two real problems: it would collide with three existing legacy `/ar/*` redirects in `next.config.mjs`, and reading a middleware-injected header via `headers()` in the shared root layout would force the **entire site** into dynamic (SSR-on-every-request) rendering, silently breaking the existing static-generation + on-demand-revalidation model (`/api/revalidate` + `revalidatePath`). The robust, standard fix for "default locale unprefixed, others prefixed, real crawlable URLs, no forced dynamic rendering" is **`next-intl`** with a `[locale]` route segment.
+**✅ Implemented and verified.** A design-validation pass (done before implementation) confirmed a hand-rolled middleware-rewrite approach had two real problems — it would collide with legacy `/ar/*` redirects in `next.config.mjs`, and reading a middleware-injected header via `headers()` would force the entire site into dynamic rendering — and recommended `next-intl` with a `[locale]` route segment instead. That's what was built.
 
-**Changes**:
-- Add `next-intl` dependency.
-- Restructure routes: `git mv` everything under `src/app/(frontend)/` into `src/app/(frontend)/[locale]/...` (mechanical, one-time move — not a folder duplicated per locale). `layout.tsx` moves too and receives `params: { locale }` directly — no `headers()` needed.
-- `src/middleware.ts` (new): `next-intl`'s `createMiddleware` with `defineRouting({ locales: ['en','ar'], defaultLocale: 'en', localePrefix: 'as-needed' })` — English stays unprefixed at its exact current URLs (non-destructive to existing SEO/backlinks), Arabic becomes `/ar/...`.
-- `generateStaticParams` returns `['en', 'ar']` so both locales remain fully statically generated, preserving current caching behavior.
-- `Nav`/`Footer`/every page's data fetch takes `locale` as a real param and passes it into `payload.findGlobal({ slug, locale })` / `payload.find({ ..., locale })`.
-- `generateMetadata` in every page: proper `alternates.canonical` (locale-specific URL, not a hardcoded shared one) and `alternates.languages` (`en`, `ar`, `x-default`) — this is what actually satisfies "canonical for SEO," since crawlers need distinct, properly cross-linked URLs per language, which cookie-based switching cannot provide.
-- Language switcher: `next-intl`'s locale-aware `<Link>` in the nav — a real navigable link to the same page in the other locale, not a client-side toggle.
-- `src/utilities/revalidate.ts` / `src/app/api/revalidate/route.ts`: update path generation to revalidate both the unprefixed and `/ar`-prefixed versions of each affected route, since they're now genuinely separate static renders.
-- `next.config.mjs`: fix the three colliding legacy redirects (`/ar/vacancies`, `/ar/admission`, `/ar/courses` → currently collapse into the English URL, which would now permanently shadow the real new Arabic pages at those same paths) and reconsider the bare `/ar` → `/` redirect (should resolve to the Arabic homepage instead).
-- **Remove** `src/components/GoogleTranslate.tsx` and its `LanguageProvider` wiring in `layout.tsx` entirely — it's the exact crawler-invisible, mistranslation-prone mechanism this whole effort replaces; running it alongside real localized content would actively re-translate already-correct Arabic text.
+**Changes made**:
+- Added `next-intl` (^4.14.1). `src/i18n/routing.ts` defines `{ locales: ['en','ar'], defaultLocale: 'en', localePrefix: 'as-needed' }`; `src/i18n/navigation.ts` exports locale-aware `Link`/`usePathname`/etc.; `src/i18n/request.ts` is a minimal request config (no message catalog — content comes from Payload); `src/middleware.ts` wires next-intl's middleware with a matcher excluding `/admin`, `/api`, and static assets. `next.config.mjs` wraps the config with `next-intl/plugin`.
+- Moved every route under `src/app/(frontend)/` into `src/app/(frontend)/[locale]/` via `git mv`. The root layout moved with it, gained `generateStaticParams` (both locales fully statically generated) and a `notFound()` guard for unconfigured locale segments.
+- `Nav`/`Footer` take a `locale` prop; every page's `generateMetadata` and default export accept the locale route param, pass it into their Payload calls, and build proper `alternates.canonical`/`alternates.languages` via a new shared `src/utilities/localeMetadata.ts` helper. `news-events/page.tsx`'s `unstable_cache` call is now locale-scoped too (was a single shared cache key across locales — a real bug this fixed).
+- `src/utilities/revalidate.ts`: every path revalidation now also revalidates the `/ar`-prefixed equivalent.
+- `next.config.mjs`: removed the 4 colliding legacy redirects (`/ar/admission`, `/ar/courses`, `/ar/vacancies`, bare `/ar`) that would have permanently shadowed the new real Arabic pages; every remaining `/ar/*` legacy redirect now points at the Arabic-prefixed version of its new slug.
+- `src/app/sitemap.ts`: emits both locale variants of every URL.
+- **Removed** `src/components/GoogleTranslate.tsx` (the client-side widget + its ~180-line mistranslation-patching dictionary) entirely, and simplified `src/components/SmartText.tsx` (which depended on it) to a plain passthrough. The language switcher in `NavClient.tsx` is now a real next-intl `Link`.
 
-**Verification**: `pnpm run build` (confirms static generation still works for both locales); visit `/about-gtni` (English, unchanged URL) and `/ar/about-gtni` (new) in a browser; confirm the language switcher navigates correctly both ways; view source and confirm `hreflang`/canonical tags are present and correct; confirm a `/api/revalidate` call updates both locale variants of a page.
+**Verified**: full production build succeeds with both `/en` and `/ar` static params generated for every page (surfaced and fixed two real pre-existing type errors in the Phase 3 code that `next lint` hadn't caught). Ran both the built production server and `pnpm run dev`: full 9-route sweep at 200 for English (unprefixed) and Arabic (`/ar`-prefixed); bare `/ar` serves the Arabic homepage; explicit `/en/about-gtni` correctly 307-redirects to the canonical unprefixed URL; an unconfigured locale (`/fr/about-gtni`) cleanly 404s at the routing level. Confirmed `<html lang dir>`, canonical, and all three hreflang alternates (en/ar/x-default) render correctly. Confirmed the CMS save → revalidate hook still works end-to-end against the built static pages. Admin panel and GraphQL API fully unaffected throughout. Lint clean.
 
 ---
 
 ## Sequencing & Checkpoints
 
-Each phase ships as its own commit, only after its own verification passes — matching the rollback-checkpoint rule. Phase 1 is fully self-contained and should land first regardless of anything else. Phases 2–4 build on each other in order; Phase 2/3 are useful and independently verifiable (content gets translated and stored) even before Phase 4 exposes it on the public site. Production deployment of the Phase 2 migration is explicitly flagged as follow-up work requiring direct VPS/database access, not something implemented in this coding session.
+Each phase shipped as its own commit, only after its own verification passed — matching the rollback-checkpoint rule. All 4 phases are now implemented and verified locally (see `PROGRESS.md` for exact commit hashes).
+
+**What's genuinely still open**:
+1. **A real Google Cloud Translation API key** — everything up to and including the live network call to Google's API has been verified (correct request format, reaches the API), but no actual translation output has ever been produced or reviewed. Worth spot-checking whether "GTNI" survives translation unmangled once a key is available.
+2. **Production deployment of the Phase 2 schema migration** — explicitly out of scope for this coding session; requires a hand-written migration validated against a real copy of production's database, plus direct VPS access for the actual maintenance-window deploy. Not something this environment can do alone.
+3. Everything else (security hardening, the CMS localization data model itself, the translation admin UI/endpoint, and the public locale routing) is done and pushed/committed.
