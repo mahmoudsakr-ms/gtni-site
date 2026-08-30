@@ -46,6 +46,24 @@ const nextConfig = {
     ]
   },
 
+  // Baseline security headers, site-wide. Deliberately NOT including a Content-Security-Policy
+  // here yet — Payload's admin panel is sensitive to CSP misconfiguration (risk of locking out
+  // admin access) and needs dedicated testing before one is added; tracked as follow-up work.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ]
+  },
+
   // Increase body size limit for file uploads (default is 4MB)
   experimental: {
     serverActions: {

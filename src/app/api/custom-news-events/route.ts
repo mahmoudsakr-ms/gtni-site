@@ -11,7 +11,8 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10)
     const limit = parseInt(searchParams.get('limit') || '9', 10)
     const category = searchParams.get('category')
-    const search = searchParams.get('search')
+    const rawSearch = searchParams.get('search')
+    const search = rawSearch && rawSearch.length <= 200 ? rawSearch : null
 
     const payload = await getPayload({ config: configPromise })
 

@@ -87,6 +87,9 @@ export default buildConfig({
   ].map(withGlobalRevalidate),
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
+  // Explicit instead of relying on Payload's defaults — scoped to the site's own origin.
+  cors: [process.env.NEXT_PUBLIC_SERVER_URL].filter((v): v is string => Boolean(v)),
+  csrf: [process.env.NEXT_PUBLIC_SERVER_URL].filter((v): v is string => Boolean(v)),
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

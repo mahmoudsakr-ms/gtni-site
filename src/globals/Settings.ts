@@ -8,7 +8,7 @@ export const Settings: GlobalConfig = {
     description: 'Configure domain SMTP email server or Resend API for Payload admin password resets',
   },
   access: {
-    read: () => true,
+    read: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),
   },
   fields: [
@@ -72,6 +72,10 @@ export const Settings: GlobalConfig = {
               name: 'smtpPass',
               type: 'text',
               label: 'SMTP Password',
+              // Write-only: never returned by read/API responses, even to authenticated users.
+              access: {
+                read: () => false,
+              },
               admin: {
                 description: 'Password for the domain SMTP email account',
               },
@@ -94,6 +98,10 @@ export const Settings: GlobalConfig = {
               name: 'resendApiKey',
               type: 'text',
               label: 'Resend API Key',
+              // Write-only: never returned by read/API responses, even to authenticated users.
+              access: {
+                read: () => false,
+              },
               admin: {
                 description: 'Optional Resend API key (re_...). Used if API provider is preferred over SMTP.',
               },

@@ -115,4 +115,9 @@ export const migrations = [
     down: migration_20260811_162000_add_admin_members.down,
     name: '20260811_162000_add_admin_members'
   },
+  {
+    up: migration_20260811_170000_remove_settings_global.up,
+    down: migration_20260811_170000_remove_settings_global.down,
+    name: '20260811_170000_remove_settings_global'
+  },
 ];

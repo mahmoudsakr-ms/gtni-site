@@ -15,10 +15,12 @@ export const NewsEvents: CollectionConfig = {
     description: 'Manage individual news stories, event updates, and video links',
   },
   access: {
-    read: () => true,
-    create: () => true,
-    update: () => true,
-    delete: () => true,
+    // Anonymous visitors only ever see published items; logged-in admins see everything
+    // (including drafts) so the admin panel list/edit views keep working normally.
+    read: ({ req }) => (req.user ? true : { _status: { equals: 'published' } }),
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
   },
   hooks: {
     beforeChange: [

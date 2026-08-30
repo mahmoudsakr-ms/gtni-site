@@ -101,6 +101,9 @@ export const Media: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
   },
   hooks: {
     beforeValidate: [
@@ -197,7 +200,17 @@ export const Media: CollectionConfig = {
     ],
     adminThumbnail: 'thumbnail',
     // إضافة أنواع الملفات المسموح بها (MIME types)
-    mimeTypes: ['image/*', 'video/mp4', 'video/quicktime', 'video/x-msvideo'],
+    // No `image/*` wildcard: that includes image/svg+xml, which can embed executable
+    // script and is served back unsanitized from staticDir — a stored-XSS vector.
+    mimeTypes: [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'video/mp4',
+      'video/quicktime',
+      'video/x-msvideo',
+    ],
   },
   fields: [
     {
