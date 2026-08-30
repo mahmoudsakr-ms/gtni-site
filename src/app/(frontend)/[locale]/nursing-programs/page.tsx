@@ -1,19 +1,23 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-import type { Course, Media } from '@/payload-types'
-import { CoursesContent } from '@/components/CoursesContent'
+import type { NursingProgram, Media } from '@/payload-types'
 import RunawayTriangles from '@/components/PhysicsTriangle'
+import { NursingProgramsSection } from '@/components/NursingProgramsSection'
 import Image from 'next/image'
 
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
 
-export async function generateMetadata(): Promise<Metadata> {
+type PageProps = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
-  const coursesData = await payload.findGlobal({
-    slug: 'courses',
+  const data = (await payload.findGlobal({
+    slug: 'nursing-programs',
     depth: 1,
-  })
-  const data = coursesData as unknown as Course
+    locale: locale as 'en' | 'ar',
+  })) as NursingProgram
 
   const heroImageUrl =
     data?.heroImage && typeof data.heroImage === 'object' && 'url' in data.heroImage
@@ -21,31 +25,28 @@ export async function generateMetadata(): Promise<Metadata> {
       : '/favicon.ico'
 
   return {
-    title: data?.heroTitle || 'Our Courses',
-    description:
-      data?.heroSubtitle || 'Competency-based curriculum designed for nursing excellence',
-    alternates: {
-      canonical: '/courses',
-    },
+    title: data?.heroTitle || '',
+    description: data?.heroSubtitle || '',
+    alternates: buildLocaleAlternates(locale, '/nursing-programs'),
     openGraph: {
-      title: data?.heroTitle || 'Our Courses',
+      title: data?.heroTitle || 'The Program',
       description:
         data?.heroSubtitle || 'Competency-based curriculum designed for nursing excellence',
-      url: '/courses',
+      url: '/nursing-programs',
       siteName: 'Gouna Technical Nursing Institute',
       images: [
         {
           url: heroImageUrl || '/favicon.ico',
           width: 1200,
           height: 630,
-          alt: data?.heroTitle || 'Our Courses',
+          alt: data?.heroTitle || 'The Program',
         },
       ],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: data?.heroTitle || 'Our Courses',
+      title: data?.heroTitle || 'The Program',
       description:
         data?.heroSubtitle || 'Competency-based curriculum designed for nursing excellence',
       images: [heroImageUrl || '/favicon.ico'],
@@ -53,27 +54,27 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function CoursesPage() {
+export default async function NursingProgramsPage({ params }: PageProps) {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
 
-  // Fetch courses global data
-  const coursesData = await payload.findGlobal({
-    slug: 'courses',
+  // Fetch nursing programs global data
+  const data = (await payload.findGlobal({
+    slug: 'nursing-programs',
     depth: 2,
-  })
-
-  const data = coursesData as unknown as Course
+    locale: locale as 'en' | 'ar',
+  })) as NursingProgram
+  // Get hero image URL
   const heroImageUrl = (data?.heroImage as Media)?.url
-  const heroTitle = data?.heroTitle || 'Our Courses'
-  const heroSubtitle =
-    data?.heroSubtitle || 'Competency-based curriculum designed for nursing excellence'
+  const heroTitle = data?.heroTitle || ''
+  const heroSubtitle = data?.heroSubtitle || ''
 
   return (
     <main className="min-h-screen bg-white">
       {/* ============================================ */}
       {/* PREMIUM HERO SECTION */}
       {/* ============================================ */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[70vh] mt-20 flex items-center justify-center overflow-hidden">
         {/* Background Image with Parallax Effect */}
         {heroImageUrl ? (
           <div className="absolute inset-0">
@@ -81,6 +82,9 @@ export default async function CoursesPage() {
               src={heroImageUrl}
               alt={heroTitle}
               fill
+              sizes="100vw"
+              quality={100}
+              priority
               className="w-full h-full object-cover scale-110"
               style={{ transform: 'translateZ(0)' }}
             />
@@ -167,47 +171,37 @@ export default async function CoursesPage() {
             )}
           </div>
         </div>
-
-        {/* Bottom Wave */}
-        {/* <div className="absolute bottom-0 left-0 right-0">
-             <svg viewBox="0 0 1440 120" className="w-full h-auto fill-white">
-               <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,69.3C960,85,1056,107,1152,101.3C1248,96,1344,64,1392,48L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" />
-             </svg>
-           </div> */}
       </section>
 
-      {/* Courses Content */}
-      <CoursesContent
-        overviewTitle={data?.overviewTitle || undefined}
-        overviewContent={data?.overviewContent || undefined}
-        creditHoursTitle={data?.creditHoursTitle || undefined}
-        creditHoursDescription={data?.creditHoursDescription || undefined}
-        creditHoursRules={data?.creditHoursRules || undefined}
-        semesters={
-          data?.semesters?.map((s) => ({
-            ...s,
-            id: s.id || undefined,
-            weeks: s.weeks || undefined,
-            tabLabel: s.tabLabel || undefined,
-            description: s.description || undefined,
-            courses:
-              s.courses?.map((c) => ({
-                ...c,
-                id: c.id || undefined,
-                classHours: c.classHours || undefined,
-                clinicalHours: c.clinicalHours || undefined,
-                totalCourseHours: c.totalCourseHours || undefined,
-                totalCredit: c.totalCredit || undefined,
-                prerequisites: c.prerequisites || undefined,
-                corequisites: c.corequisites || undefined,
-              })) || undefined,
-          })) || undefined
+      {/* Nursing Programs Section */}
+      <NursingProgramsSection
+        overview={data?.overview || undefined}
+        epslos={
+          data?.epslos
+            ? {
+                sectionTitle: data.epslos.sectionTitle || undefined,
+                sectionSubtitle: data.epslos.sectionSubtitle || undefined,
+                categories:
+                  data.epslos.categories?.map((cat) => ({
+                    ...cat,
+                    items: cat.items || undefined,
+                    id: cat.id || undefined,
+                    image: cat.image || undefined,
+                  })) || undefined,
+              }
+            : undefined
         }
-        competencyTitle={data?.competencyTitle || undefined}
-        competencyDescription={data?.competencyDescription || undefined}
-        clinicalHoursMin={data?.clinicalHoursMin || undefined}
-        clinicalHoursMax={data?.clinicalHoursMax || undefined}
-        clinicalHoursText={data?.clinicalHoursText || undefined}
+        coursesSection={
+          data?.coursesSection
+            ? {
+                sectionTitle: data.coursesSection.sectionTitle || undefined,
+                description: data.coursesSection.description || undefined,
+                image: data.coursesSection.image || undefined,
+                buttonText: data.coursesSection.buttonText || undefined,
+                buttonLink: data.coursesSection.buttonLink || undefined,
+              }
+            : undefined
+        }
       />
     </main>
   )

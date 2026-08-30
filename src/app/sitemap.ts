@@ -56,25 +56,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap generation failed to fetch updatedAt times:', err)
   }
 
-  // Generate routes with their actual last modified time
+  // Generate routes with their actual last modified time. Each entry maps to a
+  // path relative to the locale root; English is unprefixed, Arabic gets /ar.
   const staticRoutes = [
-    { url: `${baseUrl}`, lastModified: homeLastMod, priority: 1.0 },
-    { url: `${baseUrl}/about-gtni`, lastModified: aboutLastMod, priority: 0.9 },
-    { url: `${baseUrl}/admission`, lastModified: admissionLastMod, priority: 0.9 },
-    { url: `${baseUrl}/nursing-programs`, lastModified: nursingProgramsLastMod, priority: 0.9 },
-    { url: `${baseUrl}/courses`, lastModified: coursesLastMod, priority: 0.8 },
-    { url: `${baseUrl}/scholarships`, lastModified: scholarshipsLastMod, priority: 0.8 },
-    { url: `${baseUrl}/student-services`, lastModified: studentServicesLastMod, priority: 0.8 },
-    { url: `${baseUrl}/news-events`, lastModified: newsEventsLastMod, priority: 0.8 },
-    { url: `${baseUrl}/vacancies`, lastModified: vacanciesLastMod, priority: 0.8 },
+    { path: '', lastModified: homeLastMod, priority: 1.0 },
+    { path: '/about-gtni', lastModified: aboutLastMod, priority: 0.9 },
+    { path: '/admission', lastModified: admissionLastMod, priority: 0.9 },
+    { path: '/nursing-programs', lastModified: nursingProgramsLastMod, priority: 0.9 },
+    { path: '/courses', lastModified: coursesLastMod, priority: 0.8 },
+    { path: '/scholarships', lastModified: scholarshipsLastMod, priority: 0.8 },
+    { path: '/student-services', lastModified: studentServicesLastMod, priority: 0.8 },
+    { path: '/news-events', lastModified: newsEventsLastMod, priority: 0.8 },
+    { path: '/vacancies', lastModified: vacanciesLastMod, priority: 0.8 },
   ]
 
-  const routes = staticRoutes.map((route) => ({
-    url: route.url,
-    lastModified: route.lastModified,
-    changeFrequency: 'monthly' as const,
-    priority: route.priority,
-  }))
+  const routes = staticRoutes.flatMap((route) => [
+    {
+      url: `${baseUrl}${route.path}`,
+      lastModified: route.lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: route.priority,
+    },
+    {
+      url: `${baseUrl}/ar${route.path}`,
+      lastModified: route.lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: route.priority,
+    },
+  ])
 
   return routes
 }

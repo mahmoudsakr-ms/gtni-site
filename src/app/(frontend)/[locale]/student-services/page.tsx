@@ -7,12 +7,17 @@ import { StudentServicesClient } from '@/components/StudentServicesClient'
 // export const revalidate = 300 // 5 minutes
 
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
 
-export async function generateMetadata(): Promise<Metadata> {
+type PageProps = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
   const payload = await getPayload({ config })
   const studentServicesData = (await payload.findGlobal({
     slug: 'student-services',
     depth: 1,
+    locale: locale as 'en' | 'ar',
   })) as StudentService
 
   const heroImageUrl =
@@ -25,9 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: studentServicesData?.heroTitle || '',
     description: studentServicesData?.heroSubtitle || '',
-    alternates: {
-      canonical: '/student-services',
-    },
+    alternates: buildLocaleAlternates(locale, '/student-services'),
     openGraph: {
       title: studentServicesData?.heroTitle || 'Student Services | GTNI',
       description:
@@ -56,12 +59,14 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function StudentServicesPage() {
+export default async function StudentServicesPage({ params }: PageProps) {
+  const { locale } = await params
   const payload = await getPayload({ config })
 
   const studentServicesData = (await payload.findGlobal({
     slug: 'student-services',
     depth: 1,
+    locale: locale as 'en' | 'ar',
   })) as StudentService
 
   return <StudentServicesClient data={studentServicesData} />

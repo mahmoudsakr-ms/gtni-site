@@ -37,6 +37,7 @@
     "libsql": "^0.5.29",
     "lucide-react": "^0.562.0",
     "next": "15.4.10",
+    "next-intl": "^4.14.1",
     "nodemailer": "^9.0.3",
     "payload": "3.74.0",
     "radix-ui": "^1.4.3",

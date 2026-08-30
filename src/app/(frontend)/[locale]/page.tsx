@@ -9,12 +9,17 @@ import { FeatureCardsSection } from '@/components/FeatureCardsSection'
 import { FeaturedNewsEvents } from '@/components/FeaturedNewsEvents'
 import { StudentTestimonials } from '@/components/StudentTestimonials'
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
 
-export async function generateMetadata(): Promise<Metadata> {
+type PageProps = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
   const homeData: Home = await payload.findGlobal({
     slug: 'home',
     depth: 1,
+    locale: locale as 'en' | 'ar',
   })
 
   // Determine OG Image
@@ -32,9 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: homeData?.hero?.title || 'GTNI',
     description: homeData?.hero?.subtitle || 'Gouna Technical Nursing Institute',
-    alternates: {
-      canonical: '/',
-    },
+    alternates: buildLocaleAlternates(locale, '/'),
     openGraph: {
       title: homeData?.hero?.title || 'GTNI',
       description: homeData?.hero?.subtitle || 'Gouna Technical Nursing Institute',
@@ -59,13 +62,15 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function HomePage() {
+export default async function HomePage({ params }: PageProps) {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
 
   // Fetch Homepage data from Home Global
   const homeData: Home = await payload.findGlobal({
     slug: 'home',
     depth: 2,
+    locale: locale as 'en' | 'ar',
   })
 
   const heroData = homeData?.hero

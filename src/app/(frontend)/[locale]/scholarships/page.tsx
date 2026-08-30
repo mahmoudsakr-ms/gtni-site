@@ -4,11 +4,16 @@ import type { Scholarship } from '@/payload-types'
 import { ScholarshipsClient } from '@/components/ScholarshipsClient'
 
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
 
-export async function generateMetadata(): Promise<Metadata> {
+type PageProps = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
   const payload = await getPayload({ config })
   const data = (await payload.findGlobal({
     slug: 'scholarships',
+    locale: locale as 'en' | 'ar',
   })) as Scholarship
 
   const heroImageUrl =
@@ -19,9 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: data?.heroTitle || '',
     description: data?.heroSubtitle || '',
-    alternates: {
-      canonical: '/scholarships',
-    },
+    alternates: buildLocaleAlternates(locale, '/scholarships'),
     openGraph: {
       title: data?.heroTitle || 'Scholarships',
       description:
@@ -50,10 +53,12 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function ScholarshipsPage() {
+export default async function ScholarshipsPage({ params }: PageProps) {
+  const { locale } = await params
   const payload = await getPayload({ config })
   const data = (await payload.findGlobal({
     slug: 'scholarships',
+    locale: locale as 'en' | 'ar',
   })) as Scholarship
 
   return <ScholarshipsClient data={data} />

@@ -1,14 +1,13 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown, Lock, Globe, Loader2 } from 'lucide-react'
+import { Menu, X, ChevronDown, Lock, Globe } from 'lucide-react'
 
 import { Media } from '@/payload-types'
-import { useLanguage } from './GoogleTranslate'
+import type { AppLocale } from '@/i18n/routing'
 import { SmartText } from './SmartText'
 
 interface NavClientProps {
@@ -22,14 +21,16 @@ interface NavClientProps {
     link: string
   }[]
   logo?: Media | null
+  locale: AppLocale
 }
 
-export const NavClient = ({ navItems, loginLinks, logo }: NavClientProps) => {
+export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [showLoginDropdown, setShowLoginDropdown] = useState(false)
   const pathname = usePathname()
-  const { isArabic, isTranslating, toggleLanguage } = useLanguage()
+  const isArabic = locale === 'ar'
+  const otherLocale: AppLocale = isArabic ? 'en' : 'ar'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,24 +120,16 @@ export const NavClient = ({ navItems, loginLinks, logo }: NavClientProps) => {
               />
             </div>
  
-            {/* Language Toggle Button */}
-            <button
-              onClick={toggleLanguage}
-              disabled={isTranslating}
-              className={`notranslate flex items-center gap-1 xl:gap-1.5 2xl:gap-2 px-2 xl:px-2.5 2xl:px-3 py-2 2xl:py-2.5 border border-brand-turquoise/40 rounded-full font-bold text-xs 2xl:text-sm transition-all duration-300 shadow-sm ${
-                isTranslating
-                  ? 'opacity-60 cursor-not-allowed bg-gray-100 text-gray-400'
-                  : 'bg-white/80 text-brand-dark hover:bg-brand-turquoise/10 hover:border-brand-turquoise'
-              }`}
+            {/* Language Switcher — a real link to this same page in the other locale */}
+            <Link
+              href={pathname}
+              locale={otherLocale}
+              className="notranslate flex items-center gap-1 xl:gap-1.5 2xl:gap-2 px-2 xl:px-2.5 2xl:px-3 py-2 2xl:py-2.5 border border-brand-turquoise/40 rounded-full font-bold text-xs 2xl:text-sm transition-all duration-300 shadow-sm bg-white/80 text-brand-dark hover:bg-brand-turquoise/10 hover:border-brand-turquoise"
               aria-label={isArabic ? 'Switch to English' : 'التبديل إلى العربية'}
             >
-              {isTranslating ? (
-                <Loader2 size={14} className="text-brand-turquoise animate-spin" />
-              ) : (
-                <Globe size={14} className="text-brand-turquoise" />
-              )}
-              <span>{isTranslating ? '...' : (isArabic ? 'EN' : 'AR')}</span>
-            </button>
+              <Globe size={14} className="text-brand-turquoise" />
+              <span>{isArabic ? 'EN' : 'AR'}</span>
+            </Link>
  
             <div
               className="relative"
@@ -246,25 +239,18 @@ export const NavClient = ({ navItems, loginLinks, logo }: NavClientProps) => {
                 ))}
               </div>
 
-              {/* Language Toggle (Mobile) */}
+              {/* Language Switcher (Mobile) */}
               <div className="pt-4 border-t border-gray-100">
-                <button
-                  onClick={() => { toggleLanguage(); if (!isTranslating) setIsOpen(false); }}
-                  disabled={isTranslating}
-                  className={`notranslate flex items-center justify-center gap-3 w-full p-4 rounded-2xl border border-brand-turquoise/30 font-bold transition-all ${
-                    isTranslating
-                      ? 'opacity-60 cursor-not-allowed bg-gray-100 text-gray-400'
-                      : 'bg-brand-turquoise/10 text-brand-dark hover:bg-brand-turquoise/20'
-                  }`}
+                <Link
+                  href={pathname}
+                  locale={otherLocale}
+                  onClick={() => setIsOpen(false)}
+                  className="notranslate flex items-center justify-center gap-3 w-full p-4 rounded-2xl border border-brand-turquoise/30 font-bold transition-all bg-brand-turquoise/10 text-brand-dark hover:bg-brand-turquoise/20"
                   aria-label={isArabic ? 'Switch to English' : 'التبديل إلى العربية'}
                 >
-                  {isTranslating ? (
-                    <Loader2 size={20} className="text-brand-turquoise animate-spin" />
-                  ) : (
-                    <Globe size={20} className="text-brand-turquoise" />
-                  )}
-                  <span>{isTranslating ? (isArabic ? 'Switching...' : 'جاري الترجمة...') : (isArabic ? 'English' : 'العربية')}</span>
-                </button>
+                  <Globe size={20} className="text-brand-turquoise" />
+                  <span>{isArabic ? 'English' : 'العربية'}</span>
+                </Link>
               </div>
 
               {/* Login Links Sector */}

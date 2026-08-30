@@ -41,7 +41,17 @@ const getRevalidatePaths = (slug: string, isGlobal: boolean): string | string[] 
 }
 
 /**
- * Executes cache invalidation using paths or tags
+ * Given a locale-independent path (e.g. `/about-gtni`, or `/`), returns its
+ * Arabic-prefixed equivalent (`/ar/about-gtni`, `/ar`). Routes now live under a
+ * `[locale]` segment (English unprefixed, Arabic prefixed) -- each locale is a
+ * genuinely separate static render, so revalidating one doesn't revalidate the
+ * other; both need to be told explicitly.
+ */
+const toArabicPath = (path: string): string => (path === '/' ? '/ar' : `/ar${path}`)
+
+/**
+ * Executes cache invalidation using paths or tags, for both the English (default,
+ * unprefixed) and Arabic (`/ar`-prefixed) locale trees.
  */
 const triggerRevalidate = (paths: string | string[]) => {
   try {
@@ -49,10 +59,13 @@ const triggerRevalidate = (paths: string | string[]) => {
     for (const p of pathList) {
       if (p === 'layout') {
         revalidatePath('/', 'layout')
+        revalidatePath('/ar', 'layout')
       } else if (p === '/news-events') {
+        // Tag-based, not path-scoped -- already covers both locales' cached data.
         revalidateTag('news-events')
       } else {
         revalidatePath(p)
+        revalidatePath(toArabicPath(p))
       }
     }
   } catch (error) {

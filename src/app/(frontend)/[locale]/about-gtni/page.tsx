@@ -13,12 +13,17 @@ import { GtniInNumbers } from '@/components/GtniInNumbers'
 import { AboutHeroMedia } from '@/components/AboutHeroMedia'
 import { Metadata } from 'next'
 import { SmartText } from '@/components/SmartText'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
 
-export async function generateMetadata(): Promise<Metadata> {
+type PageProps = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
   const data: AboutGtni = await payload.findGlobal({
     slug: 'about-gtni',
     depth: 1,
+    locale: locale as 'en' | 'ar',
   })
 
   const heroImageUrl =
@@ -29,9 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: data?.heroTitle || '',
     description: data?.heroSubtitle || '',
-    alternates: {
-      canonical: '/about-gtni',
-    },
+    alternates: buildLocaleAlternates(locale, '/about-gtni'),
     openGraph: {
       title: data?.heroTitle || 'About GTNI',
       description:
@@ -58,13 +61,15 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function AboutGtniPage() {
+export default async function AboutGtniPage({ params }: PageProps) {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
 
   // Fetch about gtni global data
   const data = (await payload.findGlobal({
     slug: 'about-gtni',
     depth: 2,
+    locale: locale as 'en' | 'ar',
   })) as AboutGtni
 
   // Get hero media configurations

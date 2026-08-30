@@ -4,11 +4,16 @@ import type { Admission } from '@/payload-types'
 import { AdmissionClient } from '@/components/AdmissionClient'
 
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
 
-export async function generateMetadata(): Promise<Metadata> {
+type PageProps = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
   const payload = await getPayload({ config })
   const data = (await payload.findGlobal({
     slug: 'admission',
+    locale: locale as 'en' | 'ar',
   })) as Admission
 
   const heroImageUrl =
@@ -19,9 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: data?.heroTitle || '',
     description: data?.heroDescription || '',
-    alternates: {
-      canonical: '/admission',
-    },
+    alternates: buildLocaleAlternates(locale, '/admission'),
     openGraph: {
       title: data?.heroTitle || '',
       description: data?.heroDescription || '',
@@ -46,10 +49,12 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function AdmissionPage() {
+export default async function AdmissionPage({ params }: PageProps) {
+  const { locale } = await params
   const payload = await getPayload({ config })
   const data = (await payload.findGlobal({
     slug: 'admission',
+    locale: locale as 'en' | 'ar',
   })) as Admission
 
   return <AdmissionClient data={data} />

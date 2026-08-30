@@ -2,6 +2,7 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { NextRequest, NextResponse } from 'next/server'
 import { translateDocument, TranslationApiError } from '@/utilities/translateContent'
+import type { Setting } from '@/payload-types'
 
 // Only these globals carry `localized: true` fields (see Phase 2 in PLAN_SECURITY_I18N.md).
 // The NewsEvents *collection* (individual articles) and `settings` are deliberately excluded.
@@ -76,8 +77,8 @@ export async function POST(request: NextRequest) {
   // Local API bypasses field-level `access.read: () => false` -- this is the one place
   // allowed to read the real Google Translate API key, server-side only, never returned
   // to a client.
-  const settings = await payload.findGlobal({ slug: 'settings' })
-  const apiKey = (settings as Record<string, unknown>).googleTranslateApiKey as string | undefined
+  const settings: Setting = await payload.findGlobal({ slug: 'settings' })
+  const apiKey = settings.googleTranslateApiKey || undefined
 
   if (!apiKey) {
     return NextResponse.json(
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
         slug: globalSlug as never,
         locale: targetLocale as never,
         draft: true,
-        data: translatedData,
+        data: translatedData as never,
       })
 
       results[targetLocale] = { fieldsTranslated }

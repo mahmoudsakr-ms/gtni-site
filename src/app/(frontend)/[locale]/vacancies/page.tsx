@@ -8,12 +8,17 @@ import VacanciesClient from '@/components/VacanciesClient'
 // export const revalidate = 0
 
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
 
-export async function generateMetadata(): Promise<Metadata> {
+type PageProps = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
   const data = (await payload.findGlobal({
     slug: 'vacancies',
     depth: 1,
+    locale: locale as 'en' | 'ar',
   })) as Vacancy
 
   const heroImageUrl =
@@ -24,9 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: data?.heroTitle || 'Join the GTNI Family',
     description: data?.heroDescription || 'Explore career opportunities at GTNI.',
-    alternates: {
-      canonical: '/vacancies',
-    },
+    alternates: buildLocaleAlternates(locale, '/vacancies'),
     openGraph: {
       title: data?.heroTitle || 'Join the GTNI Family',
       description: data?.heroDescription || 'Explore career opportunities at GTNI.',
@@ -51,13 +54,15 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function VacanciesPage() {
+export default async function VacanciesPage({ params }: PageProps) {
+  const { locale } = await params
   const payload = await getPayload({ config: configPromise })
 
   // Fetch vacancies global data
   const data = (await payload.findGlobal({
     slug: 'vacancies',
     depth: 2,
+    locale: locale as 'en' | 'ar',
   })) as Vacancy
 
   // Map data to match VacanciesPageData interface

@@ -7,6 +7,9 @@ import NewsEventsClient from './NewsEventsClient'
 import { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { resolveItemThumbnails } from '@/utilities/video'
+import { buildLocaleAlternates } from '@/utilities/localeMetadata'
+
+type PageProps = { params: Promise<{ locale: string }> }
 
 interface ResolvedSection {
   title: string
@@ -26,12 +29,13 @@ interface NewsEventsPageData {
 }
 
 const getNewsEventsPageData = unstable_cache(
-  async (): Promise<NewsEventsPageData> => {
+  async (locale: string): Promise<NewsEventsPageData> => {
     const payload = await getPayload({ config: configPromise })
 
     const data = (await payload.findGlobal({
       slug: 'news-events-global',
       depth: 2,
+      locale: locale as 'en' | 'ar',
     })) as NewsEventsGlobal
 
     // Fetch latest news item for OG Image
@@ -136,15 +140,14 @@ const getNewsEventsPageData = unstable_cache(
   }
 )
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { hero, ogImage } = await getNewsEventsPageData()
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params
+  const { hero, ogImage } = await getNewsEventsPageData(locale)
 
   return {
     title: hero?.title || 'News & Events',
     description: hero?.subtitle || 'Stay updated with the latest happenings at GTNI.',
-    alternates: {
-      canonical: '/news-events',
-    },
+    alternates: buildLocaleAlternates(locale, '/news-events'),
     openGraph: {
       title: hero?.title || 'News & Events',
       description: hero?.subtitle || 'Stay updated with the latest happenings at GTNI.',
@@ -169,8 +172,9 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function NewsEventsPage() {
-  const { hero, resolvedSections } = await getNewsEventsPageData()
+export default async function NewsEventsPage({ params }: PageProps) {
+  const { locale } = await params
+  const { hero, resolvedSections } = await getNewsEventsPageData(locale)
 
   return (
     <NewsEventsClient
