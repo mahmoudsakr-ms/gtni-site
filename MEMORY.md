@@ -4,6 +4,19 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-08-30 — Phase 4 done: ALL 4 PHASES OF PLAN_SECURITY_I18N.md NOW COMPLETE
+
+**What happened**: Implemented and thoroughly verified Phase 4 (public-facing locale routing via `next-intl`) — the last phase of the plan. Committed as `ade9e20` (+ plan doc `c2f2e6b`), **not yet pushed**. The site now has real bilingual (EN/AR) public routing: `/about-gtni` (English, unchanged) and `/ar/about-gtni` (new), with proper canonical/hreflang SEO tags and a real language-switcher link. The old client-side Google Translate widget (`GoogleTranslate.tsx`) is gone.
+
+**If picking this up next session**, the actual remaining work is narrow:
+1. **Get a real Google Cloud Translation API key from the user** and verify actual translation output end-to-end (enter it under Settings > AI Translation, click "Translate with AI" on a global, check the Arabic draft, publish it, confirm it shows correctly on `/ar/...`). Also worth checking whether "GTNI" survives translation unmangled.
+2. **Production deployment** — this whole plan has been built and verified only against the local disposable dev DB. Deploying to the real production site needs: (a) the Phase 1 security fixes (safe, no schema changes, can ship anytime), (b) the Phase 2 localization schema change, which needs a **hand-written** migration (not `payload migrate:create` — see `PLAN_SECURITY_I18N.md` Phase 2 for why) validated against a real copy of production's `.db`, requiring the user's direct VPS access — this is a distinct, separate piece of work from everything done so far.
+3. Nothing else from the original 3-part request (security hardening, manual translation fields, Gemini/Google AI translation) remains — all implemented and locally verified. Only real-world validation (a real API key, a real production deploy) is left.
+
+**Reminder — don't confuse two similarly-named things** (still relevant): `src/components/GoogleTranslate.tsx` no longer exists (removed in Phase 4). The Google Cloud Translation API used by Phase 3's AI-translate feature lives in `src/utilities/translateContent.ts` — an unrelated, server-side thing that happens to share the "Google Translate" name.
+
+---
+
 ## 2026-08-30 — Phase 3 reworked and completed: Google Cloud Translation API
 
 **What happened**: Phase 3 was first built against Gemini, then the user asked (mid-session) to swap to the Google Cloud Translation API instead. Confirmed the swap scope explicitly: keep the same admin button / schema-driven field walker / draft→publish workflow, only swap the translation call. Implemented and verified. Committed locally as `f9a1211` (+ plan doc update `6b42f6b`), **not yet pushed** — user paused before deciding.

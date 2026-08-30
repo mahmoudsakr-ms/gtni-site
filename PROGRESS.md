@@ -4,6 +4,29 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-08-30 — Phase 4 implemented: public-facing locale routing (next-intl) — ALL 4 PHASES COMPLETE
+
+**Status**: ✅ Phase 4 of `PLAN_SECURITY_I18N.md` complete and verified, committed (`ade9e20`, plan doc updated in `c2f2e6b`). Not yet pushed. This was the last phase — `PLAN_SECURITY_I18N.md`'s full scope is now implemented.
+
+- Added `next-intl`. Created `src/i18n/{routing,navigation,request}.ts` and `src/middleware.ts` (matcher excludes `/admin`, `/api`, static assets). `next.config.mjs` wrapped with `next-intl/plugin`.
+- Moved every route under `src/app/(frontend)/` into `src/app/(frontend)/[locale]/` via `git mv`. Root layout gained `generateStaticParams`, `<html lang dir>`, and a `notFound()` guard for bad locales.
+- `Nav`/`Footer` take a `locale` prop; all 9 pages' `generateMetadata` + default export now thread `locale` into their Payload calls and build real `alternates.canonical`/`alternates.languages` via new `src/utilities/localeMetadata.ts`. Fixed a real bug found along the way: `news-events/page.tsx`'s `unstable_cache` call had a single shared cache key across all locales (would have served the wrong locale's cached data) — now locale-scoped.
+- `src/utilities/revalidate.ts` now revalidates both the English and `/ar`-prefixed path for every affected route. `next.config.mjs` redirects fixed: removed 4 that would have shadowed the new real Arabic routes (`/ar/admission`, `/ar/courses`, `/ar/vacancies`, bare `/ar`), and repointed the rest at Arabic-prefixed destinations. `sitemap.ts` now emits both locale variants.
+- **Removed** `src/components/GoogleTranslate.tsx` (the old client-side widget + its mistranslation-patching dictionary) entirely — the whole point of this multi-phase effort. Simplified `src/components/SmartText.tsx` (depended on it) to a plain passthrough rather than touching its ~9 call sites. Language switcher in `NavClient.tsx` is now a real next-intl `Link`.
+
+**Verified thoroughly**:
+- Full `pnpm run build` succeeds, both `/en` and `/ar` static params generated for every page. This surfaced (and I fixed) two real pre-existing TypeScript errors in the Phase 3 code that `next lint` had not caught (an unsafe `Settings` cast; a `data` argument type mismatch on `updateGlobal`).
+- Ran both the built production server and `pnpm run dev`: full 9-route sweep at 200 for English (unprefixed, e.g. `/about-gtni`) and Arabic (`/ar/about-gtni`); bare `/ar` serves the Arabic homepage; `/en/about-gtni` correctly 307-redirects to the canonical unprefixed URL (avoiding duplicate-content URLs); an unconfigured locale (`/fr/about-gtni`) cleanly 404s at the routing level, never reaching page code.
+- Confirmed `<html lang dir>` correct per locale; canonical + all three hreflang alternates (en/ar/x-default) present and correct in page source.
+- Confirmed the CMS save → revalidate hook still works end-to-end against the built static pages (edited a global field via the admin API, confirmed the live page updated without a rebuild, restored the original value).
+- Admin panel and GraphQL API fully unaffected (200) throughout. Lint clean.
+
+**What's genuinely still open** (see `PLAN_SECURITY_I18N.md`'s final section for full detail):
+1. A real Google Cloud Translation API key from the user — to verify actual translation output (everything up to the live network call is verified, but no real translation has ever been produced).
+2. Production deployment of the Phase 2 schema migration — needs the user's direct VPS/database access, explicitly out of scope for this environment.
+
+---
+
 ## 2026-08-30 — Phase 3 implemented: Gemini AI auto-translation
 
 **Status**: ✅ Phase 3 of `PLAN_SECURITY_I18N.md` complete, verified as far as possible without a real Gemini API key, committed (`c390071`). Not yet pushed.
