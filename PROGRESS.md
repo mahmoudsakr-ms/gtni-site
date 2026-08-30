@@ -4,6 +4,25 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-08-30 — Phase 2 implemented: CMS localization data model
+
+**Status**: ✅ Phase 2 of `PLAN_SECURITY_I18N.md` complete, verified locally, committed (`c6be416`). Not yet pushed — pending user confirmation. Production deployment explicitly out of scope (needs a hand-written migration validated against a real copy of the production DB — see plan).
+
+- `src/payload.config.ts`: added `localization` config — English (default) + Arabic, `fallback: true` (untranslated content shows English instead of blank).
+- Added `localized: true` to every visible-text field (text/textarea/richText) across all 10 page-content globals (`Header`, `Footer`, `Home`, `AboutGTNI`, `Admission`, `Courses`, `NursingPrograms`, `Scholarships`, `StudentServices`, `Vacancies`) plus the `NewsEvents` global (page settings). Left non-localized: slugs/IDs, URLs/links, course codes/prerequisites, media/relationship refs, and other structural fields (select/checkbox/date/number). Each of these 11 globals also got `versions: { drafts: true }` — native save-draft/publish per document, which Phase 3's AI-translate flow will use.
+- **Deliberately untouched**: the `NewsEvents` *collection* (individual articles) — it already has a working hand-rolled `_status` field; combining that with native versioning is a separate, riskier change, deferred per the plan.
+- Regenerated `src/payload-types.ts`.
+
+**Verified locally** (fresh disposable dev DB, `DATABASE_PUSH=true`):
+- Confirmed actual SQLite shape matches the plan's prediction: a `<table>_locales` sibling table appears the first time any field on that table becomes localized; `<slug>_v` tables appear for the new `versions.drafts`.
+- Full round-trip: set English (published) → Arabic read falls back to English → saved Arabic as a **draft** → public read still shows English fallback, draft preview shows Arabic → **published** the draft → Arabic now live, English untouched. Exactly the "translate → draft → publish" flow requested.
+- **Important gotcha found and resolved** (not a real bug, a testing pitfall worth remembering for Phase 3): updating a localized array field *without* including the existing row's `id` makes Payload treat it as a brand-new row, silently orphaning the other locale's data for that array position. Including the correct existing `id` (which the real admin UI and any correctly-written Local API call always does) preserves both locales' data correctly. **Phase 3's Gemini translation endpoint must always round-trip existing array row IDs when writing translated content back.**
+- All 9 frontend routes + `/admin` still 200. Lint clean.
+
+**Next**: Phase 3 (Gemini AI auto-translation) — needs a real Gemini API key from the user to verify end-to-end. Push of this Phase 2 commit still needs confirmation (per the agreed per-phase check-in policy).
+
+---
+
 ## 2026-08-30 — Phase 1 implemented: security hardening
 
 **Status**: ✅ Phase 1 of `PLAN_SECURITY_I18N.md` complete, verified, committed (`15f1868`). Not yet pushed — pending user confirmation.

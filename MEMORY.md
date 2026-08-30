@@ -4,6 +4,19 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-08-30 — Phase 2 (CMS localization) implemented
+
+**What happened**: Implemented and verified Phase 2 of `PLAN_SECURITY_I18N.md` — Payload native localization (EN/AR) + drafts across all 10 page globals + the NewsEvents global. Committed locally as `c6be416`, not yet pushed.
+
+**Critical implementation detail for Phase 3** (the Gemini translation endpoint, not yet built): when writing translated values back into a localized array field via the Local API, **always include the existing array row's `id`** in the update payload. Omitting it makes Payload create a new row instead of updating the existing one, silently orphaning the other locale's data for that array position. Verified this directly against the raw SQLite tables during Phase 2 testing — not a Payload bug, just an easy mistake for any API caller (including our future translate endpoint) to make.
+
+**Still open going into next session**:
+- Confirm push of commit `c6be416` (per-phase push confirmation is the agreed policy from Phase 1).
+- Phase 3 (Gemini AI auto-translation) is next — needs a real Gemini API key from the user before it can be verified end-to-end.
+- Production deployment of the Phase 2 schema change is still fully deferred — needs a hand-written migration validated against a real copy of production's `.db`, which requires the user's direct VPS access. Do not attempt to generate/guess this migration without that real data to test against.
+
+---
+
 ## 2026-08-30 — Phase 1 (security hardening) implemented
 
 **What happened**: Continued from the approved `PLAN_SECURITY_I18N.md`. Implemented and verified Phase 1 in full (see `PROGRESS.md` for the file-by-file list) — committed locally as `15f1868`, not yet pushed pending user confirmation.
