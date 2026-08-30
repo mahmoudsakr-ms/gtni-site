@@ -4,6 +4,17 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-08-30 — Phase 1 (security hardening) implemented
+
+**What happened**: Continued from the approved `PLAN_SECURITY_I18N.md`. Implemented and verified Phase 1 in full (see `PROGRESS.md` for the file-by-file list) — committed locally as `15f1868`, not yet pushed pending user confirmation.
+
+**Still open going into next session**:
+- Confirm push of commit `15f1868` (and decide push policy for the rest of the multi-phase work — confirm every phase, or pre-authorize pushing through to the end).
+- Phase 2 (localization data model) is next: touches all 10 content globals, needs a hand-written SQLite migration (see `PLAN_SECURITY_I18N.md` for why `payload migrate:create` can't be trusted here), and its production deployment step explicitly requires the user's direct VPS/DB access — not doable from this sandbox alone.
+- Phase 3 needs a real Gemini API key from the user before it can be verified end-to-end.
+
+---
+
 ## 2026-08-29 — Security + localization + AI-translation plan approved, not implemented
 
 **What happened**: User asked to (1) fix the `force-reset-pd` backdoor and harden security project-wide, (2) add manual translation fields/controls to the CMS, (3) integrate Google Gemini for AI auto-translation with a click-to-translate admin flow (translate → save draft → publish → visible via public language switcher). Went through full plan-mode research (security audit + localization architecture + design validation via subagents) and produced an approved 4-phase plan. **User had to leave before implementation started** — plan is saved at `PLAN_SECURITY_I18N.md` in the repo root, read that file first next session.

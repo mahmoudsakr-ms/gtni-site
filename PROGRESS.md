@@ -4,6 +4,27 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-08-30 — Phase 1 implemented: security hardening
+
+**Status**: ✅ Phase 1 of `PLAN_SECURITY_I18N.md` complete, verified, committed (`15f1868`). Not yet pushed — pending user confirmation.
+
+- Removed the `force-reset-pd` backdoor from `src/collections/Users.ts` entirely; declared `maxLoginAttempts`/`lockTime` explicitly (unchanged values, just now visible in code).
+- `src/globals/Settings.ts`: read/update now require an authenticated user; `smtpPass`/`resendApiKey` fields made write-only (`access.read: () => false`) so they're never returned via API even to logged-in users.
+- `src/collections/Media.ts`: `create`/`update`/`delete` now require an authenticated user (read stays public). Dropped the `image/*` wildcard from `mimeTypes` (was allowing unsanitized SVG uploads — stored XSS risk) in favor of an explicit list (jpeg/png/webp/gif + existing video types).
+- `src/collections/MediaCategory.ts`, `NewsCategory.ts`: same write-lockdown pattern, read stays public.
+- `src/collections/NewsEvents.ts`: same write-lockdown; additionally, anonymous reads are now filtered to `_status: published` only (authenticated users still see drafts, so the admin UI is unaffected).
+- `src/app/api/revalidate/route.ts`: now requires a `token` query param or `x-revalidate-token` header matching `CACHE_REVALIDATION_TOKEN` (previously had zero auth check in code). Generated and set a real token value in local `.env`.
+- `src/app/api/custom-news-events/route.ts`: caps the `search` query param at 200 chars.
+- `next.config.mjs`: added baseline security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, HSTS, Permissions-Policy) site-wide. Full CSP intentionally deferred — needs dedicated testing against the Payload admin panel to avoid locking out admin access.
+- `src/payload.config.ts`: explicit `cors`/`csrf` scoped to `NEXT_PUBLIC_SERVER_URL` instead of relying on Payload defaults.
+- `src/migrations/index.ts`: fixed a pre-existing bug (unrelated to this session's audit but found during it) — `20260811_170000_remove_settings_global` was imported but never added to the exported `migrations` array, so it silently never ran. Now registered. Note for whenever this migration chain is eventually run against production: this migration does `DROP TABLE IF EXISTS settings` — safe/idempotent, but if production's `settings` table still holds old data from before that global was orphaned, that data will be lost when this finally runs. Back up first.
+
+**Verified**: `pnpm run lint` clean. Live-tested every fix against the dev server with curl (anonymous writes to Media/NewsEvents now 403, `force-reset-pd` now 404, `/api/revalidate` now 401 without token / 200 with it, anonymous reads and authenticated writes/login still work correctly). All 9 frontend routes still return 200. No new issues introduced (self-reviewed the full diff).
+
+**Next**: Phase 2 (CMS localization data model) is next — bigger and touches all 10 content globals plus requires a hand-written SQLite migration for production. Push of this Phase 1 commit and continuation policy for the rest still need user confirmation.
+
+---
+
 ## 2026-08-29 — Security audit + full security/localization/AI-translation plan approved (not yet implemented)
 
 **Status**: 📋 Planning complete and approved by user; implementation not started (user had to stop for the day).
