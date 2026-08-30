@@ -4,6 +4,19 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-08-30 — Phase 3 (Gemini AI translation) implemented
+
+**What happened**: Implemented and verified (as far as possible without a real API key) Phase 3 of `PLAN_SECURITY_I18N.md`. Committed locally as `c390071`, not yet pushed. User does not have a Gemini API key to provide right now — proceeded with build-now-test-later per their explicit choice.
+
+**Key design decision**: the translation engine is schema-driven (`collectTranslatableRefs` in `src/utilities/geminiTranslate.ts`) — it reads the `localized: true` flags already set on each global's fields (from Phase 2) rather than maintaining a separate hand-written manifest per global. Adding a new localized field to any global automatically makes it translatable with zero changes needed in Phase 3 code.
+
+**Still open going into next session**:
+- Confirm push of commit `c390071` (per-phase push confirmation policy).
+- **User still needs to provide a real Gemini API key** to verify actual translation quality/output end-to-end — everything up to and including the real network call to Gemini has been verified, but no real translation has ever been produced.
+- Phase 4 (public-facing locale routing via `next-intl`) is the last phase in the plan — most invasive: restructures routes under `[locale]`, removes the existing `src/components/GoogleTranslate.tsx` widget, updates `next.config.mjs` redirects.
+
+---
+
 ## 2026-08-30 — Phase 2 (CMS localization) implemented
 
 **What happened**: Implemented and verified Phase 2 of `PLAN_SECURITY_I18N.md` — Payload native localization (EN/AR) + drafts across all 10 page globals + the NewsEvents global. Committed locally as `c6be416`, not yet pushed.

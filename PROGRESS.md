@@ -4,6 +4,27 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-08-30 — Phase 3 implemented: Gemini AI auto-translation
+
+**Status**: ✅ Phase 3 of `PLAN_SECURITY_I18N.md` complete, verified as far as possible without a real Gemini API key, committed (`c390071`). Not yet pushed.
+
+- Registered the previously-orphaned `Settings` global in `payload.config.ts`; added `geminiApiKey` (write-only) and `geminiModel` fields under a new "AI Translation (Gemini)" tab.
+- `src/utilities/geminiTranslate.ts`: schema-driven translation engine. `collectTranslatableRefs` walks a global's actual field config (the same `localized: true` flags from Phase 2) alongside its real data — clones everything, collects only the translatable leaf text/textarea/richText values for translation, leaves ids/media refs/structural fields untouched. This resolves the Phase 2 array-id pitfall by construction rather than by convention. Rich text is handled by walking the Lexical AST and replacing only leaf `text` values. `translateStringsWithGemini` batches a whole document's strings into one Gemini call per target locale using structured JSON-array output.
+- `src/app/api/ai-translate/route.ts`: authenticated POST endpoint (401 anonymous), whitelists the 10 translatable globals (Settings itself excluded), validates target locales, reads the Gemini key server-side only, writes translations back as **drafts** per locale.
+- `src/components/payload/TranslateButton.tsx`: shared admin UI button (locale checkboxes + "Translate with AI"), wired into all 10 translatable globals via `admin.components.elements.beforeDocumentControls`.
+- Security refinement found during self-review: switched the Gemini API key from a `?key=` URL query param to the `x-goog-api-key` header, so it can't end up in access logs or leak into a raw fetch-error message.
+
+**Verified (no real Gemini key available yet)**:
+- Auth gating, input validation, and the "no key configured" error path all confirmed via curl.
+- Confirmed `geminiApiKey` is genuinely write-only (never returned by an authenticated read).
+- Set a placeholder key and confirmed the full pipeline runs correctly through a real network call to Gemini — got Google's own "invalid API key" error back, proving the request reaches Gemini correctly (re-verified after switching to header auth).
+- Exercised the real field walker against the live `AboutGTNI` global (11 strings correctly collected across nested collapsible/group/array fields), pushed the result through the real HTTP API: English untouched, Arabic draft correctly translated under the **same** array row ids as English, published Arabic still correctly falls back to English pre-publish.
+- Full 9-route + `/admin` sweep still 200. Lint clean.
+
+**Next**: Phase 4 (public-facing locale routing via `next-intl`) is the last phase — the most invasive (route restructuring under `[locale]`, removing the existing `GoogleTranslate.tsx` widget). A real Gemini API key from the user is still needed to verify Phase 3 end-to-end with actual translations.
+
+---
+
 ## 2026-08-30 — Phase 2 implemented: CMS localization data model
 
 **Status**: ✅ Phase 2 of `PLAN_SECURITY_I18N.md` complete, verified locally, committed (`c6be416`). Not yet pushed — pending user confirmation. Production deployment explicitly out of scope (needs a hand-written migration validated against a real copy of the production DB — see plan).
