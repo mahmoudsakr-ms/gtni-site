@@ -4,6 +4,59 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-24 (2) — Fixed a real bug: write-only Settings fields never rendered in the admin UI
+
+**Status**: ✅ Fixed, verified, committed locally. Not yet pushed — pending user confirmation.
+
+**The bug**: after adding the admin-configurable Gemini key (previous entry), the user reported the
+new field didn't appear when clicking its tab. Investigation (reading Payload 3.74's actual installed
+source, since no real browser could be launched in this sandbox — see below) found this was **not**
+caused by the new field at all: `access: { read: () => false }` — the exact pattern already used for
+`smtpPass`, `resendApiKey`, and `googleTranslateApiKey` since Phase 1/3 — makes Payload's
+`RenderFields` component (`@payloadcms/ui/dist/forms/RenderFields/index.js`) skip rendering the field
+**entirely** (`if ("name" in field && !hasReadPermission) return null`), not just hide its value. This
+is a genuine pre-existing bug that predates this session: **nobody has ever been able to set these 4
+secret fields through the admin UI** — `scripts/set-translate-key.mjs` exists precisely because this
+was already silently broken, discovered during the 2026-09-06 session but never diagnosed.
+
+**The fix** (`src/globals/Settings.ts`): added a shared `writeOnlySecretField` object applied to all 4
+fields —
+- `access.read` changed from `() => false` to `({ req }) => Boolean(req.user)`, so the Admin UI's
+  field-permission check now passes and the field actually renders.
+- Added `hooks.afterRead: [({ overrideAccess, value }) => (overrideAccess ? value : null)]`. Payload
+  runs custom field hooks *before* its access-control field-stripping step, so this unconditionally
+  nulls the returned value whenever access control is in effect (Admin UI's own render-fetch,
+  REST/GraphQL) — except when `overrideAccess` is true, which is Payload Local API's default for
+  trusted server-side code (e.g. `ai-translate/route.ts`'s own `payload.findGlobal` call, which needs
+  the *real* key to actually call the translation provider). Net effect: an authenticated admin can
+  now see the field and type a new value; the stored secret is still never returned by any
+  access-controlled read, exactly matching the original "write-only" intent — now actually achieved
+  instead of achieved-by-accident-via-breaking-the-form.
+- **Caught and fixed a self-inflicted near-miss during this fix**: the first version of the hook
+  returned `undefined` instead of `null`. Payload treats a hook returning `undefined` as "leave value
+  unchanged" — so that version silently did nothing, and a live test (`POST` a real-looking key,
+  immediate `GET`) proved the plaintext value came right back. Caught before anything beyond a
+  deliberately-fake test string was ever exposed; fixed to return `null`, then re-verified.
+
+**Verified**: after the fix, set distinct fake values for all 4 fields via REST — `POST` response and
+every subsequent `GET /api/globals/settings` (authenticated) return `null` for all 4; unauthenticated
+`GET` still `403`s (global-level access untouched); the admin edit page's own rendered form state now
+includes all 4 fields with masked `null` values (confirms they render); and critically, `POST
+/api/ai-translate` with `TRANSLATE_PROVIDER=gemini` **did** read the real stored key server-side and
+reach Google's live Gemini endpoint (`400 API key not valid` for the fake key) — proving the trusted
+Local API path still works and the write-only guarantee holds everywhere else. `pnpm run lint` clean,
+full route sweep 200.
+
+**Browser testing note**: could not launch a real browser in this sandbox to visually confirm —
+Playwright's bundled Chromium doesn't support this host's OS (`ubuntu26.04-x64` isn't yet in
+Playwright 1.56.1's platform table) and `playwright install-deps` needs `sudo` (not available here).
+Diagnosed instead by reading Payload's actual installed client-side source
+(`node_modules/.pnpm/@payloadcms+ui@*/.../fields/{Tabs,RenderFields}/index.js`) and by inspecting the
+real server-rendered admin page's embedded form-state JSON for proof each field is now part of the
+rendered tree. User should do a final visual confirmation in their own browser.
+
+---
+
 ## 2026-10-24 — Verified local-testing providers; added admin-configurable Gemini API key
 
 **Status**: ✅ Committed locally. Not yet pushed — pending user confirmation.

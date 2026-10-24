@@ -4,6 +4,39 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-24 (2) — Found & fixed: `access.read: () => false` hides a field from the admin UI entirely
+
+**Load-bearing Payload fact, worth remembering for any future secret-style field**: in Payload 3.x,
+a field with `access: { read: () => false }` is not just "value hidden" — `@payloadcms/ui`'s
+`RenderFields` component skips rendering the field's input **completely** for everyone, including the
+field's own intended editor, because the Admin UI's edit-view data-fetch respects real field-level
+access control (unlike the Local API, whose default `overrideAccess: true` is a separate thing). This
+had been silently broken for `smtpPass`, `resendApiKey`, and `googleTranslateApiKey` since Phase 1/3 —
+nobody could ever actually type a new value into those fields via the admin form; `set-translate-key.mjs`
+existed as an unexplained workaround for exactly this. Only surfaced now because the user tried the new
+Gemini field through the UI and it should have been a fairly quick find if the UI had been exercised
+by a human earlier (it hadn't been).
+
+**The correct pattern for a secret that must be admin-UI-settable but never readable back** (now applied
+to all 4 fields in `src/globals/Settings.ts`): keep `access.read` permissive for authenticated users
+(so the field renders), and instead null the VALUE in an `afterRead` field hook, conditioned on the
+hook's `overrideAccess` argument — `null` when access control is in effect (Admin UI render,
+REST/GraphQL), the real value when `overrideAccess` is true (Payload Local API's default for trusted
+server-side code, e.g. reading the key to actually call an external API). **Gotcha inside the gotcha**:
+a hook returning `undefined` means "leave the value as-is" in Payload, not "clear it" — must return
+`null` to actually blank a value. Caught this exact mistake live (a real `GET` echoed a just-set test
+value back in plaintext) before anything but a deliberately-fake string was ever exposed.
+
+**This sandbox cannot launch a real browser** — Playwright's Chromium doesn't support
+`ubuntu26.04-x64` (too new for Playwright 1.56.1's platform table) and the headless shell needs system
+libs (`libnspr4`, `libnss3`, `libasound2t64`) installable only via `sudo`, which isn't available here.
+`PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 npx playwright install chromium` gets the binary
+downloaded, but it still can't launch without those libs. For any future "does this actually render"
+question in this environment, the fallback is reading Payload/React's actual installed source +
+inspecting the server-rendered page's embedded form-state JSON — not guessing from field config alone.
+
+---
+
 ## 2026-10-24 — Verified local-testing providers; Gemini key now admin-configurable
 
 **What happened**: picked up the 2026-09-06 uncommitted local-testing-provider work, verified it

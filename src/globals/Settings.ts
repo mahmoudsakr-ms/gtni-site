@@ -1,4 +1,28 @@
-import type { GlobalConfig } from 'payload'
+import type { FieldAccess, FieldHook, GlobalConfig } from 'payload'
+
+// Write-only secret field: an authenticated admin can see the (always-blank) input
+// and save a NEW value, but the stored value is never returned by any read -- not
+// the admin UI's own data-fetch, not the REST/GraphQL API -- EXCEPT trusted
+// server-side Local API calls (e.g. the ai-translate route reading the key to
+// actually call the provider), which Payload runs with `overrideAccess: true` by
+// default. The `afterRead` hook runs before Payload's access-control field-
+// stripping and sees that same `overrideAccess` flag, so it blanks the value
+// everywhere access control is in effect (admin UI render, REST/GraphQL) while
+// passing the real value through for the one trusted internal case. The
+// permissive `access.read` only controls whether the Admin UI renders the field at
+// all (a field whose read access is denied is omitted from the edit view entirely,
+// not just blanked -- a fully unconditional `() => false` here looks "more secure"
+// but actually makes the field impossible to set via the admin form).
+const canReadIfLoggedIn: FieldAccess = ({ req }) => Boolean(req.user)
+const stripUnlessOverridden: FieldHook = ({ overrideAccess, value }) => (overrideAccess ? value : null)
+const writeOnlySecretField = {
+  access: {
+    read: canReadIfLoggedIn,
+  },
+  hooks: {
+    afterRead: [stripUnlessOverridden],
+  },
+} as const
 
 export const Settings: GlobalConfig = {
   slug: 'settings',
@@ -72,10 +96,7 @@ export const Settings: GlobalConfig = {
               name: 'smtpPass',
               type: 'text',
               label: 'SMTP Password',
-              // Write-only: never returned by read/API responses, even to authenticated users.
-              access: {
-                read: () => false,
-              },
+              ...writeOnlySecretField,
               admin: {
                 description: 'Password for the domain SMTP email account',
               },
@@ -98,10 +119,7 @@ export const Settings: GlobalConfig = {
               name: 'resendApiKey',
               type: 'text',
               label: 'Resend API Key',
-              // Write-only: never returned by read/API responses, even to authenticated users.
-              access: {
-                read: () => false,
-              },
+              ...writeOnlySecretField,
               admin: {
                 description: 'Optional Resend API key (re_...). Used if API provider is preferred over SMTP.',
               },
@@ -115,10 +133,7 @@ export const Settings: GlobalConfig = {
               name: 'googleTranslateApiKey',
               type: 'text',
               label: 'Google Translate API Key',
-              // Write-only: never returned by read/API responses, even to authenticated users.
-              access: {
-                read: () => false,
-              },
+              ...writeOnlySecretField,
               admin: {
                 description:
                   'API key for the Google Cloud Translation API ("Basic"/v2), used by the "Translate with AI" button on translatable pages. In Google Cloud Console: enable the "Cloud Translation API" on a project, then create an API key (restricting it to that API is recommended).',
@@ -133,10 +148,7 @@ export const Settings: GlobalConfig = {
               name: 'geminiApiKey',
               type: 'text',
               label: 'Gemini API Key',
-              // Write-only: never returned by read/API responses, even to authenticated users.
-              access: {
-                read: () => false,
-              },
+              ...writeOnlySecretField,
               admin: {
                 description:
                   'Free-tier Google Gemini API key (from aistudio.google.com/apikey), used by the "Translate with AI" button only when the server has TRANSLATE_PROVIDER=gemini set — a local-testing path, not the production translation provider. Get a key, paste it here, no .env edit needed.',
