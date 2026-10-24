@@ -9,7 +9,12 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1', 10)
-    const limit = parseInt(searchParams.get('limit') || '9', 10)
+    // SEC-M2: clamp limit server-side -- an unclamped limit (e.g. ?limit=1000000)
+    // let a caller force an unbounded, expensive query against news-events.
+    const MAX_LIMIT = 50
+    const parsedLimit = parseInt(searchParams.get('limit') || '9', 10)
+    const limit =
+      Number.isFinite(parsedLimit) && parsedLimit > 0 ? Math.min(parsedLimit, MAX_LIMIT) : 9
     const category = searchParams.get('category')
     const rawSearch = searchParams.get('search')
     const search = rawSearch && rawSearch.length <= 200 ? rawSearch : null

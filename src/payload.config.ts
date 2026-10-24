@@ -7,6 +7,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { withCollectionRevalidate, withGlobalRevalidate } from './utilities/revalidate'
+import { withDraftProtection } from './utilities/draftAccess'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -74,17 +75,22 @@ export default buildConfig({
     withCollectionRevalidate,
   ),
   globals: [
-    Header,
-    Home,
-    NewsEventsGlobal,
-    Footer,
-    CoursesGlobal,
-    StudentServices,
-    AboutGTNI,
-    NursingPrograms,
-    Scholarships,
-    Admission,
-    Vacancies,
+    // SEC-H1: these 11 globals all have versions.drafts enabled and a public
+    // access.read -- withDraftProtection closes the unauthenticated draft leak.
+    // Settings (below) has no versions/drafts and is intentionally excluded.
+    ...[
+      Header,
+      Home,
+      NewsEventsGlobal,
+      Footer,
+      CoursesGlobal,
+      StudentServices,
+      AboutGTNI,
+      NursingPrograms,
+      Scholarships,
+      Admission,
+      Vacancies,
+    ].map(withDraftProtection),
     Settings,
   ].map(withGlobalRevalidate),
   editor: lexicalEditor(),

@@ -11,6 +11,14 @@ export const Users: CollectionConfig = {
     // Explicit for auditability — these match Payload's own defaults, just declared in code.
     maxLoginAttempts: 5,
     lockTime: 600 * 1000, // 10 minutes
+    // SEC-M1: Payload's default admin cookie has no `Secure` flag, so it could be
+    // sent over plain HTTP. `secure` is gated on NODE_ENV so local dev (http://localhost)
+    // keeps working without TLS; production (behind the Nginx/VPS HTTPS setup per
+    // STACK.md/README_DEPLOY.md) gets Secure enforced.
+    cookies: {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax',
+    },
     forgotPassword: {
       generateEmailSubject: () => 'GTNI Admin - Reset Your Password',
       generateEmailHTML: (args) => {

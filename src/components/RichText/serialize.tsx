@@ -9,6 +9,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { IS_BOLD, IS_ITALIC, IS_STRIKETHROUGH, IS_UNDERLINE, IS_CODE } from './nodeTypes'
 import { SmartText } from '../SmartText'
+import { sanitizeUrl } from '@/utilities/sanitizeUrl'
 
 export type NodeTypes = DefaultNodeTypes | SerializedBlockNode
 
@@ -167,7 +168,7 @@ export const serializeLexical = (nodes: NodeTypes[]): JSX.Element[] => {
         return (
           <a
             key={index}
-            href={linkNode.fields?.url}
+            href={sanitizeUrl(linkNode.fields?.url)}
             target={linkNode.fields?.newTab ? '_blank' : undefined}
             rel={linkNode.fields?.newTab ? 'noopener noreferrer' : undefined}
           >
