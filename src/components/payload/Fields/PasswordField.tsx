@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { useField } from '@payloadcms/ui'
 import { Input } from '@/components/ui/input'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Lock, Eye, EyeOff } from 'lucide-react'
 
 import type { TextFieldClient } from 'payload'
@@ -20,7 +20,7 @@ export const PasswordField: React.FC<{
   const description = clientField?.admin?.description
   const required = clientField?.required
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
   const stringVal = typeof value === 'string' ? value : ''
   const [show, setShow] = useState(false)
 
@@ -40,13 +40,15 @@ export const PasswordField: React.FC<{
           placeholder="••••••••"
           readOnly={readOnly}
           disabled={readOnly}
+          aria-invalid={showError}
+          aria-describedby={showError ? getFieldErrorId(path) : undefined}
           className="pr-9"
         />
         <button
           type="button"
           onClick={() => setShow(!show)}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-          tabIndex={-1}
+          aria-label={show ? 'Hide password' : 'Show password'}
         >
           {show ? <EyeOff size={14} /> : <Eye size={14} />}
         </button>

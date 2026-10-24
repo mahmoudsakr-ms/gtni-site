@@ -3,7 +3,7 @@ import React, { useRef, useMemo, useCallback } from 'react'
 import { useField } from '@payloadcms/ui'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Braces, Copy, WrapText, Check, X } from 'lucide-react'
 
 import type { JSONFieldClient } from 'payload'
@@ -21,7 +21,7 @@ export const JSONField: React.FC<{
   const description = clientField?.admin?.description
   const required = clientField?.required
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
   const stringVal = typeof value === 'string' ? value : value ? JSON.stringify(value, null, 2) : ''
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [copied, setCopied] = React.useState(false)
@@ -126,6 +126,8 @@ export const JSONField: React.FC<{
         onKeyDown={handleKeyDown}
         readOnly={readOnly}
         disabled={readOnly}
+        aria-invalid={showError}
+        aria-describedby={showError ? getFieldErrorId(path) : undefined}
         className="font-mono text-sm min-h-[160px] resize-y leading-relaxed"
         spellCheck={false}
       />

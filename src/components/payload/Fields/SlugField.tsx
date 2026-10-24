@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useField, useFormFields } from '@payloadcms/ui'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Link2, Lock, Unlock, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -24,7 +24,7 @@ export const SlugField: React.FC<{
   const required = clientField?.required
   const sourceField = clientField?.admin?.custom?.sourceField || 'title'
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
   const stringVal = typeof value === 'string' ? value : ''
   const [locked, setLocked] = useState(!!stringVal)
 
@@ -77,6 +77,8 @@ export const SlugField: React.FC<{
           placeholder="auto-generated-slug"
           readOnly={readOnly || !locked}
           disabled={readOnly}
+          aria-invalid={showError}
+          aria-describedby={showError ? getFieldErrorId(path) : undefined}
           className={cn('font-mono text-sm', !locked && 'bg-muted/50')}
         />
 

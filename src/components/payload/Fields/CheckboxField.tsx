@@ -3,7 +3,7 @@ import React from 'react'
 import { useField } from '@payloadcms/ui'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { ToggleLeft } from 'lucide-react'
 
 import type { CheckboxFieldClient } from 'payload'
@@ -21,7 +21,7 @@ export const CheckboxField: React.FC<{
   const description = clientField?.admin?.description
   const required = clientField?.required
 
-  const { value, setValue } = useField<boolean>({ path })
+  const { value, setValue, showError } = useField<boolean>({ path })
 
   return (
     <FieldWrapper path={path} description={description} required={required}>
@@ -31,6 +31,8 @@ export const CheckboxField: React.FC<{
           onCheckedChange={(checked) => setValue(checked)}
           disabled={readOnly}
           id={`switch-${path}`}
+          aria-invalid={showError}
+          aria-describedby={showError ? getFieldErrorId(path) : undefined}
         />
         <Label
           htmlFor={`switch-${path}`}

@@ -2,7 +2,7 @@
 import React from 'react'
 import { useField } from '@payloadcms/ui'
 import { Input } from '@/components/ui/input'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Hash, Plus, Minus } from 'lucide-react'
 
 import type { NumberFieldClient } from 'payload'
@@ -23,7 +23,7 @@ export const NumberField: React.FC<{
   const max = clientField?.max
   const step = typeof clientField?.admin?.step === 'number' ? clientField.admin.step : 1
 
-  const { value, setValue } = useField<number>({ path })
+  const { value, setValue, showError } = useField<number>({ path })
   const numVal = typeof value === 'number' ? value : 0
 
   const increment = () => {
@@ -98,6 +98,8 @@ export const NumberField: React.FC<{
           step={step}
           readOnly={readOnly}
           disabled={readOnly}
+          aria-invalid={showError}
+          aria-describedby={showError ? getFieldErrorId(path) : undefined}
           className="text-center font-mono text-lg h-10 bg-[var(--theme-input-bg,var(--theme-elevation-0))] border-[var(--theme-elevation-200)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
 

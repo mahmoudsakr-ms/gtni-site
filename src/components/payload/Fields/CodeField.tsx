@@ -3,7 +3,7 @@ import React, { useRef } from 'react'
 import { useField } from '@payloadcms/ui'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Code } from 'lucide-react'
 
 import type { CodeFieldClient } from 'payload'
@@ -22,7 +22,7 @@ export const CodeField: React.FC<{
   const required = clientField?.required
   const language = typeof clientField?.admin?.language === 'string' ? clientField.admin.language : 'plaintext'
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
   const stringVal = typeof value === 'string' ? value : ''
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -65,6 +65,8 @@ export const CodeField: React.FC<{
         onKeyDown={handleKeyDown}
         readOnly={readOnly}
         disabled={readOnly}
+        aria-invalid={showError}
+        aria-describedby={showError ? getFieldErrorId(path) : undefined}
         className="font-mono text-sm min-h-[160px] resize-y leading-relaxed"
         spellCheck={false}
       />
