@@ -50,7 +50,8 @@ export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps
       <div className="absolute top-0 right-0 h-full w-[50%] md:w-[45%] lg:w-[40%] z-0 pointer-events-none overflow-hidden hidden sm:block">
         <Image
           src="/images/gtni-bg-2.png"
-          alt="Premium Background"
+          alt=""
+          aria-hidden="true"
           fill
           sizes="(max-width: 640px) 0vw, (max-width: 1024px) 50vw, 40vw"
           className="object-cover object-right"
@@ -96,7 +97,7 @@ export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps
                 >
                   <SmartText text={item.label} />
                   <span
-                    className={`absolute bottom-0 left-1 lg:left-2 xl:left-2.5 2xl:left-3 right-1 lg:right-2 xl:right-2.5 2xl:right-3 h-0.5 bg-brand-turquoise transition-transform duration-300 origin-left ${
+                    className={`absolute bottom-0 left-1 lg:left-2 xl:left-2.5 2xl:left-3 right-1 lg:right-2 xl:right-2.5 2xl:right-3 h-0.5 bg-brand-turquoise transition-transform duration-300 origin-left rtl:origin-right ${
                       pathname === `/${item.globalPage || ''}`
                         ? 'scale-x-100'
                         : 'scale-x-0 group-hover:scale-x-100'
@@ -187,6 +188,8 @@ export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps
           <button
             className="lg:hidden p-2 text-brand-dark focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
