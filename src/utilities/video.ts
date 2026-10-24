@@ -18,13 +18,21 @@ export async function verifyYoutubeThumbnail(videoUrl: string): Promise<string> 
   const maxresUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
   const hqUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
 
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 4_000)
   try {
-    const response = await fetch(maxresUrl, { method: 'HEAD', next: { revalidate: 86400 } }) // Cache validation for 1 day
+    const response = await fetch(maxresUrl, {
+      method: 'HEAD',
+      next: { revalidate: 86400 }, // Cache validation for 1 day
+      signal: controller.signal,
+    })
     if (response.status === 200) {
       return maxresUrl
     }
   } catch (_error) {
-    // Silent catch, fallback below
+    // Silent catch (including abort on timeout), fallback below
+  } finally {
+    clearTimeout(timer)
   }
   return hqUrl
 }
