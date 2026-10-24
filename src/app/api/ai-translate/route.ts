@@ -4,6 +4,32 @@ import { NextRequest, NextResponse } from 'next/server'
 import { translateDocument, TranslationApiError } from '@/utilities/translateContent'
 import type { Setting } from '@/payload-types'
 
+// SEC-M5: this endpoint is auth-gated and input-validated but had no cap on call
+// frequency, so a single compromised/careless admin session could burn through the
+// configured translation API's quota/budget via scripted repeat calls. A simple
+// in-memory per-user counter is enough for this app's scale -- it doesn't need to
+// survive a server restart, and avoids pulling in a new dependency or a shared store.
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000 // 1 hour
+const RATE_LIMIT_MAX_CALLS = 20
+const rateLimitLog = new Map<string | number, number[]>()
+
+function checkRateLimit(userId: string | number): { allowed: boolean; retryAfterSeconds: number } {
+  const now = Date.now()
+  const recentCalls = (rateLimitLog.get(userId) || []).filter(
+    (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS,
+  )
+
+  if (recentCalls.length >= RATE_LIMIT_MAX_CALLS) {
+    rateLimitLog.set(userId, recentCalls)
+    const retryAfterSeconds = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - recentCalls[0])) / 1000)
+    return { allowed: false, retryAfterSeconds }
+  }
+
+  recentCalls.push(now)
+  rateLimitLog.set(userId, recentCalls)
+  return { allowed: true, retryAfterSeconds: 0 }
+}
+
 // Only these globals carry `localized: true` fields (see Phase 2 in PLAN_SECURITY_I18N.md).
 // The NewsEvents *collection* (individual articles) and `settings` are deliberately excluded.
 const TRANSLATABLE_GLOBAL_SLUGS = [
@@ -26,6 +52,16 @@ export async function POST(request: NextRequest) {
   const { user } = await payload.auth({ headers: request.headers })
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const rateLimit = checkRateLimit(user.id)
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: `Rate limit exceeded: max ${RATE_LIMIT_MAX_CALLS} AI translation calls per hour. Try again in ${rateLimit.retryAfterSeconds}s.`,
+      },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } },
+    )
   }
 
   let body: unknown
