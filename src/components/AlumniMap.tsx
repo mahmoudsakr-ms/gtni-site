@@ -226,6 +226,15 @@ export const AlumniMap = () => {
                         onMouseEnter={() => setActiveIndex(index)}
                         onMouseLeave={() => setActiveIndex(null)}
                         onClick={() => setActiveIndex(isActive ? null : index)}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={loc.country}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            setActiveIndex(isActive ? null : index)
+                          }
+                        }}
                       >
                         <g className="cursor-pointer outline-none tap-highlight-transparent">
                           <circle
@@ -317,6 +326,14 @@ export const AlumniMap = () => {
                 onHoverStart={() => setActiveIndex(i)}
                 onHoverEnd={() => setActiveIndex(null)}
                 onClick={() => setActiveIndex(activeIndex === i ? null : i)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setActiveIndex(activeIndex === i ? null : i)
+                  }
+                }}
                 className={`group relative text-center p-4 rounded-2xl border transition-all duration-300 cursor-pointer select-none ${
                   activeIndex === i
                     ? 'bg-brand-turquoise/10 border-brand-turquoise/40 shadow-lg shadow-brand-turquoise/10'
