@@ -390,7 +390,8 @@ export async function translateStringsFree(
 // Local-testing provider: Google Gemini via the AI Studio free tier
 // (aistudio.google.com -- a free key, no credit card / billing). Enabled with
 // TRANSLATE_PROVIDER=gemini; key from GEMINI_API_KEY, model from GEMINI_MODEL
-// (default gemini-2.0-flash). One batched call per document. Not for production.
+// (default gemini-3.8-flash -- gemini-2.0-flash was retired by Google and its
+// API now 404s). One batched call per document. Not for production.
 // ---------------------------------------------------------------------------
 
 const LOCALE_LABELS: Record<string, string> = {
@@ -403,7 +404,7 @@ export async function translateStringsWithGemini(
   texts: string[],
   targetLocaleCode: string,
   apiKey: string,
-  model = 'gemini-2.0-flash',
+  model = 'gemini-3.8-flash',
 ): Promise<string[]> {
   if (texts.length === 0) return []
   const targetLabel = LOCALE_LABELS[targetLocaleCode] || targetLocaleCode
@@ -471,6 +472,13 @@ ${JSON.stringify(texts)}`
  *   - TRANSLATE_PROVIDER=free     -> MyMemory, keyless (local testing)
  *   - TRANSLATE_PROVIDER=gemini   -> Gemini AI Studio free tier (local testing)
  *
+ * SEC-L2: the `free`/`gemini` local-testing providers are hard-disabled whenever
+ * `NODE_ENV === 'production'`, regardless of `TRANSLATE_PROVIDER` -- a misconfigured
+ * production env var must never silently route public content through an
+ * unauthenticated (MyMemory) or otherwise unauthorized third-party translation
+ * service. In that case execution falls through to the real Google Cloud
+ * Translation path below, same as if `TRANSLATE_PROVIDER` were unset.
+ *
  * `apiKey` is resolved by the caller (route.ts) from the Settings global -- the
  * Google key for the default path, the Gemini key (Settings, falling back to
  * GEMINI_API_KEY) when TRANSLATE_PROVIDER=gemini -- so neither local-testing nor
@@ -483,11 +491,12 @@ export async function translateStrings(
   apiKey?: string,
 ): Promise<string[]> {
   const provider = process.env.TRANSLATE_PROVIDER
+  const isProduction = process.env.NODE_ENV === 'production'
 
-  if (provider === 'free') {
+  if (provider === 'free' && !isProduction) {
     return translateStringsFree(texts, targetLocaleCode, sourceLocaleCode)
   }
-  if (provider === 'gemini') {
+  if (provider === 'gemini' && !isProduction) {
     if (!apiKey) {
       throw new TranslationApiError(
         'TRANSLATE_PROVIDER=gemini but no Gemini API key is configured (Settings > AI Translation (Gemini), or GEMINI_API_KEY env).',

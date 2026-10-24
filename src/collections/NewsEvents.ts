@@ -147,6 +147,20 @@ export const NewsEvents: CollectionConfig = {
         allowCreate: true,
         description: 'Select a category or click "+" to add a new one.',
       },
+      hooks: {
+        // E2E-4: a stringified numeric ID (e.g. "14", as sent by some JSON
+        // clients) otherwise fails Payload's relationship validation with a
+        // confusing error even though the same ID as a number (14) is valid.
+        // Coerce it to a number before that validation runs.
+        beforeValidate: [
+          ({ value }) => {
+            if (typeof value === 'string' && /^\d+$/.test(value)) {
+              return Number(value)
+            }
+            return value
+          },
+        ],
+      },
     },
     {
       name: 'isPinned',
