@@ -4,6 +4,78 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-24 — Verified local-testing providers; Gemini key now admin-configurable
+
+**What happened**: picked up the 2026-09-06 uncommitted local-testing-provider work, verified it
+end-to-end (unit smoke test + full authenticated HTTP round trip through `/api/ai-translate`), then
+the user said they'd generated a real Gemini API key and asked to make it settable from the admin
+area rather than only via `.env`. Added a write-only `geminiApiKey` field to the `Settings` global
+(same pattern as `googleTranslateApiKey`) and had `route.ts`/`translateContent.ts` resolve the Gemini
+key from Settings (env `GEMINI_API_KEY` as fallback) instead of env-only. `TRANSLATE_PROVIDER=gemini`
+in `.env` is still the switch that activates this local-testing path at all — that didn't change.
+
+**⚠️ Load-bearing gotcha — do not flip `DATABASE_PUSH=true` on this DB casually**: this local `.db`
+is the production-dump-derived, schema-rebuilt DB from the 2026-09-05 session (see
+`SESSION_i18n_local_test.md`). It carries 4 known orphan tables already documented there as leftover
+from removed features (`scholarships_accommodation_facilities_image`,
+`scholarships_blocks_accommodation_block`, `news_events_global_displayed_categories`,
+`_news_events_v` — the latter with 39 real rows) that no longer exist in `main`'s current
+collection/global TS definitions. Enabling push to add one new column (`settings.geminiApiKey`) made
+drizzle-kit propose **dropping all 4 as a side effect** of that unrelated change. Caught it before
+accepting (process killed, never answered the `y/N` prompt; `cmp` against a pre-change backup proved
+`.db` was untouched). Dropping genuinely-orphaned tables may well be fine eventually, but that should
+be a deliberate, reviewed decision — not an incidental side effect of an unrelated field addition.
+**For any future additive field on this DB, prefer a one-off raw `ALTER TABLE ... ADD COLUMN` script
+via `libsql`** (see `scripts/add-gemini-column.mjs` for the pattern) over flipping `DATABASE_PUSH`,
+unless you've first reviewed drizzle-kit's exact proposed diff and deliberately accepted it.
+
+**Other things worth remembering**:
+- Local admin login was reset again this session (`admin@gtni.edu.eg`, local DB only) — ask the user
+  or re-run `scripts/reset-local-admin.mjs <email> <new-password>` rather than relying on a password
+  written down here; don't commit local credentials to this file either.
+- `db_dump/` (the real production DB dump) sits untracked in the repo root and is genuinely sensitive
+  (real content, possibly real user data) — it is **not** caught by the `/.db*` gitignore patterns
+  (different path). Never `git add -A`/`git add .` in this repo while it's present; add files by name.
+  Worth adding an explicit `/db_dump/` gitignore entry at some point.
+- The user pastes real API keys directly into the admin UI (Settings global), never into chat —
+  keep steering them there instead of asking for the key value directly.
+
+---
+
+## 2026-09-06 — Local test against real prod data + keyless translation (uncommitted)
+
+**What happened**: user pulled the live DB (`db_dump/gtni.db`) and wanted the translate flow working
+locally without a paid Google Cloud key. All local, nothing pushed. See `SESSION_i18n_local_test.md`
+for the blow-by-blow; `PROGRESS.md` for the summary.
+
+**Key outcomes**:
+- Proved the whole Phase 3/4 translate→draft→publish→`/ar` flow works against **real content** with a
+  **keyless** provider (MyMemory): `footer` translated to Arabic and went live on `/ar`, EN untouched.
+- Added env-gated providers in `src/utilities/translateContent.ts` — `TRANSLATE_PROVIDER=free`
+  (MyMemory) and `=gemini` (AI Studio free tier, `GEMINI_API_KEY`). **Production path (`translateStringsWithGoogle`,
+  env unset) is byte-for-byte unchanged.** Not committed — decide later if worth keeping.
+
+**Gotchas discovered (worth remembering)**:
+- The dump is pre-Phase-2 schema. `scripts/build-local-i18n-db.mjs` builds the localized schema onto
+  a *copy* + backfills `en` + rebuilds divergent base tables to match `main` exactly. First version
+  only bolted new tables on → publish broke with `NOT NULL constraint failed` on the leftover moved
+  columns. This is a **local disposable build, not** the still-deferred production migration.
+- **Never run a `payload run` write-script while `pnpm run dev` is up** — two processes on `./.db`,
+  writes get lost (hit this twice with the admin password reset). Stop dev first.
+- **Publishing a global must go through the running dev server** (REST `POST /api/globals/<slug>?draft=false`
+  `{"_status":"published"}`), not `payload run` — the `afterChange`→`revalidatePath()` hook throws
+  outside a Next request context.
+- MyMemory anonymous quota (~1000 words / rolling window / IP) is too small for big globals or
+  repeated testing — set `MYMEMORY_EMAIL` or use Gemini.
+- Local admin login for the built DB: `admin@gtni.edu.eg` / `<redacted-local-only-password>` (local only; re-run
+  `scripts/reset-local-admin.mjs` after any `cp db_dump/gtni.db .db`).
+
+**Still the real remaining work** (unchanged): a usable translation key (Gemini free tier recommended),
+then translate/review/publish all globals; production deployment of the Phase 2 schema migration still
+needs direct VPS access.
+
+---
+
 ## 2026-08-30 — Phase 4 done: ALL 4 PHASES OF PLAN_SECURITY_I18N.md NOW COMPLETE
 
 **What happened**: Implemented and thoroughly verified Phase 4 (public-facing locale routing via `next-intl`) — the last phase of the plan. Committed as `ade9e20` (+ plan doc `c2f2e6b`), **not yet pushed**. The site now has real bilingual (EN/AR) public routing: `/about-gtni` (English, unchanged) and `/ar/about-gtni` (new), with proper canonical/hreflang SEO tags and a real language-switcher link. The old client-side Google Translate widget (`GoogleTranslate.tsx`) is gone.

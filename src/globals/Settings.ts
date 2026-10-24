@@ -126,6 +126,24 @@ export const Settings: GlobalConfig = {
             },
           ],
         },
+        {
+          label: 'AI Translation (Gemini — testing)',
+          fields: [
+            {
+              name: 'geminiApiKey',
+              type: 'text',
+              label: 'Gemini API Key',
+              // Write-only: never returned by read/API responses, even to authenticated users.
+              access: {
+                read: () => false,
+              },
+              admin: {
+                description:
+                  'Free-tier Google Gemini API key (from aistudio.google.com/apikey), used by the "Translate with AI" button only when the server has TRANSLATE_PROVIDER=gemini set — a local-testing path, not the production translation provider. Get a key, paste it here, no .env edit needed.',
+              },
+            },
+          ],
+        },
       ],
     },
   ],

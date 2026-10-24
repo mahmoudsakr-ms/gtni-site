@@ -4,6 +4,108 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-24 — Verified local-testing providers; added admin-configurable Gemini API key
+
+**Status**: ✅ Committed locally. Not yet pushed — pending user confirmation.
+
+**Part 1 — verified the 2026-09-06 local-testing-provider work (was uncommitted, unverified since)**:
+- Ran `pnpm run dev` against the production-dump-derived local DB; full 9-route EN/AR sweep + `/admin`
+  all 200.
+- `scripts/translate-smoke.ts` (`payload run`) against `translateStringsFree` directly: 3 samples
+  including one >450 chars, confirming the chunk-split/rejoin logic end-to-end. Acronym handling
+  matched the already-documented limitation (sentence-leading "GTNI" got expanded by MyMemory;
+  mid-sentence survives) — not a regression.
+- Full HTTP path: reset local admin password, logged in via `/api/users/login`, called
+  `POST /api/ai-translate {globalSlug:"header", targetLocales:["ar"]}` with `TRANSLATE_PROVIDER=free`
+  and no Google key configured → `200 {"ar":{"fieldsTranslated":13}}`, confirming the route's
+  no-API-key-needed bypass for local providers works through real auth, not just in unit tests.
+- `pnpm run lint` clean throughout.
+
+**Part 2 — user supplied a real Gemini API key, asked to wire it into the admin UI** (previously the
+Gemini local-testing path only read `GEMINI_API_KEY` from `.env`, no admin-UI way to set it):
+- `src/globals/Settings.ts`: new write-only `geminiApiKey` field (same `access.read: () => false`
+  pattern as `googleTranslateApiKey`/`smtpPass`/`resendApiKey`), in its own "AI Translation (Gemini —
+  testing)" tab, explicitly labeled as the local-testing path, not production.
+- `src/app/api/ai-translate/route.ts`: resolves the key per active provider —
+  `settings.geminiApiKey || process.env.GEMINI_API_KEY` when `TRANSLATE_PROVIDER=gemini`, otherwise
+  `settings.googleTranslateApiKey` as before — and returns a provider-specific "no key configured"
+  400 message. `TRANSLATE_PROVIDER` env var is still the on/off switch for which provider runs (local
+  testing only, unchanged); only *where the Gemini key comes from* changed.
+- `src/utilities/translateContent.ts`: `translateStrings`' gemini branch now uses the `apiKey` param
+  (resolved by the caller) instead of re-reading `process.env.GEMINI_API_KEY` itself.
+- `src/components/payload/TranslateButton.tsx`: help text generalized from "using Google Translate" /
+  "Requires a Google Translate API key" to provider-neutral wording, since the active provider is now
+  an invisible server-side choice.
+- Schema: added the `gemini_api_key TEXT` column to the local `settings` table.
+
+**⚠️ Near-miss, now documented as a standing gotcha**: flipping local `.env`'s `DATABASE_PUSH` to
+`true` (the normal way to sync a new field into the local SQLite schema) triggered drizzle-kit's
+interactive push prompt proposing to **drop 4 unrelated tables with real data**
+(`scholarships_accommodation_facilities_image`, `scholarships_blocks_accommodation_block`,
+`news_events_global_displayed_categories`, `_news_events_v` — 39 rows) — pre-existing schema drift
+between `main`'s current collection/global definitions and this production-dump-derived local DB,
+unrelated to the new field. The prompt was never answered (no `y` sent) and killing the process
+confirmed via `cmp` against a pre-change backup that `.db` was byte-identical — **nothing was lost**.
+Added `scripts/add-gemini-column.mjs` (raw `ALTER TABLE settings ADD COLUMN ...` via `libsql`,
+bypassing drizzle-kit entirely) to add just the one intended column, and reverted `DATABASE_PUSH` back
+to `false` immediately. **Do not set `DATABASE_PUSH=true` on this particular local DB again** without
+first reviewing drizzle-kit's proposed diff very carefully, or use the same surgical-ALTER approach —
+see `MEMORY.md`.
+
+**Verified**: regenerated `payload-types.ts` (new `geminiApiKey` field present); settings read via
+REST confirms the new field (like all the others in that tab) is correctly write-only (never in the
+response); `POST /api/ai-translate` returns the new Gemini-specific "no key configured" message
+before a key is set, and after setting a placeholder key via `POST /api/globals/settings`, the request
+correctly reaches Google's real Gemini endpoint (`400 API key not valid` — same verification pattern
+originally used for the Google Translate key in Phase 3). `pnpm run lint` clean. Full route sweep 200.
+
+**Still open**: user needs to paste their real Gemini key into Settings > AI Translation (Gemini —
+testing) via the admin UI (not pasted into chat, for key hygiene) to actually test EN→AR translation
+output. `db_dump/` (the real production dump) remains untracked/uncommitted on purpose — it is **not**
+covered by an explicit `.gitignore` entry beyond the repo root `.db` patterns; never `git add` it.
+
+---
+
+## 2026-09-06 — Local testing against real production data + keyless translation (NOT committed yet)
+
+**Status**: local-only work, no commits. Uncommitted app changes on `main`:
+`src/utilities/translateContent.ts` (+~290 lines), `src/app/api/ai-translate/route.ts` (7 lines).
+Plus untracked `scripts/` (local tooling), `db_dump/` (the VPS dump), `SESSION_i18n_local_test.md`.
+Full detail: **`SESSION_i18n_local_test.md`**.
+
+**What happened**: user downloaded the live production DB (`db_dump/gtni.db`) and wanted to run the
+site + test the "Translate with AI" flow locally, then asked to do it **without a Google Cloud API
+key**.
+
+- **Ran `main` against real production content locally.** The dump is on the pre-Phase-2 schema
+  (57 tables); `main` needs the localized schema (~161). Built `scripts/build-local-i18n-db.mjs`:
+  creates the missing `*_locales` / `*_v` tables from a reference schema, backfills every existing
+  value into the `en` locale, then **rebuilds every divergent base table to exactly match `main`'s
+  schema** (needed — publish rewrites base+locale tables and hit `NOT NULL` on leftover columns).
+  `[SHAPE] all 161 tables match reference`, FK-clean. This is a **disposable local build, NOT the
+  deferred production migration.**
+- **Keyless translation** — added two env-gated providers to `translateContent.ts` (dispatcher
+  `translateStrings`); production (env unset) still uses `translateStringsWithGoogle` unchanged:
+  - `TRANSLATE_PROVIDER=free` → MyMemory, no key. **Verified E2E**: `footer` → Arabic (9 fields) →
+    published → `/ar` renders Arabic footer, `/` still English. Also `header` (13 fields). Limit:
+    MyMemory's anonymous quota (~1000 words/rolling-window/IP) — fine for small globals, not the
+    whole site; `MYMEMORY_EMAIL` raises it.
+  - `TRANSLATE_PROVIDER=gemini` → Gemini AI Studio **free tier** (free key, no billing),
+    `GEMINI_API_KEY` env. Restored/adapted from the original Phase 3 Gemini impl (`c390071`). One
+    batched call per doc. **Not yet tested** — needs a free key.
+  - `route.ts`: skips the "no key → 400" guard when `TRANSLATE_PROVIDER` is `free`/`gemini`.
+  - Security-reviewed (fixed hosts, URL-encoded params, header auth for Gemini + 60s timeout, no new
+    deps, auth gate untouched). Lint + `tsc --noEmit` clean.
+
+**Local admin**: `admin@gtni.edu.eg` / `<redacted-local-only-password>` (reset in the local DB only; VPS unchanged).
+
+**Open**: pick a provider for real use (recommend Gemini free key); translate + review + publish the
+remaining globals; decide whether any of `scripts/` + the `translateContent.ts` provider switch is
+worth committing (it's a clean, production-safe, env-gated addition). The **live VPS was never
+contacted.**
+
+---
+
 ## 2026-08-30 — Phase 4 implemented: public-facing locale routing (next-intl) — ALL 4 PHASES COMPLETE
 
 **Status**: ✅ Phase 4 of `PLAN_SECURITY_I18N.md` complete and verified, committed (`ade9e20`, plan doc updated in `c2f2e6b`). Not yet pushed. This was the last phase — `PLAN_SECURITY_I18N.md`'s full scope is now implemented.

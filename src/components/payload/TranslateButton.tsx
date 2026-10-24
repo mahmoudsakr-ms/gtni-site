@@ -57,9 +57,9 @@ export const TranslateButton: React.FC = () => {
         </span>
       </div>
       <p className="text-xs text-(--theme-elevation-500) mb-3">
-        Translates the current English content into the selected language(s) using Google
-        Translate, and saves the result as a draft for that language — review it, then Publish to
-        make it live. Requires a Google Translate API key configured under Settings.
+        Translates the current English content into the selected language(s) using AI, and saves
+        the result as a draft for that language — review it, then Publish to make it live.
+        Requires an API key configured under Settings &gt; AI Translation.
       </p>
       <div className="flex flex-wrap items-center gap-4 mb-3">
         {TARGET_LOCALES.map((locale) => (

@@ -1397,6 +1397,10 @@ export interface Setting {
    * API key for the Google Cloud Translation API ("Basic"/v2), used by the "Translate with AI" button on translatable pages. In Google Cloud Console: enable the "Cloud Translation API" on a project, then create an API key (restricting it to that API is recommended).
    */
   googleTranslateApiKey?: string | null;
+  /**
+   * Free-tier Google Gemini API key (from aistudio.google.com/apikey), used by the "Translate with AI" button only when the server has TRANSLATE_PROVIDER=gemini set — a local-testing path, not the production translation provider. Get a key, paste it here, no .env edit needed.
+   */
+  geminiApiKey?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1909,6 +1913,7 @@ export interface SettingsSelect<T extends boolean = true> {
   smtpSecure?: T;
   resendApiKey?: T;
   googleTranslateApiKey?: T;
+  geminiApiKey?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

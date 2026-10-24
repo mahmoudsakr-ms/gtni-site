@@ -75,16 +75,26 @@ export async function POST(request: NextRequest) {
   }
 
   // Local API bypasses field-level `access.read: () => false` -- this is the one place
-  // allowed to read the real Google Translate API key, server-side only, never returned
+  // allowed to read the real translation API keys, server-side only, never returned
   // to a client.
   const settings: Setting = await payload.findGlobal({ slug: 'settings' })
-  const apiKey = settings.googleTranslateApiKey || undefined
 
-  if (!apiKey) {
+  // TRANSLATE_PROVIDER picks the provider (env-gated local-testing switch, see
+  // src/utilities/translateContent.ts); each provider resolves its own key.
+  const envProvider = process.env.TRANSLATE_PROVIDER
+  const isFreeProvider = envProvider === 'free' // MyMemory: keyless, no key to resolve.
+  const isGeminiProvider = envProvider === 'gemini'
+
+  const apiKey = isGeminiProvider
+    ? settings.geminiApiKey || process.env.GEMINI_API_KEY || undefined
+    : settings.googleTranslateApiKey || undefined
+
+  if (!isFreeProvider && !apiKey) {
     return NextResponse.json(
       {
-        error:
-          'No Google Translate API key configured. Add one under Settings > AI Translation (Google Translate).',
+        error: isGeminiProvider
+          ? 'No Gemini API key configured. Add one under Settings > AI Translation (Gemini — testing).'
+          : 'No Google Translate API key configured. Add one under Settings > AI Translation (Google Translate).',
       },
       { status: 400 },
     )

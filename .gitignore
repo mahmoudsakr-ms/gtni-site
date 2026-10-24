@@ -20,6 +20,7 @@ next-env.d.ts
 /.db-shm
 /.db-wal
 /.db.backup_*
+/db_dump/
 
 # testing
 /coverage
