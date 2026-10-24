@@ -135,11 +135,6 @@ export const HeroClient: React.FC<HeroProps> = ({
     }
   }, [isMuted, type, videoSource, sendYoutubeCommand])
 
-  // Debugging logs to help identify the issue
-  useEffect(() => {
-    console.log('Hero Props:', { type, videoUrl, externalVideoUrl, slidesCount: slides?.length })
-  }, [type, videoUrl, externalVideoUrl, slides])
-
   useEffect(() => {
     if (type === 'slider' && slides.length > 1) {
       const timer = setInterval(() => {
@@ -214,12 +209,11 @@ export const HeroClient: React.FC<HeroProps> = ({
               >
                 <Image
                   src={slides[currentSlide].image}
-                  alt={`Slide ${currentSlide}`}
+                  alt={`Slide ${currentSlide + 1}`}
                   fill
                   sizes="100vw"
-                  className="object-cover opacity-100" // Increased opacity to 100% for verification
+                  className="object-cover"
                   priority
-                  unoptimized // Use unoptimized temporarily to skip Next.js image optimization issues
                 />
                 <div className="absolute inset-0 bg-linear-to-b from-brand-dark/40 via-transparent to-brand-dark/60 pointer-events-none"></div>
               </motion.div>
@@ -267,6 +261,8 @@ export const HeroClient: React.FC<HeroProps> = ({
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+              aria-current={currentSlide === index ? 'true' : undefined}
               className={`h-1.5 transition-all duration-300 rounded-full ${
                 currentSlide === index ? 'w-10 bg-brand-turquoise' : 'w-4 bg-white/30'
               }`}
