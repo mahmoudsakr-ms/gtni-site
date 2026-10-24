@@ -10,6 +10,7 @@ import type { StudentService } from '@/payload-types'
 import RunawayTriangles from './PhysicsTriangle'
 import Link from 'next/link'
 import { SmartText } from './SmartText'
+import { sanitizeUrl } from '@/utilities/sanitizeUrl'
 interface StudentServicesWithUrl extends StudentService {
   handbookUrl?: string | null
 }
@@ -331,7 +332,7 @@ export const StudentServicesClient: React.FC<StudentServicesClientProps> = ({ da
 
                 {handbookUrl && (
                   <Link
-                    href={handbookUrl}
+                    href={sanitizeUrl(handbookUrl)}
                     target="_blank"
                     className="inline-flex items-center gap-3 px-8 py-4 bg-brand-turquoise text-brand-dark font-bold text-lg rounded-2xl hover:bg-white hover:scale-105 transition-all duration-300 shadow-xl shadow-brand-turquoise/20"
                   >
@@ -351,7 +352,7 @@ export const StudentServicesClient: React.FC<StudentServicesClientProps> = ({ da
               >
                 {handbookUrl ? (
                   <Link
-                    href={handbookUrl}
+                    href={sanitizeUrl(handbookUrl)}
                     target="_blank"
                     className="block relative w-full max-w-sm mx-auto perspective-1000"
                   >

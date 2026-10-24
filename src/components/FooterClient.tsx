@@ -18,6 +18,7 @@ import {
 
 import { Footer } from '@/payload-types'
 import { SmartText } from './SmartText'
+import { sanitizeUrl } from '@/utilities/sanitizeUrl'
 
 interface FooterProps {
   data: Footer
@@ -95,7 +96,7 @@ export const FooterClient = ({ data }: FooterProps) => {
                 return (
                   <motion.a
                     key={idx}
-                    href={social.url || '#'}
+                    href={sanitizeUrl(social.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.2, y: -5, rotate: 8 }}
