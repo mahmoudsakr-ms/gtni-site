@@ -4,6 +4,50 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-25 (2) — Local baseline migration, so a fresh DB no longer needs DATABASE_PUSH
+
+**Status**: ✅ Done, tested end-to-end against a truly fresh/empty database (not the working `.db`).
+Committed locally, not pushed. **Explicitly local dev tooling only** — not validated against, and not
+safe to blindly run against, production.
+
+**The gap**: `src/migrations/` has 20 real migrations (all dated 2026-07/08) that production has
+genuinely applied for real, and nothing after them — every schema change since (Phase 2 localization,
+Phase 3 Settings/AI-translate, today's security/UI-UX fixes) has only ever existed locally via
+`DATABASE_PUSH=true`. Tried running `pnpm run payload migrate` against a truly empty database
+directly: failed immediately — not just the known "`student_life` doesn't exist" issue, but more
+fundamentally, `payload_migrations` (Payload's own bookkeeping table) was *never created by a
+migration at all*, only ever by push. And Payload snapshots "which migrations already ran" exactly
+once, at the very start of the `migrate` command, before any migration's own code runs — so a
+migration cannot mark *other* migrations as already-applied for its own run (confirmed by trying
+exactly that and watching it have no effect).
+
+**The fix — two new files, zero changes to any of the 20 existing migration files**:
+- `src/migrations/00000000_000000_initial_schema.ts`: dumped verbatim from a truly fresh database that
+  was freshly `DATABASE_PUSH`-ed against current `main` (161 tables, byte-accurate — not hand-written
+  or reconstructed), registered first in `src/migrations/index.ts`. Creates the entire current schema
+  in one step.
+- `scripts/seed-migration-history.mjs`: **required first step**, run once against a brand-new empty
+  database before `pnpm run payload migrate`. Creates `payload_migrations` and marks the 20 old
+  migration names as already-applied (batch 1) — necessary because several of them are not safe to
+  actually replay against the final schema (confirmed: one does a `SELECT` against a `scholarships`
+  column that a later migration already renamed away, and fails with "no such column" if actually
+  re-executed here). The 20 files and their names are completely untouched, since those exact names
+  are what production's real `payload_migrations` table already has recorded for real.
+
+**Verified exactly as requested**: fresh empty `.db` → `seed-migration-history.mjs` → real
+`pnpm run payload migrate` (not a reconstructed CLI invocation) → `next dev` pointed at that database
+on an isolated port → `/admin` correctly showed the create-first-user flow → registered a user via
+`/api/users/first-register` → logged in successfully → full 10-route page sweep all 200. 161 tables,
+21 `payload_migrations` rows (20 seeded + the new baseline, which actually ran for real). Full project
+`pnpm run lint` and `tsc --noEmit` both clean (caught and fixed one real issue of my own along the
+way: the generated file's ~700 catch blocks needed `catch (e: any)` to match this project's existing
+migration style under strict TypeScript — an isolated single-file tsc check missed it; the full
+project check with the real `tsconfig.json` caught it).
+
+**Still open / explicitly out of scope**: deploying any of this to the real production database — that
+remains the separate, deferred task requiring a real copy of production's `.db` and direct VPS access,
+exactly as already documented for the Phase 2 migration.
+
 ## 2026-10-25 — Full-project security/E2E/UI-UX audit, 3 fixing passes, all merged
 
 **Status**: ✅ Audits complete, fixes reviewed and merged locally (`cdf67de`, `b380964`, `33946f6` +

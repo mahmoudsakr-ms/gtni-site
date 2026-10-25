@@ -4,6 +4,38 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-25 (2) — Local baseline migration added; how to bootstrap a fresh DB now
+
+**New local-dev workflow, going forward**: a truly empty database no longer needs
+`DATABASE_PUSH=true`. Instead: `DATABASE_URL="file:./x.db" node scripts/seed-migration-history.mjs`
+once, then `DATABASE_URL="file:./x.db" pnpm run payload migrate`. See `PROGRESS.md` for why both
+steps are required (the seed script isn't optional — `payload migrate` snapshots "already applied"
+state once at the very start, before any migration's own code runs, so a migration cannot mark other
+migrations as applied for its own invocation). `src/migrations/00000000_000000_initial_schema.ts` is
+the new baseline (161 tables, dumped from a real fresh push against current `main` — not hand-written
+by guessing). None of the 20 pre-existing migration files were touched, renamed, or reordered.
+
+**User's explicit instruction, worth remembering for any future migration work on this repo**:
+don't delete or rename old migration files without asking first — their exact names are what
+production's real `payload_migrations` table has recorded as applied; changing a name breaks that
+correspondence. This is why the "skip the old 20" mechanism works by *seeding the tracking table*
+rather than touching the files/array at all.
+
+**Gotcha, costs real time if forgotten**: an isolated single-file `tsc --noEmit <file> --skipLibCheck
+...` with hand-picked compiler flags is NOT equivalent to the project's real `npx tsc --noEmit` (which
+uses the actual `tsconfig.json`). The isolated check missed ~700 real errors (`catch (e)` needs
+`catch (e: any)` under this project's strict settings, matching the existing migrations' own style)
+that only showed up once checked against the real config. Always use the plain project-wide command
+for a real gate, not a reconstructed one with assumed flags.
+
+**Gotcha, specific to `payload migrate` on SQLite**: `payload_migrations` (Payload's own bookkeeping
+table) is not created by any migration in this repo's history — like everything else pre-2026-10-25,
+it only ever existed via `DATABASE_PUSH`. A truly virgin `.db` file fails immediately on `payload
+migrate` with `no such table: payload_migrations`, not (only) the previously-known `student_life`
+issue.
+
+---
+
 ## 2026-10-25 — Full audit + fix pipeline pattern, and two load-bearing gotchas
 
 **What happened**: user wanted a full (not diff-scoped) security audit, E2E bug hunt, and UI/UX

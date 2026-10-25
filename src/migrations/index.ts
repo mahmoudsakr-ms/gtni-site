@@ -1,3 +1,4 @@
+import * as migration_00000000_000000_initial_schema from './00000000_000000_initial_schema';
 import * as migration_20260718_143700_rename_student_life_to_services from './20260718_143700_rename_student_life_to_services';
 import * as migration_20260718_153500_scholarships_blocks from './20260718_153500_scholarships_blocks';
 import * as migration_20260718_180257 from './20260718_180257';
@@ -20,6 +21,11 @@ import * as migration_20260811_162000_add_admin_members from './20260811_162000_
 import * as migration_20260811_170000_remove_settings_global from './20260811_170000_remove_settings_global';
 
 export const migrations = [
+  {
+    up: migration_00000000_000000_initial_schema.up,
+    down: migration_00000000_000000_initial_schema.down,
+    name: '00000000_000000_initial_schema',
+  },
   {
     up: migration_20260718_143700_rename_student_life_to_services.up,
     down: migration_20260718_143700_rename_student_life_to_services.down,
