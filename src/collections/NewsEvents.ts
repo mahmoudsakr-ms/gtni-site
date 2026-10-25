@@ -139,6 +139,15 @@ export const NewsEvents: CollectionConfig = {
       label: 'Short Excerpt',
     },
     {
+      name: 'content',
+      type: 'richText',
+      label: 'Full Article Content',
+      admin: {
+        description:
+          'Optional full body shown on the article detail view below the excerpt. Leave empty for a short item (e.g. a video) that only needs the excerpt.',
+      },
+    },
+    {
       name: 'itemCategory',
       type: 'relationship',
       relationTo: 'news-category',

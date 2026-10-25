@@ -275,6 +275,24 @@ export interface NewsEvent {
   thumbnail?: (number | null) | Media;
   excerpt?: string | null;
   /**
+   * Optional full body shown on the article detail view below the excerpt. Leave empty for a short item (e.g. a video) that only needs the excerpt.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
    * Select a category or click "+" to add a new one.
    */
   itemCategory: number | NewsCategory;
@@ -479,6 +497,7 @@ export interface NewsEventsSelect<T extends boolean = true> {
   videoUrl?: T;
   thumbnail?: T;
   excerpt?: T;
+  content?: T;
   itemCategory?: T;
   isPinned?: T;
   updatedAt?: T;
