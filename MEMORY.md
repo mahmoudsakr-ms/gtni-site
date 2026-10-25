@@ -4,6 +4,57 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-25 — Full audit + fix pipeline pattern, and two load-bearing gotchas
+
+**What happened**: user wanted a full (not diff-scoped) security audit, E2E bug hunt, and UI/UX
+inspection, then fixes for everything found. See `PROGRESS.md` for the findings; this entry is the
+*process* worth repeating next time a request has this shape.
+
+**The pattern that worked well — worth reusing**:
+1. 3 parallel read-only audit agents (general-purpose, background), each told explicitly what the
+   *other two* are concurrently doing against the same shared dev server/DB so they don't collide or
+   duplicate each other's checks.
+2. Consolidate into one artifact (not 3 walls of chat text) — a filterable "Triage Board" with a
+   severity/domain breakdown chart. Genuinely useful as a shared reference, not just a nicer format.
+3. 3 parallel *fixing* agents, each in its own **isolated git worktree** (`isolation: "worktree"`) —
+   separate branch, separate dev-server port, its own copy of `.env` and `.db`. This is the load-bearing
+   choice: without it, 3 agents editing the same live working tree / fighting over the same dev server
+   port / racing on the same SQLite file (single-writer, already a known problem this project hits
+   repeatedly) would have been unmanageable.
+4. **Never trust a fixing agent's self-report as the final word** — review every diff personally
+   before merging, re-derive the trickiest claims from primary sources (Payload's actual installed
+   source, not docs or memory), and independently re-run the riskiest live tests. This caught two real
+   things a blind merge would have shipped: (a) one agent's suggested fix for the draft-leak bug
+   literally didn't work, caught by reading Payload's source before accepting the "verified" claim at
+   face value; (b) a second agent's own new XSS-sanitization function had a real bypass (tab-character
+   scheme-evasion) that its own live test didn't happen to exercise.
+5. Merge one branch at a time, immediately after each lands — don't wait for all three and merge in
+   one big-bang. Caught/resolved 2 small conflicts (same file touched by two agents for different
+   reasons) cleanly this way, each in isolation, rather than one tangled 3-way conflict at the end.
+
+**Gotcha 1 — don't run `pnpm install` against the shared `node_modules` while any dev server
+(including worktree-symlinked ones) is live.** Removing one unused dependency pruned 43 transitive
+packages; a running server's webpack dev cache held a reference to one of those files and threw
+`ENOENT` the moment it needed to recompile. Not data loss, just needs `rm -rf .next` + restart — but
+costs real debugging time to diagnose if you don't remember this happened. Prefer running `pnpm
+install` with every dev server in the repo stopped, or at least expect to need a clean cache-bust
+restart of all of them afterward.
+
+**Gotcha 2 — a worktree-isolated agent's own `.db` copy is NOT the main checkout's `.db`.** If a
+fixing agent needs a schema change (new column) to actually test its own fix, it'll correctly apply
+that to *its own* copy — but the main checkout (and therefore the orchestrating session's own dev
+server) won't have that column until someone applies the same surgical `ALTER TABLE` by hand after
+merging. Checked for this proactively this time by restarting the main server right after each merge
+and watching for exactly this class of error, rather than assuming "lint + tsc clean" meant the DB was
+fine too.
+
+**Still true from before, reconfirmed**: `DATABASE_PUSH=true` on this DB proposes dropping unrelated
+tables due to known pre-existing drift (see the Gemini-key-field entry) — the surgical-`ALTER TABLE`-
+via-`libsql` script pattern (`scripts/add-*-column.mjs`) is the correct move every time a fixing agent
+or future session needs one additive column on this particular local database.
+
+---
+
 ## 2026-10-24 (2) — Found & fixed: `access.read: () => false` hides a field from the admin UI entirely
 
 **Load-bearing Payload fact, worth remembering for any future secret-style field**: in Payload 3.x,

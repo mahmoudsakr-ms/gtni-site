@@ -4,6 +4,93 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-25 — Full-project security/E2E/UI-UX audit, 3 fixing passes, all merged
+
+**Status**: ✅ Audits complete, fixes reviewed and merged locally (`cdf67de`, `b380964`, `33946f6` +
+one DB-column commit). Not yet pushed — pending user confirmation. `CSP` and "write an actual test
+suite" explicitly deferred, not attempted.
+
+**What happened**: user asked for a full security audit, a full E2E bug hunt, and a full UI/UX
+inspection of the entire codebase (report only, no fixes), then asked for "consultancy agents" to
+fix everything found. Ran as 3 parallel read-only audit agents, consolidated into a published
+Artifact ("Triage Board", filterable by severity/domain, 46 findings), then 3 parallel fixing agents
+— each in an isolated `git worktree` with its own branch, dev-server port, and copy of `.env`/`.db`
+so they couldn't collide with each other or the live session.
+
+**Security audit** (full findings in the Artifact) — most significant: all 11 page globals had
+`access: { read: () => true }` + `versions: { drafts: true }`, so an unpublished draft (e.g. a
+not-yet-reviewed AI translation) was readable by anyone via `?draft=true`, unauthenticated — Payload's
+`access.read` has no visibility into the draft flag. Also found: admin cookie missing `Secure`, no
+pagination cap on `custom-news-events` (confirmed live with `?limit=1000000`), CMS-editable links
+rendered with no URL-scheme validation (`javascript:` XSS risk), no rate limit on `/api/ai-translate`,
+a timing-unsafe revalidate-token comparison, and an unused dependency (`javascript-obfuscator`).
+
+**E2E audit**: the test suite (`pnpm run test`) is completely non-functional — no `vitest.config.mts`,
+no `playwright.config.ts`, zero spec files exist anywhere in git history, despite `CLAUDE.md` mandating
+"run relevant tests" after every change. Also: no timeout on the YouTube-thumbnail HEAD check caused
+10-37s page hangs (confirmed: this sandbox has zero YouTube egress, so every one of the 32 video items
+with no uploaded thumbnail hit this unprotected path), the Gemini model name was stale/retired by
+Google, a relationship field rejected a stringified numeric ID with a confusing error, and two small
+`/api/revalidate` validation gaps.
+
+**UI/UX audit** (largest, ~26 findings): most serious was the News & Events article body being
+**entirely commented out** in `NewsEventsClient.tsx` — every "read more" showed only a hero image and
+excerpt, never the actual content. Also a latent `next/image` bug on the Vacancies hero (missing
+`fill`, masked locally because no hero image happens to be uploaded), no confirmation before
+"Translate with AI" overwrites an existing hand-edited draft, systemic keyboard-accessibility gaps on
+every clickable content card (About pages, News/Events, homepage, alumni map), the entire custom admin
+field library missing `aria-describedby`/`aria-invalid` on validation errors, and a recurring RTL bug
+where a decorative "accent bar" design element used physical `border-l`/`pl-*` instead of logical
+properties, visually detaching from right-aligned Arabic text on nearly every content page.
+
+**Fixing passes — notable things caught during review before merging, not just "ran and merged"**:
+- The security-fix agent discovered the *literal* fix I'd suggested for the draft-leak bug (a
+  `beforeOperation` hook forcing `args.draft = false`) **doesn't work** in Payload 3.74 — `draft` is
+  destructured out of `args` before any `beforeOperation` hook runs. It built a working alternative
+  (stash intent on `req.context` in `beforeOperation`, read it back in `access.read`, which runs later
+  but before the draft-substitution code) and I independently re-derived the same conclusion by
+  reading Payload's installed source before trusting it.
+- The UI/UX agent, fixing the commented-out article body, discovered the field it referenced
+  (`item.content`) never existed in the `NewsEvents` schema at all — added it properly (optional,
+  additive) rather than just uncommenting a block that would've been a no-op.
+- **Caught and fixed a real security gap during my own merge review**: the UI/UX agent independently
+  added its own link-sanitization function (correctly spotting the same `javascript:`-URI risk the
+  security agent had already fixed elsewhere) but its regex didn't strip embedded control characters
+  before checking the scheme, so `"java\tscript:alert(1)"` passed through unsanitized even though a
+  real browser's URL parser strips the tab and still executes it as `javascript:`. Proved the bypass
+  with a live test, then resolved the merge conflict by keeping the already-merged, more robust
+  `sanitizeUrl()` and deleting the weaker duplicate.
+- The UI/UX agent got cut off mid-task by a session rate limit (not its own error) with 7 commits
+  landed and good uncommitted work in progress; resumed it the next day once the reset had passed and
+  it finished the remaining ~15 findings.
+- The UI/UX agent's own `pkill -9 -f "next dev"` (fighting a stuck port) was too broad and killed
+  sibling dev servers — turned out to be a red herring for the real incident: my own background
+  `pnpm install` (regenerating the lockfile after removing the unused dependency) pruned 43 transitive
+  packages, including one needed by `@payloadcms/ui`'s client bundle, out from under a *running* dev
+  server sharing that `node_modules` via symlink — a stale webpack cache then threw `ENOENT` on a file
+  that genuinely no longer existed. Fixed with a clean `rm -rf .next` restart, same as previous
+  cache-corruption incidents this project has hit.
+- The new `content` field on `NewsEvents` needed an actual DB column; each fixing agent's isolated
+  `.db` copy got the column added directly via `libsql` (`scripts/add-newsevents-content-column.mjs`,
+  same surgical-`ALTER TABLE` pattern as the earlier Gemini-key column), but the **main checkout's**
+  `.db` still needed the same column added by hand after merging — found via a live `ENOENT`/"no such
+  column: content" error, fixed the same way, re-verified.
+
+**Verified after all three merges**: `pnpm run lint` clean, `tsc --noEmit` clean, full 14-route sweep
+200 on the real local database (not a fixture), the draft-leak fix (`403` unauthenticated, `200`
+authenticated), the secret-field status indicator (`"✓ A value is currently set (hidden)"` vs. `"Not
+configured"`, computed from real data, real secret still `null`), RTL logical classes and the nav
+`aria-label` present in live `/ar/...` HTML, and the news-events API (previously erroring on the main
+DB) now `200`.
+
+**Explicitly deferred, not attempted by any agent**: site-wide CSP (needs dedicated testing against
+the admin panel to avoid lockout) and writing an actual test suite from scratch (foundational enough
+to need a real scoping conversation on conventions/coverage, not an unsupervised pass).
+
+**Still open**: a real production migration for the `NewsEvents.content` column (same caveat as every
+other schema addition this project — the production migration chain is still a separate, deferred,
+hand-written effort). `pnpm-lock.yaml` is now back in sync after removing `javascript-obfuscator`.
+
 ## 2026-10-24 (2) — Fixed a real bug: write-only Settings fields never rendered in the admin UI
 
 **Status**: ✅ Fixed, verified, committed locally. Not yet pushed — pending user confirmation.
