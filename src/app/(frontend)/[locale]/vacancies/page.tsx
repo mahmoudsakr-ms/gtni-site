@@ -84,5 +84,5 @@ export default async function VacanciesPage({ params }: PageProps) {
     applicationEmail: data.applicationEmail || undefined,
   }
 
-  return <VacanciesClient data={clientData} />
+  return <VacanciesClient data={clientData} locale={locale as 'en' | 'ar'} />
 }
