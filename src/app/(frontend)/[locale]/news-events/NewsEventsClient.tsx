@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, X, Calendar, ArrowRight, Clock } from 'lucide-react'
 import Image from 'next/image'
+import { serializeLexical } from '@/components/RichText/serialize'
 
 const VideoModal = ({
   isOpen,
@@ -224,13 +225,17 @@ const DetailsModal = ({
 
                 {/* Main Article Content */}
                 <div className="prose prose-invert prose-lg max-w-none prose-p:text-white/70 prose-headings:text-white prose-strong:text-white prose-a:text-brand-turquoise prose-img:rounded-3xl mb-24">
-                  {/* {item.content ? (
-                    <RichText content={item.content} />
+                  {item.content?.root?.children?.length ? (
+                    // Use serializeLexical directly rather than the shared <RichText>
+                    // wrapper -- RichText wraps its output in its own
+                    // "prose prose-slate" div, which would nest inside (and fight
+                    // with) this dark "prose-invert" container's own color classes.
+                    serializeLexical(item.content.root.children)
                   ) : (
                     <p className="text-white/50 italic">
                       Full story details are currently being updated by the GTNI media team.
                     </p>
-                  )} */}
+                  )}
                 </div>
 
                 {/* Quick Info Section (Moved to Bottom) */}
