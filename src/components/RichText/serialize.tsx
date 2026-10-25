@@ -54,6 +54,31 @@ const getTextAlign = (format?: string | number): React.CSSProperties | undefined
 }
 
 /**
+ * Guards against javascript:/data:/vbscript: URLs in CMS-authored link nodes.
+ * Lexical's own link feature UI doesn't restrict the scheme an editor can type
+ * into the URL field, and this function had no live call site in the app at
+ * all until the News/Events article body was wired up to it (see UX-1) -- so
+ * this is the first time a real visitor's browser ever evaluates one of these
+ * hrefs. React doesn't sanitize `href` the way it sanitizes
+ * dangerouslySetInnerHTML, so an editor (or a compromised editor account)
+ * pasting `javascript:...` into a link would otherwise render as a clickable,
+ * script-executing anchor. Allows relative paths, fragments, and the handful
+ * of schemes real content links use; anything else falls back to a harmless
+ * "#" rather than rendering the raw value.
+ */
+const sanitizeHref = (url: string | undefined | null): string => {
+  if (!url) return '#'
+  const trimmed = url.trim()
+  // Relative paths, hash anchors, and protocol-relative URLs are always safe.
+  if (/^(\/|#|\.\.?\/)/.test(trimmed)) return trimmed
+  const schemeMatch = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(trimmed)
+  if (!schemeMatch) return trimmed // no scheme at all, e.g. "example.com"
+  const scheme = schemeMatch[1].toLowerCase()
+  const allowedSchemes = new Set(['http', 'https', 'mailto', 'tel'])
+  return allowedSchemes.has(scheme) ? trimmed : '#'
+}
+
+/**
  * Builds a combined style object from a Lexical element node's format & indent.
  */
 const getElementStyle = (node: Record<string, unknown>): React.CSSProperties | undefined => {
@@ -167,7 +192,7 @@ export const serializeLexical = (nodes: NodeTypes[]): JSX.Element[] => {
         return (
           <a
             key={index}
-            href={linkNode.fields?.url}
+            href={sanitizeHref(linkNode.fields?.url)}
             target={linkNode.fields?.newTab ? '_blank' : undefined}
             rel={linkNode.fields?.newTab ? 'noopener noreferrer' : undefined}
           >
