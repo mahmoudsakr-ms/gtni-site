@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { getPublicBaseUrl } from '@/utilities/publicUrl'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gtni.edu.eg'
+  const baseUrl = getPublicBaseUrl()
   const currentDate = new Date()
 
   // Try to fetch real updatedAt times from Payload

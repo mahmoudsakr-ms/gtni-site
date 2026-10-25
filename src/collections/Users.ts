@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { getPublicBaseUrl } from '@/utilities/publicUrl'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -23,8 +24,7 @@ export const Users: CollectionConfig = {
       generateEmailSubject: () => 'GTNI Admin - Reset Your Password',
       generateEmailHTML: (args) => {
         const { token } = args || {}
-        const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gtni.edu.eg'
-        const resetUrl = `${serverUrl}/admin/reset/${token}`
+        const resetUrl = `${getPublicBaseUrl()}/admin/reset/${token}`
         return `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff;">
             <div style="text-align: center; margin-bottom: 24px;">

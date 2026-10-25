@@ -4,6 +4,56 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-25 (3) — basePath: '/new' support, verified via a real pnpm build && pnpm start
+
+**Status**: ✅ Done, verified end-to-end with a real production build + start (not dev mode) on an
+isolated port against the real working database. Committed and pushed.
+
+**What changed**: the whole app can now be mounted under a path prefix (e.g. `/new`) via a single
+env var (`NEXT_PUBLIC_BASE_PATH`), feeding `basePath` in `next.config.mjs`. `@payloadcms/next`'s
+`withPayload()` already natively supports this — it propagates `basePath` to
+`process.env.NEXT_BASE_PATH`, which Payload's own URL-building (admin routes, its REST API, and
+upload/media file URLs — `formatAdminURL`/`generateFilePathOrURL` in Payload's source) already reads
+internally, confirmed by reading the installed package source before touching anything. So admin, API,
+and media URLs needed **zero** app-level code changes for the Payload-internal side.
+
+**What DID need explicit changes** (new `src/utilities/publicUrl.ts` — `BASE_PATH` reads the same
+`NEXT_BASE_PATH` Payload derives, so everything stays in sync with one source of truth):
+- `layout.tsx`: `metadataBase` + the JSON-LD schema's `url`/`logo` fields.
+- `robots.ts`: the `sitemap` URL and the `disallow` path literals (these are plain strings in the
+  returned object, not Next.js routing primitives — basePath doesn't auto-apply to them).
+- `sitemap.ts`: the base URL used to build each entry.
+- `Users.ts`: the password-reset email link (`/admin/reset/:token`) — previously hardcoded to the
+  bare origin.
+- **6 client-side `fetch()`/`<a href>` calls using a hardcoded absolute path**, found via a full-repo
+  grep, not guesswork: `BeforeListMedia.tsx` (4 calls), `CategoryCell.tsx` (2 calls),
+  `TranslateButton.tsx`, `NewsEventsClient.tsx`'s search, and two plain `<a href="/...">` (not even
+  `next/link`) in `AboutPageContent.tsx`. A literal string passed to `fetch()` or a plain `<a>` never
+  gets basePath-prefixed automatically — only Next's own `Link`/router does that; this is exactly the
+  kind of gap a theoretical read-through misses and only a full grep catches.
+
+**A real bug found and fixed, not an app bug — a middleware-matcher edge case under `basePath`**:
+the homepage (`/new` itself) 404ed while every other route — explicit locale prefixes, real sub-pages,
+even `/new/en`'s redirect — worked correctly. Spent real effort chasing this into next-intl's and
+Payload's internals (confirmed via `console.log` instrumentation that middleware was never even being
+invoked for this one path, ruling out next-intl's own rewrite logic) before finding the actual cause:
+Next.js strips the configured `basePath` from the pathname **before** checking the middleware
+`matcher`, so a request for exactly the basePath root (`/new`) arrives at the matcher as an **empty
+string**, not `/`. The project's matcher regex (`/((?!admin|api|...).*)`) requires a literal leading
+`/`, which an empty string can never satisfy — middleware (and therefore the locale-rewrite) was
+silently skipped for the site's own homepage, every single time, under any non-empty basePath. Fixed
+by adding an explicit `'/'` entry to the matcher array in `src/middleware.ts` (a no-op when basePath
+is unset, since `/` already matches the regex on its own in that case).
+
+**Verified via a real `pnpm run build && next start`** (not dev mode) on an isolated port (3098),
+against the real working `.db` (not a copy): both locales' full page sweep (9 pages × 2), `/admin`
+with real cookie-based login, every specific API endpoint the 6 fixed client-side calls target, the
+actual Media file bytes (not just the URL), `sitemap.xml`/`robots.txt` content, the password-reset
+email's URL-construction path (fails only on the pre-existing, unrelated, already-documented missing
+local SMTP credentials — not on anything basePath-related), and the auth cookie's `Path=/`/`Secure`
+(correctly `true` in this real production-mode run, confirming today's earlier SEC-M1 fix also holds)/
+`HttpOnly`/`SameSite` attributes. `pnpm run lint` and `tsc --noEmit` both clean throughout.
+
 ## 2026-10-25 (2) — Local baseline migration, so a fresh DB no longer needs DATABASE_PUSH
 
 **Status**: ✅ Done, tested end-to-end against a truly fresh/empty database (not the working `.db`).

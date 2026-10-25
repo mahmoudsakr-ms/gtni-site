@@ -4,6 +4,37 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-25 (3) — basePath support added; one real Next.js matcher gotcha to remember
+
+**How to run it locally**: set `NEXT_PUBLIC_BASE_PATH=/new` (any value, including empty/unset for
+normal unprefixed deployment) before `pnpm run build`/`pnpm run dev`/`pnpm run start` — it feeds
+`basePath` in `next.config.mjs`. Everything else derives from that one var; see `src/utilities/
+publicUrl.ts`.
+
+**Load-bearing gotcha, easy to rediscover the hard way**: Next.js strips `basePath` from the pathname
+*before* evaluating middleware's `matcher` config. A request for exactly the basePath root arrives at
+the matcher as an **empty string**, not `/`. Any matcher regex requiring a leading `/` (the common
+`/((?!api|_next).*)` style pattern used almost everywhere, including this project's own
+`src/middleware.ts`) silently never matches that one request — middleware just doesn't run, with no
+error, no log, nothing — so if `basePath` is ever reintroduced or changed here, double-check the
+matcher still has an explicit `'/'` entry alongside the regex. This cost real debugging time: `/new/
+about-gtni` worked, `/new/en`'s redirect worked, but bare `/new` 404ed, and the fix wasn't in next-intl
+or Payload at all — confirmed only by adding a raw `console.log` at the top of the middleware function
+and seeing it never fire for that one path.
+
+**What did NOT need fixing**: Payload's admin routes, REST API, and upload/media URLs are already
+basePath-aware internally (`@payloadcms/next`'s `withPayload()` reads `nextConfig.basePath` and
+derives `process.env.NEXT_BASE_PATH`, which Payload's `formatAdminURL`/`generateFilePathOrURL` already
+use) — confirmed by reading the installed package source, not assumed. Only this project's *own* code
+that builds an absolute/literal path by hand needed touching: metadata/sitemap/robots/the password-
+reset email link, plus 6 client-side `fetch()`/`<a href>` calls using a hardcoded absolute path
+(`BeforeListMedia.tsx`, `CategoryCell.tsx`, `TranslateButton.tsx`, `NewsEventsClient.tsx`,
+`AboutPageContent.tsx`) — found via a full-repo grep for the literal pattern, not by reading every
+component. A plain `fetch('/api/...')` or `<a href="/...">` never gets basePath-prefixed automatically
+the way `next/link`/the router does.
+
+---
+
 ## 2026-10-25 (2) — Local baseline migration added; how to bootstrap a fresh DB now
 
 **New local-dev workflow, going forward**: a truly empty database no longer needs

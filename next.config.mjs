@@ -5,8 +5,17 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
- 
- serverExternalPackages: [
+  // Mounts the whole app under this path prefix (e.g. '/new') when set -- empty
+  // by default so existing deployments/dev are unaffected. @payloadcms/next's
+  // withPayload() reads this and propagates it to process.env.NEXT_BASE_PATH,
+  // which Payload's own URL-building (admin routes, its REST API, and upload
+  // file URLs -- see formatAdminURL/generateFilePathOrURL in payload's source)
+  // already uses internally. See src/utilities/publicUrl.ts for the handful of
+  // places in THIS project's own code (sitemap, robots, metadata, the password-
+  // reset email link) that also need to know about it explicitly.
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
+
+  serverExternalPackages: [
     'libsql',
     '@libsql/client',
   ],

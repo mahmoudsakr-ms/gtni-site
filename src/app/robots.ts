@@ -1,14 +1,13 @@
 import { MetadataRoute } from 'next'
+import { BASE_PATH, getPublicBaseUrl } from '@/utilities/publicUrl'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gtni.edu.eg'
-
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin', '/api'],
+      disallow: [`${BASE_PATH}/admin`, `${BASE_PATH}/api`],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${getPublicBaseUrl()}/sitemap.xml`,
   }
 }

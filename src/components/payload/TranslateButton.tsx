@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { useDocumentInfo } from '@payloadcms/ui'
 import { Languages, Loader2 } from 'lucide-react'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 // Kept in sync with the `localization.locales` list in src/payload.config.ts, minus the
 // default locale (English is the translation source, never a translation target).
@@ -39,7 +40,7 @@ export const TranslateButton: React.FC = () => {
     setResult(null)
 
     try {
-      const res = await fetch('/api/ai-translate', {
+      const res = await fetch(`${BASE_PATH}/api/ai-translate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',

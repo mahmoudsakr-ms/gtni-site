@@ -6,9 +6,10 @@ import { Nav } from '@/components/Nav'
 import { Footer } from '@/components/Footer'
 import { JsonLd } from '@/components/JsonLd'
 import { routing, type AppLocale } from '@/i18n/routing'
+import { getPublicBaseUrl } from '@/utilities/publicUrl'
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'https://gtni.edu.eg'),
+  metadataBase: new URL(getPublicBaseUrl()),
   description: 'Gouna Technical Nursing Institute Official Website',
   icons: {
     icon: '/favicon.ico',
@@ -48,8 +49,8 @@ export default async function RootLayout(props: {
     '@context': 'https://schema.org',
     '@type': 'CollegeOrUniversity',
     name: 'Gouna Technical Nursing Institute (GTNI)',
-    url: 'https://gtni.edu.eg',
-    logo: 'https://gtni.edu.eg/favicon.ico',
+    url: getPublicBaseUrl(),
+    logo: `${getPublicBaseUrl()}/favicon.ico`,
     description:
       'A premiere nursing education institute in El Gouna, Egypt, dedicated to producing world-class healthcare professionals.',
     address: {

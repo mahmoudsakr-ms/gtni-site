@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 interface MediaFolder {
   id: string | number
@@ -39,7 +40,7 @@ export const CategoryCell: React.FC<CategoryCellProps> = (props) => {
   useEffect(() => {
     const fetchFolders = async () => {
       try {
-        const res = await fetch('/api/media-categories?limit=100')
+        const res = await fetch(`${BASE_PATH}/api/media-categories?limit=100`)
         if (res.ok) {
           const data = await res.json()
           setFolders(data.docs || [])
@@ -69,7 +70,7 @@ export const CategoryCell: React.FC<CategoryCellProps> = (props) => {
       : (isNaN(Number(newValue)) ? newValue : Number(newValue))
 
     try {
-      const response = await fetch(`/api/media/${rowData.id}`, {
+      const response = await fetch(`${BASE_PATH}/api/media/${rowData.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

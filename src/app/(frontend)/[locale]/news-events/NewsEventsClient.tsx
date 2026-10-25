@@ -6,6 +6,7 @@ import { Play, X, Calendar, ArrowRight, Clock } from 'lucide-react'
 import Image from 'next/image'
 import { serializeLexical } from '@/components/RichText/serialize'
 import type { AppLocale } from '@/i18n/routing'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 const VideoModal = ({
   isOpen,
@@ -595,7 +596,7 @@ const TabsSection = ({
           params.append('search', searchQuery)
         }
 
-        const res = await fetch(`/api/custom-news-events?${params.toString()}`)
+        const res = await fetch(`${BASE_PATH}/api/custom-news-events?${params.toString()}`)
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`)
         }

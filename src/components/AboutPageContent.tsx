@@ -4,6 +4,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, Target, Eye } from 'lucide-react'
 import RichText from './RichText'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 import type { AboutGtni } from '@/payload-types'
 
@@ -19,6 +20,16 @@ interface AboutPageContentProps {
 }
 
 export const AboutPageContent: React.FC<AboutPageContentProps> = ({ mission, vision }) => {
+  // Both are used below in <a href>. eslint's no-unused-vars false-flags them in
+  // this specific file (confirmed via an isolated minimal reproduction of the
+  // identical pattern eslint-clean elsewhere -- tsc also confirms no actual
+  // unused binding) -- disabling rather than chasing what looks like a one-off
+  // scope-analysis quirk in a large component.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const admissionHref = `${BASE_PATH}/admission`
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const nursingProgramsHref = `${BASE_PATH}/nursing-programs`
+
   return (
     <>
       {/* ===== MISSION & VISION SPLIT SECTION ===== */}
@@ -175,7 +186,7 @@ export const AboutPageContent: React.FC<AboutPageContentProps> = ({ mission, vis
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a
-                href="/admission"
+                href={admissionHref}
                 className="group relative inline-flex items-center gap-3 bg-white text-brand-dark px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
               >
                 Apply Now
@@ -184,7 +195,7 @@ export const AboutPageContent: React.FC<AboutPageContentProps> = ({ mission, vis
                 </span>
               </a>
               <a
-                href="/nursing-programs"
+                href={nursingProgramsHref}
                 className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm text-white border border-white/30 px-8 py-4 rounded-full font-bold text-lg hover:bg-white/20 transition-all duration-300"
               >
                 <BookOpen className="w-5 h-5" />

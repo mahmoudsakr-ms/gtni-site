@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { Folder, Plus, Trash2, Loader2 } from 'lucide-react'
 import { useSelection, useListQuery } from '@payloadcms/ui'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 interface MediaFolder {
   id: string
@@ -33,7 +34,7 @@ export const BeforeListMedia: React.FC = () => {
   // Fetch folders from Payload API
   const fetchFolders = async () => {
     try {
-      const res = await fetch('/api/media-categories?limit=100')
+      const res = await fetch(`${BASE_PATH}/api/media-categories?limit=100`)
       if (res.ok) {
         const data = await res.json()
         setFolders(data.docs || [])
@@ -76,7 +77,7 @@ export const BeforeListMedia: React.FC = () => {
 
     setActionLoading(true)
     try {
-      const res = await fetch('/api/media-categories', {
+      const res = await fetch(`${BASE_PATH}/api/media-categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ export const BeforeListMedia: React.FC = () => {
 
     setActionLoading(true)
     try {
-      const res = await fetch(`/api/media-categories/${folder.id}`, {
+      const res = await fetch(`${BASE_PATH}/api/media-categories/${folder.id}`, {
         method: 'DELETE',
       })
 
@@ -176,7 +177,7 @@ export const BeforeListMedia: React.FC = () => {
       for (const id of selectedIds) {
         const parsedId = isNaN(Number(id)) ? id : Number(id)
         try {
-          const res = await fetch(`/api/media/${parsedId}`, {
+          const res = await fetch(`${BASE_PATH}/api/media/${parsedId}`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
