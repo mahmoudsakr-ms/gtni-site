@@ -180,6 +180,7 @@ export default async function NewsEventsPage({ params }: PageProps) {
     <NewsEventsClient
       hero={hero}
       sections={resolvedSections}
+      locale={locale as 'en' | 'ar'}
     />
   )
 }

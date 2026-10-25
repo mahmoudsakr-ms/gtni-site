@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Play, X, Calendar, ArrowRight, Clock } from 'lucide-react'
 import Image from 'next/image'
 import { serializeLexical } from '@/components/RichText/serialize'
+import type { AppLocale } from '@/i18n/routing'
 
 const VideoModal = ({
   isOpen,
@@ -125,10 +126,12 @@ const DetailsModal = ({
   isOpen,
   onClose,
   item,
+  locale,
 }: {
   isOpen: boolean
   onClose: () => void
   item: NewsItem | null
+  locale: AppLocale
 }) => {
   // Disable scroll when modal is open
   useEffect(() => {
@@ -150,6 +153,8 @@ const DetailsModal = ({
       ? item.thumbnail
       : null
   const publishedDate = item.publishedDate ? new Date(item.publishedDate) : new Date()
+  // UX-11: format dates in the active locale instead of always English
+  const dateLocale = locale === 'ar' ? 'ar-EG' : 'en-US'
 
   return (
     <AnimatePresence>
@@ -197,9 +202,11 @@ const DetailsModal = ({
               {/* Main Content Area */}
               <div className="max-w-7xl mx-auto">
                 {/* Title */}
-                <h1 className="lg:text-3xl  text-2xl font-bold text-white leading-tight mb-4">
+                {/* h2, not h1: the page's hero title is the sole h1 (see below), and
+                    this modal mounts over it rather than replacing it. */}
+                <h2 className="lg:text-3xl  text-2xl font-bold text-white leading-tight mb-4">
                   {item.title}
-                </h1>
+                </h2>
 
                 {/* Date and Type Tag */}
                 <div className="flex flex-wrap items-center gap-4 mb-8">
@@ -208,7 +215,7 @@ const DetailsModal = ({
                   </span>
                   <div className="flex items-center gap-2 text-white/60 text-sm font-medium">
                     <Calendar size={16} className="text-brand-turquoise" />
-                    {publishedDate.toLocaleDateString('en-US', {
+                    {publishedDate.toLocaleDateString(dateLocale, {
                       month: 'long',
                       day: 'numeric',
                       year: 'numeric',
@@ -218,7 +225,7 @@ const DetailsModal = ({
 
                 {/* Excerpt with special styling */}
                 {item.excerpt && (
-                  <div className="text-xl max-sm:text-base text-justify text-white/90 font-light leading-relaxed mb-12 border-l-4 border-brand-turquoise pl-8 max-sm:pl-4 max-sm:pr-4  bg-white/5 py-6 pr-6 rounded-r-2xl">
+                  <div className="text-xl max-sm:text-base text-justify text-white/90 font-light leading-relaxed mb-12 border-s-4 border-brand-turquoise ps-8 max-sm:ps-4 max-sm:pe-4  bg-white/5 py-6 pe-6 rounded-e-2xl">
                     {item.excerpt}
                   </div>
                 )}
@@ -258,7 +265,7 @@ const DetailsModal = ({
                                 Published
                               </p>
                               <p className="text-white/90 font-bold border-b border-brand-turquoise/20 pb-1 inline-block">
-                                {publishedDate.toLocaleDateString('en-US', {
+                                {publishedDate.toLocaleDateString(dateLocale, {
                                   weekday: 'long',
                                   month: 'long',
                                   day: 'numeric',
@@ -313,6 +320,7 @@ interface SectionData {
 interface NewsEventsClientProps {
   hero?: NewsEventsGlobal['hero']
   sections: SectionData[]
+  locale: AppLocale
 }
 
 const GridSection = ({
@@ -330,8 +338,8 @@ const GridSection = ({
   return (
     <section className="space-y-12">
       <div className="max-w-3xl space-y-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-brand-dark border-l-4 border-brand-turquoise pl-4">{title}</h2>
-        {description && <p className="text-brand-dark/70 text-base leading-relaxed pl-4">{description}</p>}
+        <h2 className="text-3xl md:text-4xl font-bold text-brand-dark border-s-4 border-brand-turquoise ps-4">{title}</h2>
+        {description && <p className="text-brand-dark/70 text-base leading-relaxed ps-4">{description}</p>}
       </div>
 
       {items.length > 0 ? (
@@ -345,6 +353,14 @@ const GridSection = ({
               transition={{ delay: (index % 3) * 0.1 }}
               className="group flex flex-col bg-white border border-brand-dark/10 rounded-2xl overflow-hidden hover:border-brand-turquoise/40 hover:bg-brand-dark/[0.01] transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
               onClick={() => onItemClick(item)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onItemClick(item)
+                }
+              }}
             >
               <div className="relative aspect-video overflow-hidden">
                 {item.resolvedThumbnailUrl ? (
@@ -407,8 +423,8 @@ const FeaturedSection = ({
   return (
     <section className="space-y-12">
       <div className="max-w-3xl space-y-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-brand-dark border-l-4 border-brand-turquoise pl-4">{title}</h2>
-        {description && <p className="text-brand-dark/70 text-base leading-relaxed pl-4">{description}</p>}
+        <h2 className="text-3xl md:text-4xl font-bold text-brand-dark border-s-4 border-brand-turquoise ps-4">{title}</h2>
+        {description && <p className="text-brand-dark/70 text-base leading-relaxed ps-4">{description}</p>}
       </div>
 
       {featuredLeaderItem && (
@@ -471,6 +487,14 @@ const FeaturedSection = ({
                 transition={{ delay: (index % 3) * 0.1 }}
                 className="group flex flex-col bg-white border border-brand-dark/10 rounded-2xl overflow-hidden hover:border-brand-turquoise/40 hover:bg-brand-dark/[0.01] transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
                 onClick={() => onItemClick(item)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onItemClick(item)
+                  }
+                }}
               >
                 <div className="relative aspect-video overflow-hidden">
                   {item.resolvedThumbnailUrl ? (
@@ -498,9 +522,9 @@ const FeaturedSection = ({
                   </div>
                 </div>
                 <div className="p-6 flex-1 flex flex-col justify-between">
-                  <h5 className="text-base font-bold text-brand-dark group-hover:text-brand-turquoise transition-colors line-clamp-2 mb-2">
+                  <h4 className="text-base font-bold text-brand-dark group-hover:text-brand-turquoise transition-colors line-clamp-2 mb-2">
                     {item.title}
-                  </h5>
+                  </h4>
                   <p className="text-brand-dark/60 text-xs line-clamp-2">{item.excerpt}</p>
                 </div>
               </motion.div>
@@ -535,6 +559,9 @@ const TabsSection = ({
   const [searchInput, setSearchInput] = useState('')
   const [loadingMore, setLoadingMore] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  // UX-15: distinct from the "no results" empty state -- true only when the
+  // request itself failed, not when it succeeded with zero matches.
+  const [fetchError, setFetchError] = useState(false)
 
 
 
@@ -569,6 +596,9 @@ const TabsSection = ({
         }
 
         const res = await fetch(`/api/custom-news-events?${params.toString()}`)
+        if (!res.ok) {
+          throw new Error(`Request failed with status ${res.status}`)
+        }
         const data = await res.json()
 
         if (data && data.docs) {
@@ -585,9 +615,12 @@ const TabsSection = ({
           }
           setCommunityPage(pageToFetch)
           setCommunityHasNextPage(data.hasNextPage)
+          // Clear any previous error now that a fetch has actually succeeded
+          setFetchError(false)
         }
       } catch (error) {
         console.error('Error fetching community items:', error)
+        setFetchError(true)
       } finally {
         setIsTransitioning(false)
         setLoadingMore(false)
@@ -615,8 +648,8 @@ const TabsSection = ({
   return (
     <section className="space-y-12">
       <div className="max-w-3xl space-y-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-brand-dark border-l-4 border-brand-turquoise pl-4">{title}</h2>
-        {description && <p className="text-brand-dark/70 text-base leading-relaxed pl-4">{description}</p>}
+        <h2 className="text-3xl md:text-4xl font-bold text-brand-dark border-s-4 border-brand-turquoise ps-4">{title}</h2>
+        {description && <p className="text-brand-dark/70 text-base leading-relaxed ps-4">{description}</p>}
       </div>
 
       {/* Filtering and Search Area */}
@@ -650,6 +683,17 @@ const TabsSection = ({
         </div>
       </div>
 
+      {/* UX-15: visible, distinct-from-"no results" error state for failed fetches */}
+      {fetchError && (
+        <div
+          role="alert"
+          className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium"
+        >
+          <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          Something went wrong loading these results. Please try again.
+        </div>
+      )}
+
       {/* Stakeholder Videos Grid */}
       {communityItems.length > 0 ? (
         <div className="space-y-12">
@@ -671,6 +715,14 @@ const TabsSection = ({
                   transition={{ delay: (index % 3) * 0.1 }}
                   className="group flex flex-col bg-white border border-brand-dark/10 rounded-2xl overflow-hidden hover:border-brand-turquoise/40 hover:bg-brand-dark/[0.01] transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
                   onClick={() => onItemClick(item)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onItemClick(item)
+                    }
+                  }}
                 >
                   <div className="relative aspect-video overflow-hidden">
                     {item.resolvedThumbnailUrl ? (
@@ -698,9 +750,9 @@ const TabsSection = ({
                     </div>
                   </div>
                   <div className="p-6 flex-1 flex flex-col justify-between">
-                    <h5 className="text-base font-bold text-brand-dark group-hover:text-brand-turquoise transition-colors line-clamp-2 mb-2">
+                    <h3 className="text-base font-bold text-brand-dark group-hover:text-brand-turquoise transition-colors line-clamp-2 mb-2">
                       {item.title}
-                    </h5>
+                    </h3>
                     <p className="text-brand-dark/60 text-xs line-clamp-2">{item.excerpt}</p>
                   </div>
                 </motion.div>
@@ -747,7 +799,7 @@ const TabsSection = ({
   )
 }
 
-export default function NewsEventsClient({ hero, sections }: NewsEventsClientProps) {
+export default function NewsEventsClient({ hero, sections, locale }: NewsEventsClientProps) {
   const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string } | null>(null)
   const [selectedItem, setSelectedItem] = useState<NewsItem | null>(null)
 
@@ -797,9 +849,9 @@ export default function NewsEventsClient({ hero, sections }: NewsEventsClientPro
               Updates & Media
             </span>
             {hero?.title && (
-              <h2 className="lg:text-4xl md:text-3xl text-2xl font-bold text-center text-white mb-4">
+              <h1 className="lg:text-4xl md:text-3xl text-2xl font-bold text-center text-white mb-4">
                 {hero.title}
-              </h2>
+              </h1>
             )}
             {hero?.subtitle && (
               <p className="text-lg md:text-xl text-white/70 text-center max-w-2xl mx-auto leading-relaxed font-light mt-2">
@@ -864,6 +916,7 @@ export default function NewsEventsClient({ hero, sections }: NewsEventsClientPro
         isOpen={!!selectedItem}
         onClose={() => setSelectedItem(null)}
         item={selectedItem}
+        locale={locale}
       />
     </main>
   )
