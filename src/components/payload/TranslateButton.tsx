@@ -24,6 +24,16 @@ export const TranslateButton: React.FC = () => {
     const targetLocales = TARGET_LOCALES.filter((l) => selected[l.code]).map((l) => l.code)
     if (targetLocales.length === 0) return
 
+    // UX-19: this always overwrites whatever draft already exists for the
+    // target locale(s) -- confirm before doing that instead of firing silently.
+    const localeLabels = TARGET_LOCALES.filter((l) => selected[l.code])
+      .map((l) => l.label)
+      .join(', ')
+    const confirmed = window.confirm(
+      `This will overwrite any existing ${localeLabels} draft for this page with a fresh AI translation. Continue?`,
+    )
+    if (!confirmed) return
+
     setLoading(true)
     setError(null)
     setResult(null)
@@ -59,7 +69,8 @@ export const TranslateButton: React.FC = () => {
       <p className="text-xs text-(--theme-elevation-500) mb-3">
         Translates the current English content into the selected language(s) using AI, and saves
         the result as a draft for that language — review it, then Publish to make it live.
-        Requires an API key configured under Settings &gt; AI Translation.
+        Requires an API key configured under Settings &gt; AI Translation (Google Translate) or
+        AI Translation (Gemini — testing), depending on which provider the server is set to use.
       </p>
       <div className="flex flex-wrap items-center gap-4 mb-3">
         {TARGET_LOCALES.map((locale) => (
