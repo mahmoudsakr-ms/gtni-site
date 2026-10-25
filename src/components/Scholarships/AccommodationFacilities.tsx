@@ -110,16 +110,24 @@ const AccommodationFacilities: React.FC<AccommodationFacilitiesProps> = ({
                       )
                     }
                     className="w-14 h-14 rounded-full bg-brand-dark/40 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-brand-turquoise hover:border-brand-turquoise transition-all shadow-2xl"
+                    aria-label="Previous slide"
                   >
-                    <ChevronLeft className="mr-0.5" size={28} />
+                    {/* UX-12: margin made logical (me-0.5 instead of mr-0.5). Whether
+                        this chevron's glyph itself should mirror (point the other way)
+                        under RTL is a design call left for a human to confirm visually
+                        -- not guessed at here. */}
+                    <ChevronLeft className="me-0.5" size={28} />
                   </button>
                   <button
                     onClick={() =>
                       setActiveSlide((prev) => (prev + 1) % accommodationFacilitiesImage.length)
                     }
                     className="w-14 h-14 rounded-full bg-brand-dark/40 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-brand-turquoise hover:border-brand-turquoise transition-all shadow-2xl"
+                    aria-label="Next slide"
                   >
-                    <ChevronRight className="ml-0.5" size={28} />
+                    {/* UX-12: same note as the previous button -- margin logicalized
+                        (ms-0.5), icon-direction-under-RTL left as a human design call. */}
+                    <ChevronRight className="ms-0.5" size={28} />
                   </button>
                 </div>
               </div>
@@ -137,6 +145,7 @@ const AccommodationFacilities: React.FC<AccommodationFacilitiesProps> = ({
                           : 'w-2.5 bg-white/20 hover:bg-white/40'
                       }`}
                       aria-label={`Go to slide ${i + 1}`}
+                      aria-current={activeSlide === i ? 'true' : undefined}
                     />
                   ))}
               </div>
