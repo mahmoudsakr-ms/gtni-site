@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react'
 import { useField } from '@payloadcms/ui'
 import { Input } from '@/components/ui/input'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Mail, Check, X } from 'lucide-react'
 
 import type { EmailFieldClient } from 'payload'
@@ -20,7 +20,7 @@ export const EmailField: React.FC<{
   const description = clientField?.admin?.description
   const required = clientField?.required
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
   const stringVal = typeof value === 'string' ? value : ''
 
   const isValid = useMemo(() => {
@@ -44,6 +44,8 @@ export const EmailField: React.FC<{
           placeholder="email@example.com"
           readOnly={readOnly}
           disabled={readOnly}
+          aria-invalid={showError}
+          aria-describedby={showError ? getFieldErrorId(path) : undefined}
           className="pr-9"
         />
         {isValid !== null && (
@@ -55,6 +57,12 @@ export const EmailField: React.FC<{
             )}
           </span>
         )}
+        {/* UX-14: the valid/invalid state above is purely visual (icon swap) --
+            mirror it into an off-screen live region so screen reader users get
+            the same feedback as sighted users typing in this field. */}
+        <span aria-live="polite" className="sr-only">
+          {isValid === null ? '' : isValid ? 'Valid email address' : 'Invalid email address'}
+        </span>
       </div>
     </FieldWrapper>
   )

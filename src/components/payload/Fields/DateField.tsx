@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import { useField } from '@payloadcms/ui'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Calendar } from 'lucide-react'
 
 import type { DateFieldClient } from 'payload'
@@ -27,7 +27,7 @@ export const DateField: React.FC<{
   const dateConfig = clientField?.admin?.date as DateAdminConfig | undefined
   const pickerAppearance = dateConfig?.pickerAppearance || 'dayAndTime'
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
 
   const inputType = useMemo(() => {
     switch (pickerAppearance) {
@@ -78,6 +78,8 @@ export const DateField: React.FC<{
         onChange={(e) => setValue(e.target.value)}
         readOnly={readOnly}
         disabled={readOnly}
+        aria-invalid={showError}
+        aria-describedby={showError ? getFieldErrorId(path) : undefined}
       />
     </FieldWrapper>
   )

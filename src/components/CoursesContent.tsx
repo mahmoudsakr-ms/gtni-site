@@ -310,7 +310,7 @@ export function CoursesContent({
                   <h3 className="text-2xl font-bold text-white mb-2">
                     {semesters[activeTab]?.name}
                     {semesters[activeTab]?.weeks && (
-                      <span className="text-brand-turquoise ml-2">
+                      <span className="text-brand-turquoise ms-2">
                         ({semesters[activeTab]?.weeks} Weeks)
                       </span>
                     )}
@@ -324,7 +324,7 @@ export function CoursesContent({
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-white/10 text-left">
+                      <tr className="border-b border-white/10 text-start">
                         <th className="px-6 py-4 text-white/50 font-semibold text-sm uppercase tracking-wider">
                           Code
                         </th>

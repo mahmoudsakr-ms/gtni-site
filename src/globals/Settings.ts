@@ -1,4 +1,4 @@
-import type { FieldAccess, FieldHook, GlobalConfig } from 'payload'
+import type { Field, FieldAccess, FieldHook, GlobalConfig } from 'payload'
 
 // Write-only secret field: an authenticated admin can see the (always-blank) input
 // and save a NEW value, but the stored value is never returned by any read -- not
@@ -22,7 +22,45 @@ const writeOnlySecretField = {
   hooks: {
     afterRead: [stripUnlessOverridden],
   },
-} as const
+}
+
+// UX-18: a write-only secret field always renders blank in the admin UI, even
+// when a value IS stored -- there's no way for an admin to tell "a key is set"
+// apart from "nothing was ever configured" without unmasking the real value.
+// Fix: a virtual, read-only companion field placed immediately BEFORE each
+// secret in the `fields` array. Payload's afterRead hooks run per-field in
+// array order against the same mutable sibling-data object, so this status
+// field's hook sees the secret's still-raw value (the secret's own
+// stripUnlessOverridden hook hasn't run yet) and can derive a safe
+// true/false-only string from it ("A value is currently set" / "Not
+// configured") -- never the value itself. `virtual: true` means this field
+// has no DB column, so nothing is ever persisted for it (no risk of the
+// placeholder text getting saved back over the real secret), and it carries
+// the same `canReadIfLoggedIn` access as the real fields for defense in depth
+// even though the global's own access.read already requires a logged-in user.
+const secretStatusField = (secretFieldName: string, label: string): Field => ({
+  name: `${secretFieldName}Status`,
+  type: 'text',
+  label,
+  virtual: true,
+  access: {
+    read: canReadIfLoggedIn,
+  },
+  admin: {
+    readOnly: true,
+    description: 'Shows whether a value is currently stored, without revealing it.',
+  },
+  hooks: {
+    afterRead: [
+      ({ siblingData }) => {
+        const raw = (siblingData as Record<string, unknown> | undefined)?.[secretFieldName]
+        return typeof raw === 'string' && raw.trim().length > 0
+          ? '✓ A value is currently set (hidden)'
+          : 'Not configured'
+      },
+    ],
+  },
+})
 
 export const Settings: GlobalConfig = {
   slug: 'settings',
@@ -92,6 +130,7 @@ export const Settings: GlobalConfig = {
                 description: 'Domain email username used to authenticate with SMTP server',
               },
             },
+            secretStatusField('smtpPass', 'SMTP Password Status'),
             {
               name: 'smtpPass',
               type: 'text',
@@ -115,6 +154,7 @@ export const Settings: GlobalConfig = {
         {
           label: 'Resend API Alternative',
           fields: [
+            secretStatusField('resendApiKey', 'Resend API Key Status'),
             {
               name: 'resendApiKey',
               type: 'text',
@@ -129,6 +169,7 @@ export const Settings: GlobalConfig = {
         {
           label: 'AI Translation (Google Translate)',
           fields: [
+            secretStatusField('googleTranslateApiKey', 'Google Translate API Key Status'),
             {
               name: 'googleTranslateApiKey',
               type: 'text',
@@ -144,6 +185,7 @@ export const Settings: GlobalConfig = {
         {
           label: 'AI Translation (Gemini — testing)',
           fields: [
+            secretStatusField('geminiApiKey', 'Gemini API Key Status'),
             {
               name: 'geminiApiKey',
               type: 'text',

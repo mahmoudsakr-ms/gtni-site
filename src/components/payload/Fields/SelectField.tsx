@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { useField } from '@payloadcms/ui'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { ChevronDown, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { SelectFieldClient } from 'payload'
@@ -21,7 +21,7 @@ export const SelectField: React.FC<{
   const options = (clientField?.options || []) as { label: string; value: string }[]
   const hasMany = clientField?.hasMany
 
-  const { value, setValue } = useField<string | string[]>({ path })
+  const { value, setValue, showError } = useField<string | string[]>({ path })
 
   // Multi-select: toggle card buttons
   if (hasMany) {
@@ -83,6 +83,8 @@ export const SelectField: React.FC<{
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => setValue(e.target.value)}
           disabled={readOnly}
+          aria-invalid={showError}
+          aria-describedby={showError ? getFieldErrorId(path) : undefined}
           className={cn(
             'w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm',
             'shadow-xs transition-colors outline-none appearance-none pr-8',

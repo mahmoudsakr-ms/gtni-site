@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { useField } from '@payloadcms/ui'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { CircleDot, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -21,7 +21,7 @@ export const RadioField: React.FC<{
   const required = clientField?.required
   const options = (clientField?.options || []) as { label: string; value: string }[]
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
 
   return (
     <FieldWrapper
@@ -31,13 +31,20 @@ export const RadioField: React.FC<{
       required={required}
       icon={CircleDot}
     >
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div
+        role="radiogroup"
+        aria-invalid={showError}
+        aria-describedby={showError ? getFieldErrorId(path) : undefined}
+        className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+      >
         {options.map((opt) => {
           const isActive = value === opt.value
           return (
             <button
               key={opt.value}
               type="button"
+              role="radio"
+              aria-checked={isActive}
               onClick={() => !readOnly && setValue(opt.value)}
               disabled={readOnly}
               className={cn(

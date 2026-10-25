@@ -299,6 +299,21 @@ export const FeaturedNewsEventsClient = ({
                         title: currentItem.title,
                       })
                     }
+                    role={currentItem.type === 'video' ? 'button' : undefined}
+                    tabIndex={currentItem.type === 'video' ? 0 : undefined}
+                    aria-label={currentItem.type === 'video' ? `Play video: ${currentItem.title}` : undefined}
+                    onKeyDown={(e) => {
+                      if (
+                        currentItem.type === 'video' &&
+                        (e.key === 'Enter' || e.key === ' ')
+                      ) {
+                        e.preventDefault()
+                        setSelectedVideo({
+                          url: currentItem.videoUrl || '',
+                          title: currentItem.title,
+                        })
+                      }
+                    }}
                   >
                     <div className="absolute -inset-px bg-linear-to-tr from-brand-turquoise/40 via-brand-dark/5 to-transparent rounded-[2.5rem] opacity-30 group-hover:opacity-100 transition-opacity" />
 
@@ -375,6 +390,7 @@ export const FeaturedNewsEventsClient = ({
                 <div className="flex justify-center items-center gap-8 mt-12">
                   <button
                     onClick={prevSlide}
+                    aria-label="Previous slide"
                     className="w-14 h-14 rounded-full border border-brand-dark/10 flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all duration-300"
                   >
                     <ChevronLeft size={24} />
@@ -385,6 +401,8 @@ export const FeaturedNewsEventsClient = ({
                       <button
                         key={i}
                         onClick={() => setCurrentIndex(i)}
+                        aria-label={`Go to slide ${i + 1}`}
+                        aria-current={i === currentIndex ? 'true' : undefined}
                         className={`h-1.5 rounded-full transition-all duration-300 ${
                           i === currentIndex
                             ? 'bg-brand-turquoise w-8'
@@ -396,6 +414,7 @@ export const FeaturedNewsEventsClient = ({
 
                   <button
                     onClick={nextSlide}
+                    aria-label="Next slide"
                     className="w-14 h-14 rounded-full border border-brand-dark/10 flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all duration-300"
                   >
                     <ChevronRight size={24} />

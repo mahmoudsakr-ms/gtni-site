@@ -126,7 +126,7 @@ export const FooterClient = ({ data }: FooterProps) => {
                       href={href}
                       className="group flex items-center gap-3 text-white/50 hover:text-white transition-colors duration-300"
                     >
-                      <motion.span className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all text-brand-turquoise">
+                      <motion.span className="opacity-0 group-hover:opacity-100 -ms-4 group-hover:ms-0 transition-all text-brand-turquoise">
                         <ArrowRight size={14} />
                       </motion.span>
                       <span className="font-medium"><SmartText text={item.label} /></span>

@@ -83,7 +83,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
               <AnimatedSection
                 variant="fade-up"
                 delay={0.3}
-                className="mb-12 border-l-4 border-brand-turquoise pl-6"
+                className="mb-12 border-s-4 border-brand-turquoise ps-6"
               >
                 <p className="lg:text-xl md:text-lg font-bold text-brand-dark">{signature}</p>
                 <p className="text-sm font-medium uppercase tracking-wider text-brand-turquoise mt-1">

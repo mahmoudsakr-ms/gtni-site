@@ -8,6 +8,7 @@ import RichText from '@/components/RichText'
 import RunawayTriangles from './PhysicsTriangle'
 
 import { Vacancy } from '@/payload-types'
+import type { AppLocale } from '@/i18n/routing'
 
 // --- Type Definitions ---
 type Position = NonNullable<Vacancy['positions']>[number]
@@ -33,9 +34,17 @@ const staggerContainer = {
 }
 
 // --- Component ---
-export default function VacanciesClient({ data }: { data: VacanciesPageData }) {
+export default function VacanciesClient({
+  data,
+  locale,
+}: {
+  data: VacanciesPageData
+  locale: AppLocale
+}) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState<string | 'all'>('all')
+  // UX-11: format dates in the active locale instead of always English
+  const dateLocale = locale === 'ar' ? 'ar-EG' : 'en-GB'
 
   // Filter Positions
   const filteredPositions = useMemo(() => {
@@ -65,8 +74,12 @@ export default function VacanciesClient({ data }: { data: VacanciesPageData }) {
           <div className="absolute inset-0">
             <Image
               src={data.heroImage.url}
-              alt="Vacancies Hero Image"
-              className="w-full h-full object-cover scale-110"
+              alt={data.heroTitle || 'Vacancies Hero'}
+              fill
+              sizes="100vw"
+              quality={100}
+              priority
+              className="object-cover scale-110"
               style={{ transform: 'translateZ(0)' }}
             />
             {/* Multi-layer Gradient Overlay */}
@@ -177,7 +190,7 @@ export default function VacanciesClient({ data }: { data: VacanciesPageData }) {
           <div className="flex flex-col md:flex-row gap-4 mb-12 sticky top-24 z-30">
             <div className="relative flex-1">
               <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute start-4 top-1/2 -translate-y-1/2 text-gray-400"
                 size={20}
               />
               <input
@@ -185,12 +198,12 @@ export default function VacanciesClient({ data }: { data: VacanciesPageData }) {
                 placeholder="Search positions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white border border-gray-200 focus:border-brand-turquoise focus:ring-4 focus:ring-brand-turquoise/10 outline-none transition-all shadow-lg shadow-gray-100/50 text-brand-dark font-medium"
+                className="w-full ps-12 pe-6 py-4 rounded-2xl bg-white border border-gray-200 focus:border-brand-turquoise focus:ring-4 focus:ring-brand-turquoise/10 outline-none transition-all shadow-lg shadow-gray-100/50 text-brand-dark font-medium"
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full text-gray-400 transition-colors"
+                  className="absolute end-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full text-gray-400 transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -237,7 +250,7 @@ export default function VacanciesClient({ data }: { data: VacanciesPageData }) {
               {filteredPositions.length > 0 ? (
                 filteredPositions.map((position, index) => (
                   <motion.div
-                    key={index}
+                    key={position.id ?? index}
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -271,7 +284,7 @@ export default function VacanciesClient({ data }: { data: VacanciesPageData }) {
                           {position.deadline && (
                             <span className="flex items-center gap-2">
                               <Clock size={16} />
-                              Deadline: {new Date(position.deadline).toLocaleDateString('en-GB')}
+                              Deadline: {new Date(position.deadline).toLocaleDateString(dateLocale)}
                             </span>
                           )}
                         </div>
@@ -337,6 +350,12 @@ export default function VacanciesClient({ data }: { data: VacanciesPageData }) {
          SECTION 4: CTA
       ════════════════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-brand-dark text-white relative overflow-hidden mt-auto">
+        {/* UX-25: decorative texture loaded from transparenttextures.com (third-party
+            dependency: an extra DNS/TLS round trip, and the page breaks slightly if
+            that domain is ever down). Low priority since it's purely decorative
+            (opacity-5) -- self-hosting would mean downloading cubes.png into
+            public/images/ and swapping this url() for a local path; not done here
+            since no local copy exists yet and this pass is scoped to quick fixes. */}
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
         <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div

@@ -3,7 +3,7 @@ import React from 'react'
 import { useField } from '@payloadcms/ui'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { MapPin } from 'lucide-react'
 
 import type { PointFieldClient } from 'payload'
@@ -21,7 +21,7 @@ export const PointField: React.FC<{
   const description = clientField?.admin?.description
   const required = clientField?.required
 
-  const { value, setValue } = useField<[number, number]>({ path })
+  const { value, setValue, showError } = useField<[number, number]>({ path })
   const lng = Array.isArray(value) ? value[0] : 0
   const lat = Array.isArray(value) ? value[1] : 0
 
@@ -52,6 +52,8 @@ export const PointField: React.FC<{
             step="any"
             readOnly={readOnly}
             disabled={readOnly}
+            aria-invalid={showError}
+            aria-describedby={showError ? getFieldErrorId(path) : undefined}
             placeholder="0.0000"
           />
         </div>
@@ -64,6 +66,8 @@ export const PointField: React.FC<{
             step="any"
             readOnly={readOnly}
             disabled={readOnly}
+            aria-invalid={showError}
+            aria-describedby={showError ? getFieldErrorId(path) : undefined}
             placeholder="0.0000"
           />
         </div>

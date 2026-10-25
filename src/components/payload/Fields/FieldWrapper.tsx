@@ -19,6 +19,16 @@ interface FieldWrapperProps {
   headerExtra?: React.ReactNode
 }
 
+/**
+ * Stable, derivable id for a field's error message element, based on its
+ * Payload form path. Individual field components use this same function to
+ * compute `aria-describedby` so they stay in sync with FieldWrapper without
+ * needing any shared state -- just the same `path` prop every field already
+ * receives.
+ */
+export const getFieldErrorId = (path: string): string =>
+  `field-error-${path.replace(/[^a-zA-Z0-9_-]/g, '-')}`
+
 export const getLocalizedLabel = (label: unknown): string => {
   if (!label) return ''
   if (typeof label === 'string') return label
@@ -156,7 +166,11 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
 
       {/* Error */}
       {showError && errorMessage && (
-        <div className="flex items-center gap-1.5 mt-2.5 px-2.5 py-1.5 rounded-lg bg-red-500/8">
+        <div
+          id={getFieldErrorId(path)}
+          role="alert"
+          className="flex items-center gap-1.5 mt-2.5 px-2.5 py-1.5 rounded-lg bg-red-500/8"
+        >
           <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
           <p className="text-xs text-red-500 font-medium">{errorMessage}</p>
         </div>

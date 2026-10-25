@@ -269,7 +269,7 @@ export const AdmissionClient: React.FC<{ data: Admission }> = ({ data }) => {
                 <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-brand-turquoise/10 to-transparent pointer-events-none" />
 
-                <h3 className="lg:text-3xl md:text-2xl text-xl font-bold text-white mb-8 border-l-4 border-brand-turquoise pl-4 flex items-center gap-3">
+                <h3 className="lg:text-3xl md:text-2xl text-xl font-bold text-white mb-8 border-s-4 border-brand-turquoise ps-4 flex items-center gap-3">
                   {data.admissionDecisionTitle}
                 </h3>
 
@@ -389,11 +389,14 @@ export const AdmissionClient: React.FC<{ data: Admission }> = ({ data }) => {
                   </h3>
                 </div>
 
-                <div className="relative border-l-2 border-white/10 ml-4 space-y-10">
+                <div className="relative border-s-2 border-white/10 ms-4 space-y-10">
                   {data.applicationStepsList?.map((step, i) => (
-                    <div key={i} className="relative pl-10 group">
-                      {/* Timeline Dot */}
-                      <span className="absolute left-[-1.35rem] top-0 flex items-center justify-center w-10 h-10 rounded-full bg-brand-dark border-4 border-white/10 text-brand-turquoise font-bold text-sm group-hover:border-brand-turquoise group-hover:bg-brand-turquoise group-hover:text-brand-dark transition-all duration-300 shadow-xl">
+                    <div key={i} className="relative ps-10 group">
+                      {/* Timeline Dot -- start-[-1.35rem] (not the originally-flagged
+                          left-[-1.35rem]) so the dot stays centered on the
+                          border-s-2 rail above instead of drifting to the wrong
+                          side once that rail mirrors under RTL. */}
+                      <span className="absolute start-[-1.35rem] top-0 flex items-center justify-center w-10 h-10 rounded-full bg-brand-dark border-4 border-white/10 text-brand-turquoise font-bold text-sm group-hover:border-brand-turquoise group-hover:bg-brand-turquoise group-hover:text-brand-dark transition-all duration-300 shadow-xl">
                         {i + 1}
                       </span>
 

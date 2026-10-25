@@ -319,7 +319,18 @@ export const AboutOtherMembers = ({ title, subtitle, items }: AboutLeadershipPro
                 viewport={{ once: true }}
                 transition={{ delay: (index % itemsToShow) * 0.1, duration: 0.5 }}
               >
-                <div className="group relative cursor-pointer" onClick={() => openModal(member)}>
+                <div
+                  className="group relative cursor-pointer"
+                  onClick={() => openModal(member)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      openModal(member)
+                    }
+                  }}
+                >
                   <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-gray-900 border border-white/5 group-hover:border-brand-turquoise/50 transition-colors duration-500 shadow-xl">
                     {member.photo?.url ? (
                       <Image

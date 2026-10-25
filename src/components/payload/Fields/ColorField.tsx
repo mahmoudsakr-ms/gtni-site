@@ -2,7 +2,7 @@
 import React from 'react'
 import { useField } from '@payloadcms/ui'
 import { Input } from '@/components/ui/input'
-import { FieldWrapper, getLocalizedLabel } from './FieldWrapper'
+import { FieldWrapper, getFieldErrorId, getLocalizedLabel } from './FieldWrapper'
 import { Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +34,7 @@ export const ColorField: React.FC<{
   const description = clientField?.admin?.description
   const required = clientField?.required
 
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue, showError } = useField<string>({ path })
   const stringVal = typeof value === 'string' ? value : '#000000'
 
   return (
@@ -66,6 +66,8 @@ export const ColorField: React.FC<{
             placeholder="#000000"
             readOnly={readOnly}
             disabled={readOnly}
+            aria-invalid={showError}
+            aria-describedby={showError ? getFieldErrorId(path) : undefined}
             className="font-mono text-sm uppercase"
             maxLength={7}
           />

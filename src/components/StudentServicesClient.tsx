@@ -232,7 +232,7 @@ export const StudentServicesClient: React.FC<StudentServicesClientProps> = ({ da
                                 {headers.map((header, idx) => (
                                   <th
                                     key={idx}
-                                    className="px-4 py-3 text-left text-sm font-bold border border-gray-700"
+                                    className="px-4 py-3 text-start text-sm font-bold border border-gray-700"
                                   >
                                     {header}
                                   </th>
