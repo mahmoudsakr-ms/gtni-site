@@ -1,9 +1,15 @@
 import { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-import { getPublicBaseUrl } from '@/utilities/publicUrl'
+import { getPublicBaseUrl, NOINDEX } from '@/utilities/publicUrl'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // A noindex deployment has nothing worth listing -- every page already tells
+  // crawlers not to index it via metadata.robots (see the root layout), so an
+  // empty sitemap (skipping the Payload fetch below entirely) is correct, not
+  // just "mostly" correct.
+  if (NOINDEX) return []
+
   const baseUrl = getPublicBaseUrl()
   const currentDate = new Date()
 

@@ -17,3 +17,13 @@ export function getPublicBaseUrl(): string {
   const origin = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gtni.edu.eg'
   return `${origin}${BASE_PATH}`
 }
+
+/**
+ * Set NEXT_PUBLIC_NOINDEX=true for a deployment that shouldn't be indexed by
+ * search engines at all -- e.g. a parallel/staging mount under `basePath`
+ * living alongside the real production site on the same domain. Read by the
+ * root layout (sitewide `robots` metadata) and the sitemap (which returns no
+ * entries at all in that case, since there's nothing to usefully list for
+ * pages search engines have been told not to index).
+ */
+export const NOINDEX = process.env.NEXT_PUBLIC_NOINDEX === 'true'

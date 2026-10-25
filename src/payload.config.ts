@@ -98,6 +98,12 @@ export default buildConfig({
   // Explicit instead of relying on Payload's defaults — scoped to the site's own origin.
   cors: [process.env.NEXT_PUBLIC_SERVER_URL].filter((v): v is string => Boolean(v)),
   csrf: [process.env.NEXT_PUBLIC_SERVER_URL].filter((v): v is string => Boolean(v)),
+  // Configurable so a parallel deployment on the same domain (e.g. under basePath
+  // '/new') can use a distinct cookie name ('payload-new-token' etc.) instead of
+  // colliding with the main site's 'payload-token' cookie -- cookies are scoped
+  // by domain, not by basePath, so two Payload instances on the same domain would
+  // otherwise overwrite each other's session. Defaults to Payload's own default.
+  cookiePrefix: process.env.PAYLOAD_COOKIE_PREFIX || 'payload',
   localization: {
     locales: [
       { code: 'en', label: 'English' },

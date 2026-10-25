@@ -4,6 +4,23 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-25 (4) — /new deployment's full env var set, and a reconfirmed gotcha
+
+**The `/new` parallel-mount deployment now needs 3 env vars together** (all optional/off by default,
+so the main site needs none of them): `NEXT_PUBLIC_BASE_PATH=/new`, `PAYLOAD_COOKIE_PREFIX=payload-new`
+(prevents cookie collision with the main site's `payload-token` on the same domain), and
+`NEXT_PUBLIC_NOINDEX=true` (sitewide `noindex,nofollow` + empty sitemap, since `/new` shouldn't be
+indexed separately from the real site). All three were verified together, as the real intended
+combination, in one `pnpm run build && next start` run — not just individually.
+
+**Reconfirmed gotcha (same class as earlier `.next` cache incidents)**: editing `src/payload.config.ts`
+while a dev server has it already loaded leaves that server in a broken state (500s) until restarted
+— hot-reload doesn't reliably pick up core Payload config changes the way it does for page/component
+edits. Always restart (`pnpm run devsafe`) after touching `payload.config.ts`, don't assume dev mode
+will catch it.
+
+---
+
 ## 2026-10-25 (3) — basePath support added; one real Next.js matcher gotcha to remember
 
 **How to run it locally**: set `NEXT_PUBLIC_BASE_PATH=/new` (any value, including empty/unset for

@@ -4,6 +4,42 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-25 (4) — Pre-deploy prep for the /new parallel mount: cookie isolation + noindex
+
+**Status**: ✅ Done, verified with a real `pnpm run build && next start`. Committed and pushed.
+
+Two small additions specifically because `/new` is meant to run **alongside** the live production
+site on the same domain, not replace it:
+
+**1. `cookiePrefix` is now configurable** (`PAYLOAD_COOKIE_PREFIX` env var, defaults to Payload's own
+`'payload'` default when unset — zero change for the main site). Cookies are scoped by domain, not by
+`basePath`, so without this, both the live site's Payload instance and the `/new` one would fight over
+the same `payload-token` cookie name on the same domain — logging into one would clobber the other's
+session. Setting `PAYLOAD_COOKIE_PREFIX=payload-new` for the `/new` deployment gives it its own
+`payload-new-token` cookie, fully isolated.
+
+**2. `NEXT_PUBLIC_NOINDEX=true`** adds `robots: { index: false, follow: false }` to the sitewide
+metadata (every page, both locales — confirmed live, no page currently overrides `metadata.robots`
+itself so this one sitewide default reaches all of them) and makes `sitemap.ts` return an empty
+`<urlset>` instead of doing the Payload fetch at all — there's nothing useful to list for pages search
+engines have already been told not to index. `robots.txt`'s existing `Disallow` rules are unrelated
+and untouched.
+
+**Verified via a real `pnpm run build && next start`** on an isolated port, with
+`NEXT_PUBLIC_BASE_PATH=/new`, `PAYLOAD_COOKIE_PREFIX=payload-new`, and `NEXT_PUBLIC_NOINDEX=true` all
+set together (the actual intended `/new` configuration): login sets `payload-new-token` (not
+`payload-token`), `/new/admin` works fully authenticated with that cookie, every page's rendered HTML
+has the `noindex, nofollow` meta tag, `sitemap.xml` is empty, `robots.txt` unchanged. Then separately
+re-verified on the plain dev server (both env vars unset) that default behavior is completely
+unaffected: plain `payload-token` cookie, no robots meta tag, sitemap fully populated. `pnpm run lint`
+and `tsc --noEmit` both clean.
+
+**Gotcha hit again, same as before**: editing `payload.config.ts` while the dev server was still
+running left it serving a stale/broken state (500 on `/admin`) — same class of issue as earlier
+schema-change-while-running incidents this project has hit. Fixed with the usual `pnpm run devsafe`
+restart. Worth remembering: any `payload.config.ts` edit warrants a dev-server restart, not just
+relying on hot-reload.
+
 ## 2026-10-25 (3) — basePath: '/new' support, verified via a real pnpm build && pnpm start
 
 **Status**: ✅ Done, verified end-to-end with a real production build + start (not dev mode) on an

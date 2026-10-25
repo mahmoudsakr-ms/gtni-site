@@ -6,7 +6,7 @@ import { Nav } from '@/components/Nav'
 import { Footer } from '@/components/Footer'
 import { JsonLd } from '@/components/JsonLd'
 import { routing, type AppLocale } from '@/i18n/routing'
-import { getPublicBaseUrl } from '@/utilities/publicUrl'
+import { getPublicBaseUrl, NOINDEX } from '@/utilities/publicUrl'
 
 export const metadata = {
   metadataBase: new URL(getPublicBaseUrl()),
@@ -25,6 +25,10 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
   },
+  // No individual page currently sets its own `robots` field, so this sitewide
+  // default (NEXT_PUBLIC_NOINDEX=true -- a parallel/staging deployment that
+  // shouldn't be indexed) applies to every page unchanged.
+  ...(NOINDEX && { robots: { index: false, follow: false } }),
 }
 
 export function generateStaticParams() {
