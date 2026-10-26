@@ -99,6 +99,11 @@ export const FooterClient = ({ data }: FooterProps) => {
                     href={sanitizeUrl(social.url)}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={
+                      social.platform
+                        ? social.platform.charAt(0).toUpperCase() + social.platform.slice(1)
+                        : 'Social media link'
+                    }
                     whileHover={{ scale: 1.2, y: -5, rotate: 8 }}
                     className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-brand-turquoise hover:border-brand-turquoise/50 hover:bg-brand-turquoise/10 transition-all duration-300 shadow-lg shadow-black/20"
                   >

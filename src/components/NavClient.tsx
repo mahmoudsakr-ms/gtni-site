@@ -187,7 +187,7 @@ export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 text-brand-dark focus:outline-none"
+            className="lg:hidden p-2 text-brand-dark rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2"
             onClick={() => setIsOpen(!isOpen)}
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isOpen}
