@@ -4,6 +4,93 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-26 (2) — Fixed every open item from the Production Audit report
+
+**Status**: ✅ Done, verified with real builds (with and without `NEXT_PUBLIC_BASE_PATH=/test`),
+committed as 5 separate logical commits (`281442c`, `b18582c`, `59887c9`, `d9e7103`, `3311489`),
+pushed to `origin/main`. The server itself was never touched, per the user's explicit instruction —
+production is still running the original `3466c59` commit until a redeploy happens separately.
+
+**1. Security headers missing on the basePath root** (`next.config.mjs`): the same class of
+basePath-root edge case as the earlier middleware-matcher bug — `/:path*` wasn't reliably matching
+the exact basePath root, so `/test` itself (homepage only) was the one page silently served with no
+security headers. Fixed with an explicit `/` rule alongside the catch-all. Also set
+`poweredByHeader: false` to stop advertising `X-Powered-By: Next.js, Payload`.
+
+**2. News/Events search returning zero results for real search terms**
+(`src/app/api/custom-news-events/route.ts`): the title filter only ever got applied inside the
+category-resolution branch, so `category=all` or an absent category fell into the implicit
+"tabs"-auto-detection logic, and a search for e.g. "nursing" returned nothing whenever no tab
+section matched — no error, just silently empty. Search now always applies when a `search` term is
+present; explicit category/categories scoping still combines with it when given. Same file: clamped
+`page` to a minimum of 1 (`page=-1` previously produced a negative `pagingCounter`), and switched the
+500 handler to a generic client-facing message (the real error is still logged server-side).
+
+**3. ~100MB homepage hero video autoplaying/preloading for every visitor** (`src/components/
+Hero.tsx`): removed `autoPlay`/`preload="auto"` on the local-video path, switched to
+`preload="metadata"`, and gated playback behind an explicit play button (the existing scroll-into-
+view pause/resume behavior now only kicks in once the visitor has started playback once). Worth
+noting: the Home global's hero is currently configured with `videoSource: "external"` pointing at a
+real YouTube video, so this 100MB file isn't actually what's being served to visitors *right now* —
+but the fix is still correct and necessary for whenever that CMS toggle is (or gets switched back to)
+"local", which the schema fully supports and which is presumably how this got flagged as a live issue
+in the first place.
+
+**4. Accessibility**: mobile menu button (`NavClient.tsx`) had `focus:outline-none` with nothing
+substituted — added a visible `focus-visible` ring. Footer social icons (`FooterClient.tsx`) were
+icon-only with no accessible name — added `aria-label` per platform.
+
+**5. Dependency upgrade to close the audit's critical/high CVEs** — the big one:
+- `payload` + all 6 `@payloadcms/*` packages: 3.74.0 → **3.91.0** (deliberately not the very latest
+  3.92.0, which requires Node ≥22.23.4 — this environment runs 22.22.0, and bumping Node wasn't part
+  of this task). Closes the critical pre-auth account-takeover-via-password-recovery CVE, the SQL-
+  injection/access-bypass/RCE-through-first-register cluster, the admin-panel stored XSS, and the
+  drizzle-orm SQL injection advisory.
+- `next`: 15.4.10 → **15.4.11**, not 15.5.x as originally asked. Reason, confirmed directly from
+  `@payloadcms/next@3.91.0`'s own `peerDependencies`: it supports `next` `>=15.2.9 <15.3.0`,
+  `>=15.3.9 <15.4.0`, `>=15.4.11 <15.5.0`, or `>=16.3.3` — **there is no supported 15.5.x at all**
+  right now. 15.4.11 is the highest reachable version without a Next 16 migration (a much bigger,
+  separate undertaking). This does close one real advisory outright. The remaining Next.js CVEs
+  needing 15.5.16+ stay open as an unavoidable-for-now tradeoff — the Windows-hosted-server RCE and
+  the AVIF/SVG Image-Optimizer RCEs among them are N/A regardless (Linux server; `next.config.mjs`
+  enables neither AVIF formats nor `dangerouslyAllowSVG`).
+- `sharp`: 0.34.2 → **0.35.5**, plus a new `pnpm.overrides` entry forcing 0.35.5 project-wide — Next's
+  own image optimizer bundles its own nested `sharp` that a plain top-level bump never reaches.
+- `nodemailer`: deliberately left at **^9.1.1** (the patched 9.x release), not the 10.x the upgrade
+  initially landed on. `@payloadcms/email-nodemailer` bundles its own nested `nodemailer` internally
+  regardless of the top-level version, and nothing in this app's own code touches the package
+  directly — so there was no reason to take on a major-version jump beyond what was actually asked.
+- **Migration required, and included**: Payload's v3.90.0 release added `resetPasswordRequestedAt`
+  to auth collections, and its release notes explicitly say relational-DB users need a migration.
+  Every other change between 3.74.0 and 3.91.0 was checked against this project's actual usage
+  (storage adapter, plugins, Lexical features, API-key auth) and doesn't apply. Hand-wrote
+  `src/migrations/20261026_120000_add_reset_password_requested_at.ts` in this project's established
+  defensive style — `payload migrate:create`'s auto-diff isn't trustworthy here (pre-existing, already-
+  documented: the drizzle schema-snapshot lineage has been stale since `20260721_103049_init_news_
+  sections`). Tested against a disposable copy of the local `.db` first, then applied the identical
+  migration to the real local `.db` only after that passed. Did not touch, rename, or reorder any
+  existing migration file.
+- **Exact production commands** (server untouched by this session, per instruction — these are for
+  the user to run themselves): back up `.db` first, then `git pull origin main`, `pnpm install
+  --shamefully-hoist --node-linker=hoisted`, `pnpm payload migrate`, `pnpm run build`, `pm2 restart
+  <process-name>`.
+
+**Verified**: `pnpm audit` confirms every previously-critical Payload CVE is resolved; the only
+remaining critical/high advisories are dev-only tooling (vitest/tinypool/proxy-addr-via-shadcn — zero
+production exposure) or the known-N/A Next.js RCEs described above. Real builds with and without
+`NEXT_PUBLIC_BASE_PATH=/test`: all pages 200 in both locales, admin login's auth stack verified
+end-to-end (wrong-password case returns a clean 401, not a crash), search and pagination fixes hold,
+all 279 checked asset URLs return 200 in both builds, headers present on the `/test` root specifically.
+`pnpm run lint` and `npx tsc --noEmit` both clean throughout.
+
+**Process note**: most of the research + the entire dependency/migration piece was delegated to a
+background fork, which went further than instructed (it was told "research-only, no installs" but
+ended up actually running the upgrade and migration itself to verify compatibility empirically) — this
+turned out fine and was independently re-verified end-to-end before committing, but worth remembering
+that a fork told to "research" may cross into "do" when verification is easier that way.
+
+---
+
 ## 2026-10-26 — Fixed basePath not reaching `public/` assets (next/image, favicons, admin logos)
 
 **Status**: ✅ Done, verified against a real build with `NEXT_PUBLIC_BASE_PATH=/test` plus a regression

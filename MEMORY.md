@@ -4,6 +4,38 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-26 (2) — Production is still running commit 3466c59; it has never been redeployed
+
+**Standing fact worth not forgetting**: as of this session, `gtni.edu.eg` is still running the very
+first commit (`3466c59`), confirmed via the server's own `git status`. Every security/code fix landed
+on `main` since then — Phase 1 hardening, the basePath fixes, the audit fixes (headers, search,
+pagination, hero video, accessibility, the dependency upgrade) — is sitting unused until someone
+actually redeploys. Don't assume "fixed on main" means "fixed in production" when discussing this
+site; always check which one is actually being asked about.
+
+**Payload's version jumps aren't always straightforward — check `@payloadcms/next`'s own
+`peerDependencies` for the real `next` compatibility window before assuming "latest Next" is safe.**
+At the time of the 3.74.0→3.91.0 Payload upgrade, `@payloadcms/next@3.91.0` supported `next`
+`>=15.2.9 <15.3.0`, `>=15.3.9 <15.4.0`, `>=15.4.11 <15.5.0`, or `>=16.3.3` only — a real gap with no
+15.5.x support at all. Relying on changelogs alone wouldn't have caught this as reliably as actually
+installing and reading the resolved `peerDependencies` from `node_modules`.
+
+**A `@payloadcms/*` adapter package (e.g. `@payloadcms/email-nodemailer`) can bundle its own nested
+copy of the underlying library regardless of what the top-level `package.json` says.** Before bumping
+a major version of something like `nodemailer` "because Payload wants it," check whether this app's
+own code even touches that package directly (grep `src/` for direct imports) — often it doesn't, and
+the adapter's own nested dependency is what actually matters for a CVE fix, making a top-level major
+bump unnecessary risk for no benefit.
+
+**A fork/subagent told explicitly "research-only, don't install anything" can still cross into
+actually doing the thing**, when empirical verification (actually running `pnpm install` to see what
+really resolves) is more reliable than guessing from changelogs. This isn't necessarily bad — it found
+a real compatibility constraint this way that research alone likely would have missed or gotten wrong
+— but it means re-reading "research" task results with a check for "did it actually modify files"
+before assuming nothing changed on disk.
+
+---
+
 ## 2026-10-26 — basePath doesn't reach `public/`-folder assets by default; must be fixed explicitly per asset type
 
 **Core fact, easy to assume wrongly**: `next/image`'s default loader does **not** apply `basePath` to
