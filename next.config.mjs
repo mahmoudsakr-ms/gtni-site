@@ -62,21 +62,28 @@ const nextConfig = {
     ]
   },
 
+  // Don't advertise the framework in responses (was leaking "X-Powered-By: Next.js, Payload").
+  poweredByHeader: false,
+
   // Baseline security headers, site-wide. Deliberately NOT including a Content-Security-Policy
   // here yet — Payload's admin panel is sensitive to CSP misconfiguration (risk of locking out
   // admin access) and needs dedicated testing before one is added; tracked as follow-up work.
   async headers() {
+    const securityHeaders = [
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+    ]
     return [
-      {
-        source: '/:path*',
-        headers: [
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-        ],
-      },
+      // Explicit '/' rule alongside the catch-all below -- under `basePath`, a request for
+      // exactly the basePath root doesn't reliably pick up the '/:path*' rule (the same class
+      // of basePath-root edge case already fixed for the middleware matcher in
+      // src/middleware.ts); without this, the homepage was the one page silently served with
+      // no security headers at all under a basePath. A no-op duplicate when basePath is unset.
+      { source: '/', headers: securityHeaders },
+      { source: '/:path*', headers: securityHeaders },
     ]
   },
 
