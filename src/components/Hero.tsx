@@ -27,6 +27,10 @@ export const HeroClient: React.FC<HeroProps> = ({
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isMuted, setIsMuted] = useState(true) // Default to sound ON
+  // The local hero video is a ~100MB file -- it must never download/play until the visitor
+  // explicitly asks for it, so playback (for the local-video case only) starts paused and
+  // only begins once this is true, set by the play-button click handler below.
+  const [hasStarted, setHasStarted] = useState(false)
   const containerRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -93,6 +97,7 @@ export const HeroClient: React.FC<HeroProps> = ({
     const handlePlayback = async () => {
       if (type === 'video') {
         if (videoSource === 'local' && videoRef.current) {
+          if (!hasStarted) return
           if (isInView) {
             try {
               await videoRef.current.play()
@@ -122,7 +127,7 @@ export const HeroClient: React.FC<HeroProps> = ({
       }
     }
     handlePlayback()
-  }, [isInView, type, videoSource, sendYoutubeCommand, disableCaptionsRepeatedly])
+  }, [isInView, type, videoSource, hasStarted, sendYoutubeCommand, disableCaptionsRepeatedly])
 
   // Handle YouTube mute/unmute state changes without reloading the iframe
   useEffect(() => {
@@ -154,17 +159,31 @@ export const HeroClient: React.FC<HeroProps> = ({
         {type === 'video' ? (
           <>
             {videoSource === 'local' && videoUrl ? (
-              <video
-                ref={videoRef}
-                autoPlay
-                muted={isMuted}
-                loop
-                playsInline
-                preload="auto"
-                className="h-full w-full object-cover opacity-80"
-              >
-                <source src={videoUrl} type="video/mp4" />
-              </video>
+              <>
+                <video
+                  ref={videoRef}
+                  muted={isMuted}
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="h-full w-full object-cover opacity-80"
+                >
+                  <source src={videoUrl} type="video/mp4" />
+                </video>
+                {!hasStarted && (
+                  <button
+                    onClick={() => setHasStarted(true)}
+                    aria-label="Play video"
+                    className="absolute inset-0 z-20 flex items-center justify-center bg-brand-dark/30 hover:bg-brand-dark/40 transition-colors cursor-pointer group"
+                  >
+                    <span className="flex items-center justify-center w-20 h-20 rounded-full bg-white/90 group-hover:bg-white transition-colors shadow-lg">
+                      <svg viewBox="0 0 24 24" className="w-8 h-8 text-brand-dark translate-x-0.5" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </span>
+                  </button>
+                )}
+              </>
             ) : (
               youtubeUrl && (
                 <div className="absolute inset-0 w-full h-full opacity-80 pointer-events-none">
@@ -184,7 +203,8 @@ export const HeroClient: React.FC<HeroProps> = ({
             )}
             {/* <div className="absolute inset-0 bg-linear-to-b from-brand-dark/40 via-transparent to-brand-dark/60 pointer-events-none"></div> */}
 
-            {/* Sound Control Button */}
+            {/* Sound Control Button -- hidden for the local video until playback has actually started */}
+            {(videoSource !== 'local' || hasStarted) && (
             <button
               onClick={() => setIsMuted(!isMuted)}
               className="absolute bottom-10 right-10 z-30 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all cursor-pointer group"
@@ -195,6 +215,7 @@ export const HeroClient: React.FC<HeroProps> = ({
                 {isMuted ? 'Enable Sound' : 'Mute Sound'}
               </span>
             </button>
+            )}
           </>
         ) : (
           <AnimatePresence mode="wait">
