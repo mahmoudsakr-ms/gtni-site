@@ -39,6 +39,7 @@ import { BeforeLogin as BeforeLogin_4352e591a465a83c47faca366d5b7026 } from '@/e
 import { Dashboard as Dashboard_0be6bf55bfecaae57c200bf83ac9ae33 } from '@/elements/Dashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
+/** @type import('payload').ImportMap */
 export const importMap = {
   "@/components/UploadLoader#UploadLoader": UploadLoader_bfa78d67b182e63a16cb0b45c7d16313,
   "@/components/CategoryCell#CategoryCell": CategoryCell_d96afb08497116bd4bbafb33360ae94e,

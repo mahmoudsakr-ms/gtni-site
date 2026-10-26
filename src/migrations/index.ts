@@ -19,6 +19,7 @@ import * as migration_20260811_125300_add_epslo_category_image from './20260811_
 import * as migration_20260811_132000_remove_nursing_programs_courses_table from './20260811_132000_remove_nursing_programs_courses_table';
 import * as migration_20260811_162000_add_admin_members from './20260811_162000_add_admin_members';
 import * as migration_20260811_170000_remove_settings_global from './20260811_170000_remove_settings_global';
+import * as migration_20261026_120000_add_reset_password_requested_at from './20261026_120000_add_reset_password_requested_at';
 
 export const migrations = [
   {
@@ -125,5 +126,10 @@ export const migrations = [
     up: migration_20260811_170000_remove_settings_global.up,
     down: migration_20260811_170000_remove_settings_global.down,
     name: '20260811_170000_remove_settings_global'
+  },
+  {
+    up: migration_20261026_120000_add_reset_password_requested_at.up,
+    down: migration_20261026_120000_add_reset_password_requested_at.down,
+    name: '20261026_120000_add_reset_password_requested_at'
   },
 ];
