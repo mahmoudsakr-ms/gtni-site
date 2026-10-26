@@ -6,13 +6,18 @@ import { Nav } from '@/components/Nav'
 import { Footer } from '@/components/Footer'
 import { JsonLd } from '@/components/JsonLd'
 import { routing, type AppLocale } from '@/i18n/routing'
-import { getPublicBaseUrl, NOINDEX } from '@/utilities/publicUrl'
+import { getPublicBaseUrl, NOINDEX, BASE_PATH } from '@/utilities/publicUrl'
 
 export const metadata = {
   metadataBase: new URL(getPublicBaseUrl()),
   description: 'Gouna Technical Nursing Institute Official Website',
+  // Explicit BASE_PATH rather than relying on metadataBase's relative-URL
+  // resolution for this field specifically -- kept consistent with every other
+  // favicon/local-asset reference in the app now being explicit, after finding
+  // next/image's own default loader does NOT apply basePath to local `src`
+  // paths (confirmed by reading next/dist/shared/lib/image-loader.js).
   icons: {
-    icon: '/favicon.ico',
+    icon: `${BASE_PATH}/favicon.ico`,
   },
   title: {
     default: 'GTNI | Gouna Technical Nursing Institute',

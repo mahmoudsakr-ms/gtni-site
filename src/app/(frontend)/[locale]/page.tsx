@@ -10,6 +10,7 @@ import { FeaturedNewsEvents } from '@/components/FeaturedNewsEvents'
 import { StudentTestimonials } from '@/components/StudentTestimonials'
 import { Metadata } from 'next'
 import { buildLocaleAlternates } from '@/utilities/localeMetadata'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 type PageProps = { params: Promise<{ locale: string }> }
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   })
 
   // Determine OG Image
-  let ogImage = '/favicon.ico'
+  let ogImage = `${BASE_PATH}/favicon.ico`
   const hero = homeData?.hero
   if (
     hero?.type === 'slider' &&

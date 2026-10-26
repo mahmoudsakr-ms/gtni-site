@@ -4,6 +4,67 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-26 — Fixed basePath not reaching `public/` assets (next/image, favicons, admin logos)
+
+**Status**: ✅ Done, verified against a real build with `NEXT_PUBLIC_BASE_PATH=/test` plus a regression
+pass with no basePath set. Committed and pushed.
+
+**The bug, caught by the user's own testing against a live `/test` deployment, not found locally**:
+every `/new`/basePath fix from 2026-10-25 (3) covered Payload-internal URLs (admin, REST API, media
+uploads) and a handful of hardcoded client fetches, but missed a whole separate category — **any `src`
+pointing at a file physically in `public/`**. `next/image`'s own default loader does **not** apply
+`basePath` to the `url` query param it builds; it `encodeURIComponent()`s the raw `src` untouched
+(confirmed by reading the installed `next/dist/shared/lib/image-loader.js` directly). So under
+`basePath=/test`, `GET /test/_next/image?url=%2FGTNI-logo-15yer.png&w=256&q=75` 400'd, while the
+equivalent request for a CMS/Payload-media image (already basePath-correct via Payload's own internals)
+returned 200. My earlier claim in the 2026-10-25 (3) entry that this "just worked" was never actually
+verified end-to-end — only that the HTML `src` attribute string looked right, not that the underlying
+image request succeeded.
+
+**Full-repo sweep for every other local-`public/`-asset reference, not just `next/image`**: searched for
+`<img>`/`<video>`/`<Image>` `src`, `fetch()` calls, CSS `url()`, and metadata `icons`/`openGraph.images`.
+Fixed by prefixing every one with `BASE_PATH` from `src/utilities/publicUrl.ts` (the same single source
+of truth used for the rest of the basePath work):
+- `src/components/NavClient.tsx` — 3 image `src`s (`gtni-bg-2.png`, `GTNI-logo-15yer.png` ×2).
+- `src/elements/Logo/index.tsx`, `src/elements/BeforeLogin/index.tsx`,
+  `src/elements/Dashboard/DashboardBanner/index.tsx` — Payload admin custom components (logo, login-page
+  image, dashboard banner). `DashboardBanner` was missed by the first two grep passes because its `src`
+  uses single quotes inside a JSX expression (`src={'/image-login1.webp'}`) — a pattern narrower regexes
+  don't catch; found on a final, more permissive sweep.
+- `src/app/(frontend)/[locale]/layout.tsx` and `src/payload.config.ts` — **two separate, independent**
+  favicon metadata gaps. The frontend's `layout.tsx` already has its own `metadataBase` (from
+  2026-10-25 (3)), but the `icons.icon` field is a literal string that doesn't get resolved relative to
+  it the way `openGraph.images` do, so it needed an explicit `BASE_PATH` prefix too. Separately,
+  `@payloadcms/next`'s admin-panel metadata builder (`meta.js`) constructs its **own** `metadataBase`
+  from `config.serverURL` — never set in this project, so it was silently falling back to a bare
+  localhost URL with zero basePath awareness, completely independent of the frontend fix. Fixed by
+  explicitly prefixing both favicon URLs in `payload.config.ts`'s admin `meta.icons` block.
+- 9 page.tsx files sharing an identical `'/favicon.ico'` OG-image-fallback pattern (admission, courses,
+  nursing-programs, scholarships, student-services, vacancies, about-gtni, home, news-events).
+
+**Confirmed NOT needing a fix, after checking each category explicitly** (not guessed): every
+`<video>`/`<source>` field in `Home.ts`/`AboutGTNI.ts`/`NewsEvents.ts` is either a Payload
+`upload`/`relationTo: 'media'` field (already basePath-correct) or an explicit external
+YouTube/Vimeo URL text field — no raw `public/` video paths anywhere. `AlumniMap.tsx`'s
+`world-110m.json` is a build-time static `import`, not a runtime `fetch` — no basePath concern.
+No CSS `url()` anywhere in the project references a local file (all Google Fonts or `data:` URIs).
+
+**Verified with a real build, `NEXT_PUBLIC_BASE_PATH=/test` on an isolated port**: wrote a small
+Node script hitting all 12 routes (both locales × every page + `/admin/login`), extracting every
+`_next/image` and direct asset URL from the rendered HTML (decoding `&amp;`→`&` first — an earlier
+bash-based version of this same check had a regex bug that excluded individual characters instead of
+the `&amp;` substring, producing false failures from truncated URLs), and curling each one for a real
+200 — not just checking the `src` string looks prefixed. **279 unique asset URLs, 0 failures.**
+Re-ran the identical approach against the plain dev server with no basePath set — **279 (of the
+non-basePath pages' own URLs) checked, 0 failures** — confirming the default (no-`/test`) deployment is
+fully unaffected. `pnpm run lint` and `npx tsc --noEmit` both clean.
+
+**Gotchas reconfirmed**: editing `payload.config.ts` while the dev server is running leaves it serving
+a stale 500 on `/admin` until a `pnpm run devsafe` restart — now hit three times across this project's
+basePath/noindex work, always fixed the same way. `pnpm run dev -- -p PORT` / `pnpm run start -- -p PORT`
+both break on the double `--` (parsed as a literal directory argument) — use
+`./node_modules/.bin/next dev -p PORT` directly instead.
+
 ## 2026-10-25 (4) — Pre-deploy prep for the /new parallel mount: cookie isolation + noindex
 
 **Status**: ✅ Done, verified with a real `pnpm run build && next start`. Committed and pushed.

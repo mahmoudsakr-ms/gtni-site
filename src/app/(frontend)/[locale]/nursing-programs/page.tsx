@@ -7,6 +7,7 @@ import Image from 'next/image'
 
 import { Metadata } from 'next'
 import { buildLocaleAlternates } from '@/utilities/localeMetadata'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 type PageProps = { params: Promise<{ locale: string }> }
 
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const heroImageUrl =
     data?.heroImage && typeof data.heroImage === 'object' && 'url' in data.heroImage
       ? data.heroImage.url
-      : '/favicon.ico'
+      : `${BASE_PATH}/favicon.ico`
 
   return {
     title: data?.heroTitle || '',
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'Gouna Technical Nursing Institute',
       images: [
         {
-          url: heroImageUrl || '/favicon.ico',
+          url: heroImageUrl || `${BASE_PATH}/favicon.ico`,
           width: 1200,
           height: 630,
           alt: data?.heroTitle || 'The Program',
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: data?.heroTitle || 'The Program',
       description:
         data?.heroSubtitle || 'Competency-based curriculum designed for nursing excellence',
-      images: [heroImageUrl || '/favicon.ico'],
+      images: [heroImageUrl || `${BASE_PATH}/favicon.ico`],
     },
   }
 }

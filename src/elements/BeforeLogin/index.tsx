@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 import './index.scss'
 
@@ -8,7 +9,12 @@ export const BeforeLogin = () => {
   return (
     <aside className={baseClass}>
       <div className={`${baseClass}__image-wrap`}>
-        <Image src="/image-login1.webp" alt="" fill sizes="(max-width: 768px) 100vw, 50vw" />
+        <Image
+          src={`${BASE_PATH}/image-login1.webp`}
+          alt=""
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
       </div>
     </aside>
   )

@@ -8,6 +8,7 @@ import { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { resolveItemThumbnails } from '@/utilities/video'
 import { buildLocaleAlternates } from '@/utilities/localeMetadata'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 type PageProps = { params: Promise<{ locale: string }> }
 
@@ -48,7 +49,7 @@ const getNewsEventsPageData = unstable_cache(
     })
     const latestNews = latestNewsRes.docs?.[0]
 
-    let ogImage = '/favicon.ico'
+    let ogImage = `${BASE_PATH}/favicon.ico`
     if (
       latestNews?.thumbnail &&
       typeof latestNews.thumbnail === 'object' &&

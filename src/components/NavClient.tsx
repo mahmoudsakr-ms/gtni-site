@@ -9,6 +9,7 @@ import { Menu, X, ChevronDown, Lock, Globe } from 'lucide-react'
 import { Media } from '@/payload-types'
 import type { AppLocale } from '@/i18n/routing'
 import { SmartText } from './SmartText'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 interface NavClientProps {
   navItems: {
@@ -49,7 +50,7 @@ export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps
       {/* Visual Background Element (Right Side Angled Image) */}
       <div className="absolute top-0 right-0 h-full w-[50%] md:w-[45%] lg:w-[40%] z-0 pointer-events-none overflow-hidden hidden sm:block">
         <Image
-          src="/images/gtni-bg-2.png"
+          src={`${BASE_PATH}/images/gtni-bg-2.png`}
           alt=""
           aria-hidden="true"
           fill
@@ -113,7 +114,7 @@ export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps
             {/* 15 Year Anniversary Logo */}
             <div className="relative h-10 w-10 lg:h-11 lg:w-11 xl:h-12 xl:w-12 2xl:h-16 2xl:w-16 transition-transform hover:scale-110">
               <Image
-                src="/GTNI-logo-15yer.png"
+                src={`${BASE_PATH}/GTNI-logo-15yer.png`}
                 alt="GTNI 15 Years Anniversary"
                 className="object-contain"
                 fill
@@ -209,7 +210,7 @@ export const NavClient = ({ navItems, loginLinks, logo, locale }: NavClientProps
             <div className="flex justify-start px-5 pt-4">
               <div className="relative h-16 w-16">
                 <Image
-                  src="/GTNI-logo-15yer.png"
+                  src={`${BASE_PATH}/GTNI-logo-15yer.png`}
                   alt="GTNI 15 Years Anniversary"
                   className="object-contain"
                   fill

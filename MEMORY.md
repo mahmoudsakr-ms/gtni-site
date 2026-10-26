@@ -4,6 +4,41 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-26 — basePath doesn't reach `public/`-folder assets by default; must be fixed explicitly per asset type
+
+**Core fact, easy to assume wrongly**: `next/image`'s default loader does **not** apply `basePath` to
+local `src` paths — it builds the `_next/image?url=...` query param from the raw, unprefixed `src`
+string (confirmed by reading `next/dist/shared/lib/image-loader.js`). This is different from Payload's
+own URL-building (admin/API/media), which *does* already read the derived basePath internally — so
+"basePath support" for this app is really two unrelated mechanisms, not one: Payload's own (automatic)
+and everything touching `public/` directly (`next/image`, `<img>`, custom-component `src`s, favicon
+metadata) which needs **manual** `BASE_PATH` prefixing at every call site, with no shortcut. Checking
+only that the rendered HTML `src` attribute *looks* basePath-prefixed is not sufficient verification —
+it says nothing about whether the actual image/asset request behind it succeeds. Always curl the real
+resolved URL and check for a real 200.
+
+**The admin panel has its OWN separate metadataBase, independent of the frontend's**: `layout.tsx`'s
+`metadataBase` (set via `getPublicBaseUrl()`) only covers the public frontend. `@payloadcms/next`'s
+admin-panel metadata builder constructs a second, completely separate `metadataBase` from
+`config.serverURL` (never set in this project) — so admin-panel favicons etc. need their own explicit
+`BASE_PATH` prefix in `payload.config.ts`'s `admin.meta` block; fixing the frontend's metadataBase does
+nothing for the admin side.
+
+**Testing gotcha (bash regex), worth remembering before writing another one-off asset-check script**:
+`grep -oE '[^"&amp; ]*'`-style negated character classes exclude the individual *characters*
+`{", &, a, m, p, ;, space}`, not the literal 4-character substring `&amp;` — this silently truncates
+any matched URL at its first `a`/`m`/`p` character, producing false-positive "failures" from malformed
+partial URLs. A plain bash one-liner piping a single `grep | head -1 | xargs curl` through an
+`&amp;`-encoded HTML srcset has the same failure mode for a different reason: it curls the raw
+`&amp;`-encoded string, which curl/the shell splits on the literal `&` inside `&amp;` itself, turning
+`&amp;w=256` into a bogus `amp;w=256` param — missing the real `w` the image endpoint requires, so it
+400s even though the app is fine. Write a small Node `.mjs` script instead: fetch each page, decode
+`&amp;`→`&` in the HTML first, regex out full URLs, then `fetch()` each one directly and check
+`.status`. Worth reusing (see git history around 2026-10-26) rather than rewriting from scratch next
+time a basePath/asset regression check is needed.
+
+---
+
 ## 2026-10-25 (4) — /new deployment's full env var set, and a reconfirmed gotcha
 
 **The `/new` parallel-mount deployment now needs 3 env vars together** (all optional/off by default,

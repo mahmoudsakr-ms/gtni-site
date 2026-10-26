@@ -8,6 +8,7 @@ import { StudentServicesClient } from '@/components/StudentServicesClient'
 
 import { Metadata } from 'next'
 import { buildLocaleAlternates } from '@/utilities/localeMetadata'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 type PageProps = { params: Promise<{ locale: string }> }
 
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     typeof studentServicesData.heroImage === 'object' &&
     'url' in studentServicesData.heroImage
       ? studentServicesData.heroImage.url
-      : '/favicon.ico'
+      : `${BASE_PATH}/favicon.ico`
 
   return {
     title: studentServicesData?.heroTitle || '',
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'Gouna Technical Nursing Institute',
       images: [
         {
-          url: heroImageUrl || '/favicon.ico',
+          url: heroImageUrl || `${BASE_PATH}/favicon.ico`,
           width: 1200,
           height: 630,
           alt: studentServicesData?.heroTitle || 'Student Services | GTNI',
@@ -54,7 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description:
         studentServicesData?.heroSubtitle ||
         'Discover the services and support available to enhance your journey at GTNI.',
-      images: [heroImageUrl || '/favicon.ico'],
+      images: [heroImageUrl || `${BASE_PATH}/favicon.ico`],
     },
   }
 }

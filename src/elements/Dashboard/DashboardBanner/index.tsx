@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { BASE_PATH } from '@/utilities/publicUrl'
 
 import './index.scss'
 
@@ -9,7 +10,7 @@ export const DashboardBanner = () => {
     <div className={baseClass}>
       <div className={`${baseClass}__wrap`}>
         <div className={`${baseClass}__image-wrap`}>
-          <Image src={'/image-login1.webp'} alt="" fill sizes="100vw" />
+          <Image src={`${BASE_PATH}/image-login1.webp`} alt="" fill sizes="100vw" />
         </div>
       </div>
     </div>

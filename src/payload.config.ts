@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { withCollectionRevalidate, withGlobalRevalidate } from './utilities/revalidate'
 import { withDraftProtection } from './utilities/draftAccess'
+import { BASE_PATH } from './utilities/publicUrl'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -57,14 +58,19 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: ' | GTNI Admin',
+      // Explicit BASE_PATH prefix rather than relying on metadataBase resolution --
+      // this config never sets `serverURL` (see below), so @payloadcms/next's own
+      // admin-metadata builder falls back to a bare localhost URL with no basePath
+      // awareness at all, unlike the frontend's own layout.tsx (which has an
+      // explicit metadataBase via getPublicBaseUrl()).
       icons: [
         {
           rel: 'icon',
-          url: '/favicon.ico?v=2',
+          url: `${BASE_PATH}/favicon.ico?v=2`,
         },
         {
           rel: 'shortcut icon',
-          url: '/favicon.ico?v=2',
+          url: `${BASE_PATH}/favicon.ico?v=2`,
         },
       ],
     },
