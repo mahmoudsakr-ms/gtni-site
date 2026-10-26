@@ -4,6 +4,35 @@ Running chronological log of work done on this project. Newest entry on top.
 
 ---
 
+## 2026-10-26 (3) — Security headers still missing on the basePath root on a real server; added a middleware-level fallback
+
+**Status**: ✅ Done, committed (`0b231b6`), pushed.
+
+The user caught, via real server testing (`next build` + `next start` under pm2, port 3001, direct
+to the app bypassing nginx, with the exact deployed env vars), that `GET /test` — the basePath root
+exactly — still came back with only 2 of the 5 security headers from the previous fix
+(`281442c`), even though `next.config.mjs`'s own `routes-manifest.json` on that server had the
+correct rule for it, and every other path under `/test` got all 5 headers correctly.
+
+**Could not reproduce this locally** despite matching the exact conditions (same 3 env vars —
+`NEXT_PUBLIC_BASE_PATH=/test`, `NEXT_PUBLIC_NOINDEX=true`, `PAYLOAD_COOKIE_PREFIX=payload-test` — via
+an actual `.env` file, not inline; a genuine `next build` + `next start`, not dev mode) — all 5
+headers were present and consistent across 5 repeated requests every time. The exact mechanism
+behind the gap on the user's server was never pinned down.
+
+**Fix applied anyway, as a belt-and-suspenders safeguard**: `src/middleware.ts` now sets the same 5
+headers directly on every response next-intl's middleware produces (the basePath root specifically
+goes through next-intl's locale rewrite there), independent of whatever subtlety might be dropping
+them via `next.config.mjs`'s own header-matching in the user's environment. Paths middleware
+excludes (`/admin`, `/api`, static files) are unaffected and still rely solely on `next.config.mjs`.
+
+**Verified**: real builds with and without `NEXT_PUBLIC_BASE_PATH=/test` (via `.env`): all 5 headers
+present on the basePath root, on plain `/`, on regular pages, and independently on `/admin/login`
+(confirming `next.config`'s own rule still covers middleware-excluded paths unchanged). All other
+regression checks (279 asset URLs, search, pagination) still pass in both builds. lint/tsc clean.
+
+---
+
 ## 2026-10-26 (2) — Fixed every open item from the Production Audit report
 
 **Status**: ✅ Done, verified with real builds (with and without `NEXT_PUBLIC_BASE_PATH=/test`),

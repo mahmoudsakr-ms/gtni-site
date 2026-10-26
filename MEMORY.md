@@ -4,6 +4,21 @@ Purpose: condensed notes between chat sessions on this project, so context/decis
 
 ---
 
+## 2026-10-26 (3) — The basePath root + next-intl rewrite has now needed TWO separate header/matcher fixes; trust the user's real-server test over a local repro that can't reproduce a bug
+
+Three separate basePath-root edge cases have now been found in this exact code path (middleware
+matcher not matching `''`, `next.config.mjs` headers() not applying, and still-unexplained missing
+headers on a real pm2-hosted server even after the headers() fix). If this area acts up again,
+suspect the basePath-root + next-intl-rewrite interaction first.
+
+When a user reports a bug from real server testing that a local repro (matching env vars, real
+build, same Next version) can't reproduce, don't assume the user's test was wrong — add a defensive
+fix that closes the gap regardless of root cause (here: setting the headers directly in middleware
+as well as via `next.config.mjs`) rather than insisting on root-causing it before acting, especially
+when the defensive fix is cheap and can't make things worse.
+
+---
+
 ## 2026-10-26 (2) — Production is still running commit 3466c59; it has never been redeployed
 
 **Standing fact worth not forgetting**: as of this session, `gtni.edu.eg` is still running the very
