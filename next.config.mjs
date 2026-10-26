@@ -68,6 +68,11 @@ const nextConfig = {
   // Baseline security headers, site-wide. Deliberately NOT including a Content-Security-Policy
   // here yet — Payload's admin panel is sensitive to CSP misconfiguration (risk of locking out
   // admin access) and needs dedicated testing before one is added; tracked as follow-up work.
+  //
+  // Keep this list identical to the SECURITY_HEADERS object in src/middleware.ts -- that file
+  // sets these same headers directly on every response next-intl's middleware produces, as a
+  // belt-and-suspenders fix for a basePath-root case where this config's own rule below wasn't
+  // enough in at least one real production-like test.
   async headers() {
     const securityHeaders = [
       { key: 'X-Content-Type-Options', value: 'nosniff' },
